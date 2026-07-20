@@ -59,9 +59,9 @@ export default function LoginForm() {
               <Image
                 src="/logo.png"
                 alt="Logo"
-                width={240}
-                height={240}
-                className="h-16 w-auto object-contain"
+                width={320}
+                height={180}
+                className="h-14 w-auto object-contain"
               />
             </div>
 

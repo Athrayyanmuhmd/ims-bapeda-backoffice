@@ -24,27 +24,27 @@ const fontPoppins = Poppins({
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_FE_URL),
-  title: "IMS Bapeda",
-  description: "IMS Bapeda - Intern Management System",
+  title: "SIMAGANG",
+  description: "SIMAGANG Bapeda - Intern Management System",
   openGraph: {
-    title: "IMS Bapeda",
-    description: "IMS Bapeda - Intern Management System",
+    title: "SIMAGANG Bapeda",
+    description: "SIMAGANG Bapeda - Intern Management System",
     url: "https://ims.bapeda.id",
     images: [
       {
         url: "/banner.png",
-        alt: "IMS Bapeda",
+        alt: "SIMAGANG Bapeda",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "IMS Bapeda",
-    description: "IMS Bapeda - Intern Management System",
+    title: "SIMAGANG Bapeda",
+    description: "SIMAGANG Bapeda - Intern Management System",
     images: [
       {
         url: "/banner.png",
-        alt: "IMS Bapeda",
+        alt: "SIMAGANG Bapeda",
       },
     ],
   },

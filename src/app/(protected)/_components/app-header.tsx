@@ -25,7 +25,7 @@ export default function AppHeader() {
 
   const pageTitle =
     NAVIGATION.find((item) => pathname === item.href || pathname.startsWith(`${item.href}/`))
-      ?.name ?? "IMS Bapeda";
+      ?.name ?? "SIMAGANG Bapeda";
 
   const getUserInitials = () => {
     if (!user?.fullName) return "U";

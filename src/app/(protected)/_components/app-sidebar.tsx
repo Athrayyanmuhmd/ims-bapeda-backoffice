@@ -28,14 +28,19 @@ export default function AppSidebar() {
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" asChild tooltip="IMS Bapeda Backoffice">
+            <SidebarMenuButton size="lg" asChild tooltip="SIMAGANG Bapeda">
               <Link href="/dashboard">
                 <div className="flex aspect-square size-8 items-center justify-center rounded-xl bg-white">
-                  <Image src="/logo.png" alt="Logo" width={32} height={32} className="size-4.5" />
+                  <Image
+                    src="/logo.png"
+                    alt="Logo"
+                    width={320}
+                    height={180}
+                    className="size-6 object-contain"
+                  />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="font-display truncate font-semibold tracking-tight">IMS Bapeda</span>
-                  <span className="text-sidebar-foreground/60 truncate text-xs">Backoffice</span>
+                  <span className="font-display truncate font-semibold tracking-tight">SIMAGANG Bapeda</span>
                 </div>
               </Link>
             </SidebarMenuButton>

@@ -6,12 +6,18 @@ export default function Illustrations() {
       <div className="bg-primary relative h-full w-full overflow-hidden rounded-2xl">
         <div className="relative flex h-full flex-col justify-between p-10">
           <div className="flex size-11 items-center justify-center rounded-xl bg-white">
-            <Image src="/logo.png" alt="Logo" width={240} height={240} className="h-6 w-auto" />
+            <Image
+              src="/logo.png"
+              alt="Logo"
+              width={320}
+              height={180}
+              className="h-7 w-auto object-contain"
+            />
           </div>
 
           <div className="max-w-md">
             <h2 className="font-display text-primary-foreground text-4xl font-semibold tracking-tight text-balance">
-              IMS Bapeda
+              SIMAGANG Bapeda
             </h2>
             <p className="text-primary-foreground/80 mt-3 text-lg font-medium">
               Sistem Absensi Online Magang
