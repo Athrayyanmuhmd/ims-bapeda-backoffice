@@ -1,11 +1,9 @@
 import { redirect } from "next/navigation";
 import type React from "react";
-import { Suspense } from "react";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import type { TAuthUser } from "@/stores/auth";
 import { getSession } from "@/utils/session";
 import Providers from "@/components/auth-providers";
-import { PageTransition } from "@/components/page-transition";
 import AppHeader from "./_components/app-header";
 import AppSidebar from "./_components/app-sidebar";
 
@@ -38,15 +36,12 @@ export default async function Layout({ children }: TLayoutProps) {
         <AppSidebar />
         <SidebarInset>
           <AppHeader />
+          {/* ponytail: PageTransition (framer-motion) + Suspense here caused a
+              production-only React #300 (hook-count mismatch) on every
+              navigation. Dropped both — revisit with AnimatePresence if the
+              fade transition comes back, test a full nav cycle before it ships. */}
           <section className="flex max-w-full min-w-0 flex-1 flex-col gap-4 overflow-x-hidden bg-[#FAFAFA] p-4">
-            {/* useQueryBuilder (every list page) reads useSearchParams, which
-                Next.js requires a Suspense boundary for in production builds —
-                same reason ProgressBar is wrapped in app/layout.tsx. Missing
-                this caused a client-side hook-count mismatch (React #300) on
-                every page except /login and /dashboard, which don't use it. */}
-            <Suspense fallback={null}>
-              <PageTransition>{children}</PageTransition>
-            </Suspense>
+            {children}
           </section>
         </SidebarInset>
       </SidebarProvider>

@@ -2,7 +2,6 @@ import { redirect } from "next/navigation";
 import type React from "react";
 import { getSession } from "@/utils/session";
 import Providers from "@/components/auth-providers";
-import { PageTransition } from "@/components/page-transition";
 
 type TLayoutProps = {
   children: React.ReactNode;
@@ -25,7 +24,7 @@ export default async function Layout({ children }: TLayoutProps) {
         user: null,
       }}
     >
-      <PageTransition>{children}</PageTransition>
+      {children}
     </Providers>
   );
 }
