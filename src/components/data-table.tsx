@@ -267,11 +267,11 @@ export function DataTable<TData>({
           </div>
         </div>
         {!hideFooter && (
-        <div className="flex items-center justify-between py-2.5 gap-2.5 border-t">
-          <p className="text-xs font-normal text-muted-foreground">Total Data: {totalDataCount}</p>
-          <div className="flex items-center gap-1 bg-accent p-1 rounded-lg">
+        <div className="flex flex-col items-center gap-2.5 border-t py-2.5 sm:flex-row sm:justify-between">
+          <p className="text-xs font-normal text-muted-foreground order-2 sm:order-1">Total Data: {totalDataCount}</p>
+          <div className="order-1 flex max-w-full items-center gap-1 overflow-x-auto rounded-lg bg-accent p-1 sm:order-2">
             <Button
-              className="text-xs font-normal bg-white text-foreground hover:bg-accent"
+              className="shrink-0 text-xs font-normal bg-white text-foreground hover:bg-accent"
               size="sm"
               onClick={() => handlePageChange(currentPage - 1)}
               disabled={currentPage === 1 || pagination?.isFetching}
@@ -281,14 +281,14 @@ export function DataTable<TData>({
 
             {pageNumbers.map((page, index) =>
               page === "..." ? (
-                <span key={`ellipsis-${index}`} className="px-2 text-xs text-muted-foreground">
+                <span key={`ellipsis-${index}`} className="shrink-0 px-2 text-xs text-muted-foreground">
                   •••
                 </span>
               ) : (
                 <Button
                   key={page}
                   size="sm"
-                  className={`h-8 w-8 p-0 text-xs font-normal ${
+                  className={`h-8 w-8 shrink-0 p-0 text-xs font-normal ${
                     currentPage === page
                       ? "bg-primary text-white hover:bg-primary/90"
                       : "bg-white text-foreground hover:bg-accent"
@@ -302,7 +302,7 @@ export function DataTable<TData>({
             )}
 
             <Button
-              className="text-xs font-normal bg-white text-foreground hover:bg-accent"
+              className="shrink-0 text-xs font-normal bg-white text-foreground hover:bg-accent"
               size="sm"
               onClick={() => handlePageChange(currentPage + 1)}
               disabled={currentPage === totalPages || pagination?.isFetching}
@@ -311,7 +311,7 @@ export function DataTable<TData>({
             </Button>
           </div>
 
-          <div className="hidden items-center gap-2 lg:flex">
+          <div className="order-3 hidden items-center gap-2 lg:flex">
             <Label htmlFor="rows-per-page" className="text-xs font-normal text-muted-foreground">
               Tampilan per halaman
             </Label>

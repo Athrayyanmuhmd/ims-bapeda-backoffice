@@ -238,9 +238,9 @@ export default function Container({ id }: { id: string }) {
             <ul className="flex flex-col gap-3">
               {dokumen.map((d) => (
                 <li key={d.id} className="flex items-center justify-between gap-3 text-sm">
-                  <div>
+                  <div className="min-w-0">
                     <p className="text-muted-foreground text-xs">{d.jenisDokumen.replace(/_/g, " ")}</p>
-                    <p>{d.namaFile}</p>
+                    <p className="truncate">{d.namaFile}</p>
                   </div>
                   <a
                     href={d.urlFile}

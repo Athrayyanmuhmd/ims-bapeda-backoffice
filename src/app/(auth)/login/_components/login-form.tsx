@@ -52,7 +52,7 @@ export default function LoginForm() {
 
   return (
     <div className="col-span-1 h-full">
-      <div className="bg-background flex h-full w-full flex-col items-center justify-center rounded-2xl p-8">
+      <div className="bg-background flex h-full w-full flex-col items-center justify-center rounded-2xl p-6 sm:p-8">
         <div className="w-full">
           <div className="mb-8 flex flex-col">
             <div className="flex justify-center">
@@ -65,7 +65,7 @@ export default function LoginForm() {
               />
             </div>
 
-            <h4 className="font-display text-foreground text-center text-3xl font-semibold tracking-tight">
+            <h4 className="font-display text-foreground text-center text-2xl font-semibold tracking-tight sm:text-3xl">
               Selamat Datang
             </h4>
             <p className="text-muted-foreground text-center text-sm">

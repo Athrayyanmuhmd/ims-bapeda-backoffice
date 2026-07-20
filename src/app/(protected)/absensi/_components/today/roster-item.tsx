@@ -43,7 +43,9 @@ export function RosterItem({ peserta, dense, onMark, isPending }: RosterItemProp
     <div
       className={cn(
         "bg-card flex gap-3 rounded-xl border shadow-sm",
-        dense ? "flex-row items-center px-3 py-2" : "flex-col p-3.5",
+        dense
+          ? "flex-wrap items-center px-3 py-2 sm:flex-nowrap"
+          : "flex-col p-3.5",
         borderClass,
       )}
     >
@@ -59,7 +61,7 @@ export function RosterItem({ peserta, dense, onMark, isPending }: RosterItemProp
         </div>
       </div>
 
-      <div className={cn("grid grid-cols-4 gap-1.5", dense && "w-72 shrink-0")}>
+      <div className={cn("grid grid-cols-4 gap-1.5", dense && "w-full order-3 sm:order-0 sm:w-72 sm:shrink-0")}>
         {KEHADIRAN_OPTIONS.map((option) => (
           <button
             key={option}
@@ -81,7 +83,7 @@ export function RosterItem({ peserta, dense, onMark, isPending }: RosterItemProp
       <div
         className={cn(
           "text-muted-foreground font-mono text-[0.7rem] tabular-nums",
-          dense ? "w-24 shrink-0 text-right" : "min-h-[14px]",
+          dense ? "shrink-0 sm:w-24 sm:text-right" : "min-h-[14px]",
         )}
       >
         {peserta.kehadiran === "Hadir" && peserta.jamMasuk

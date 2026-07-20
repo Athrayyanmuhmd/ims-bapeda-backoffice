@@ -16,7 +16,7 @@ export default function Container() {
         <p className="text-muted-foreground text-sm">
           Selamat datang kembali, <span className="font-medium">{user?.fullName ?? "User"}</span>
         </p>
-        <h1 className="font-display text-3xl font-semibold tracking-tight">Dashboard</h1>
+        <h1 className="font-display text-2xl font-semibold tracking-tight sm:text-3xl">Dashboard</h1>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">

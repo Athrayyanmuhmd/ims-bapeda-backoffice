@@ -39,16 +39,18 @@ export default function AppHeader() {
 
   return (
     <>
-      <header className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-4 border-b bg-background px-4">
-        <div className="flex flex-1 items-center gap-4">
+      <header className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-2 border-b bg-background px-3 sm:gap-4 sm:px-4">
+        <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-4">
           <SidebarTrigger />
           <Separator orientation="vertical" className="h-6" />
-          <div className="flex items-center gap-2">
-            <h1 className="font-display text-lg font-semibold tracking-tight">{pageTitle}</h1>
+          <div className="min-w-0 flex-1">
+            <h1 className="font-display truncate text-base font-semibold tracking-tight sm:text-lg">
+              {pageTitle}
+            </h1>
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex shrink-0 items-center gap-2 sm:gap-4">
           {/* User Menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

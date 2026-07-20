@@ -166,7 +166,7 @@ export function FormDialog({ open, onOpenChange, absensi }: FormDialogProps) {
             )}
           />
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Controller
               control={form.control}
               name="jamMasuk"

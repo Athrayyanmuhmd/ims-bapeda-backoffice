@@ -68,8 +68,8 @@ export default function TableManajemenUser() {
       </CardHeader>
 
       <CardContent className="flex flex-col gap-4">
-        <div className="flex items-center justify-between gap-3">
-          <InputGroup className="max-w-sm">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <InputGroup className="w-full sm:max-w-sm">
             <InputGroupInput
               placeholder="Cari nama user..."
               onChange={(e) => debouncedSearch(e.target.value)}

@@ -82,7 +82,7 @@ export function Modal({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className={cn(className)}>
+      <DialogContent className={cn("max-h-[85vh] overflow-y-auto", className)}>
         {(title || description) && (
           <DialogHeader>
             {title && <DialogTitle>{title}</DialogTitle>}
