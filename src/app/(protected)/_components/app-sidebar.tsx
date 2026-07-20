@@ -15,6 +15,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { NAVIGATION } from "@/constants/navigation";
 import { useAuth } from "@/stores/auth";
@@ -22,6 +23,7 @@ import { useAuth } from "@/stores/auth";
 export default function AppSidebar() {
   const pathname = usePathname();
   const { user } = useAuth();
+  const { setOpenMobile } = useSidebar();
 
   return (
     <Sidebar collapsible="icon">
@@ -29,7 +31,7 @@ export default function AppSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild tooltip="SIMAGANG Bapeda">
-              <Link href="/dashboard">
+              <Link href="/dashboard" onClick={() => setOpenMobile(false)}>
                 <div className="flex aspect-square size-8 items-center justify-center rounded-xl bg-white">
                   <Image
                     src="/logo.png"
@@ -55,7 +57,7 @@ export default function AppSidebar() {
               {NAVIGATION.filter((item) => !item.roles || item.roles.includes(user?.role ?? "")).map((item) => (
                 <SidebarMenuItem key={item.href}>
                   <SidebarMenuButton asChild isActive={pathname === item.href} tooltip={item.name}>
-                    <Link href={item.href}>
+                    <Link href={item.href} onClick={() => setOpenMobile(false)}>
                       {item.icon && <Icon icon={item.icon} className="size-4" />}
                       <span>{item.name}</span>
                     </Link>
