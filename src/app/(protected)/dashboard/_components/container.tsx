@@ -19,15 +19,15 @@ export default function Container() {
         <h1 className="font-display text-2xl font-semibold tracking-tight sm:text-3xl">Dashboard</h1>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        <div className="lg:col-span-2">
+      <div className="grid min-w-0 gap-6 lg:grid-cols-3">
+        <div className="min-w-0 lg:col-span-2">
           <TodayHighlight />
         </div>
         <AttendanceSummary />
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        <div className="lg:col-span-2">
+      <div className="grid min-w-0 gap-6 lg:grid-cols-3">
+        <div className="min-w-0 lg:col-span-2">
           <TableAttendance />
         </div>
         <div className="flex flex-col gap-6">
