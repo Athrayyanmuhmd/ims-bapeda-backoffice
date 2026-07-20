@@ -61,7 +61,7 @@ export const createColumns = ({
         if (!kehadiran) return <span className="text-sm">-</span>;
         return (
           <span
-            className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${
+            className={`inline-flex w-16 items-center justify-center rounded-full px-3 py-1 text-xs font-semibold ${
               KEHADIRAN_BADGE_CLASS[kehadiran] ?? "bg-accent text-muted-foreground"
             }`}
           >

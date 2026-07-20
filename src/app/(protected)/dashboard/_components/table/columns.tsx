@@ -26,7 +26,7 @@ export const columns: ColumnDef<TAbsensi>[] = [
     header: "Status",
     cell: ({ row }) => (
       <span
-        className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
+        className={`inline-flex w-16 items-center justify-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
           KEHADIRAN_BADGE_CLASS[row.original.kehadiran] ?? "bg-accent text-muted-foreground"
         }`}
       >
