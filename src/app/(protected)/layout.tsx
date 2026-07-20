@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import type React from "react";
+import { Suspense } from "react";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import type { TAuthUser } from "@/stores/auth";
 import { getSession } from "@/utils/session";
@@ -38,7 +39,14 @@ export default async function Layout({ children }: TLayoutProps) {
         <SidebarInset>
           <AppHeader />
           <section className="flex max-w-full min-w-0 flex-1 flex-col gap-4 overflow-x-hidden bg-[#FAFAFA] p-4">
-            <PageTransition>{children}</PageTransition>
+            {/* useQueryBuilder (every list page) reads useSearchParams, which
+                Next.js requires a Suspense boundary for in production builds —
+                same reason ProgressBar is wrapped in app/layout.tsx. Missing
+                this caused a client-side hook-count mismatch (React #300) on
+                every page except /login and /dashboard, which don't use it. */}
+            <Suspense fallback={null}>
+              <PageTransition>{children}</PageTransition>
+            </Suspense>
           </section>
         </SidebarInset>
       </SidebarProvider>
