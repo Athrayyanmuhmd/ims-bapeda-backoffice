@@ -1,6 +1,6 @@
 "use client";
 
-import { KEHADIRAN_OPTIONS } from "@/services/absensi/types";
+import { KEHADIRAN_OPTIONS, type IZIN_STATUS_OPTIONS } from "@/services/absensi/types";
 import { cn } from "@/utils/classname";
 import { fmtJam } from "@/utils/datetime";
 
@@ -12,6 +12,9 @@ export interface RosterPeserta {
   absensiId: string | null;
   kehadiran: (typeof KEHADIRAN_OPTIONS)[number] | null;
   jamMasuk: string | null;
+  izinStatus: (typeof IZIN_STATUS_OPTIONS)[number] | null;
+  izinJenis: (typeof KEHADIRAN_OPTIONS)[number] | null;
+  keterangan: string | null;
 }
 
 const STATUS_CLASS: Record<string, string> = {
@@ -33,13 +36,25 @@ interface RosterItemProps {
   peserta: RosterPeserta;
   dense?: boolean;
   onMark: (kehadiran: (typeof KEHADIRAN_OPTIONS)[number]) => void;
+  onApproveIzin?: () => void;
+  onRejectIzin?: () => void;
   isPending?: boolean;
 }
 
-export function RosterItem({ peserta, dense, onMark, isPending }: RosterItemProps) {
-  const borderClass = peserta.kehadiran
-    ? STATUS_CLASS[peserta.kehadiran]?.split(" ")[0]
-    : "border-border";
+export function RosterItem({
+  peserta,
+  dense,
+  onMark,
+  onApproveIzin,
+  onRejectIzin,
+  isPending,
+}: RosterItemProps) {
+  const isPendingIzin = peserta.izinStatus === "PENDING";
+  const borderClass = isPendingIzin
+    ? "border-amber-500"
+    : peserta.kehadiran
+      ? STATUS_CLASS[peserta.kehadiran]?.split(" ")[0]
+      : "border-border";
 
   return (
     <div
@@ -60,32 +75,66 @@ export function RosterItem({ peserta, dense, onMark, isPending }: RosterItemProp
           <p className="text-muted-foreground truncate text-xs">
             {peserta.divisi ?? "-"} · {peserta.pembimbingLapangan ?? "-"}
           </p>
+          {isPendingIzin && peserta.keterangan && (
+            <p className="text-muted-foreground mt-0.5 truncate text-xs">
+              Ket: {peserta.keterangan}
+            </p>
+          )}
         </div>
       </div>
 
-      <div
-        className={cn(
-          "grid grid-cols-4 gap-1.5",
-          dense && "w-full order-3 sm:order-0 sm:w-72 sm:shrink-0"
-        )}
-      >
-        {KEHADIRAN_OPTIONS.map((option) => (
+      {isPendingIzin ? (
+        <div
+          className={cn(
+            "flex flex-wrap items-center gap-1.5",
+            dense && "w-full order-3 sm:order-0 sm:w-72 sm:shrink-0 sm:justify-end"
+          )}
+        >
+          <span className="rounded-full bg-amber-100 px-2.5 py-1 text-[0.7rem] font-bold text-amber-800">
+            Menunggu {peserta.izinJenis ?? peserta.kehadiran}
+          </span>
           <button
-            key={option}
             type="button"
             disabled={isPending}
-            onClick={() => onMark(option)}
-            className={cn(
-              "rounded-lg border py-1.5 text-[0.7rem] font-bold whitespace-nowrap transition-colors disabled:opacity-50",
-              peserta.kehadiran === option
-                ? STATUS_CLASS[option]
-                : "border-input text-muted-foreground hover:bg-accent"
-            )}
+            onClick={onApproveIzin}
+            className="rounded-lg border border-green-600 bg-green-50 px-2.5 py-1.5 text-[0.7rem] font-bold text-green-700 transition-colors disabled:opacity-50"
           >
-            {option}
+            Setuju
           </button>
-        ))}
-      </div>
+          <button
+            type="button"
+            disabled={isPending}
+            onClick={onRejectIzin}
+            className="rounded-lg border border-red-600 bg-red-50 px-2.5 py-1.5 text-[0.7rem] font-bold text-red-700 transition-colors disabled:opacity-50"
+          >
+            Tolak
+          </button>
+        </div>
+      ) : (
+        <div
+          className={cn(
+            "grid grid-cols-4 gap-1.5",
+            dense && "w-full order-3 sm:order-0 sm:w-72 sm:shrink-0"
+          )}
+        >
+          {KEHADIRAN_OPTIONS.map((option) => (
+            <button
+              key={option}
+              type="button"
+              disabled={isPending}
+              onClick={() => onMark(option)}
+              className={cn(
+                "rounded-lg border py-1.5 text-[0.7rem] font-bold whitespace-nowrap transition-colors disabled:opacity-50",
+                peserta.kehadiran === option
+                  ? STATUS_CLASS[option]
+                  : "border-input text-muted-foreground hover:bg-accent"
+              )}
+            >
+              {option}
+            </button>
+          ))}
+        </div>
+      )}
 
       <div
         className={cn(
@@ -93,11 +142,13 @@ export function RosterItem({ peserta, dense, onMark, isPending }: RosterItemProp
           dense ? "shrink-0 sm:w-24 sm:text-right" : "min-h-[14px]"
         )}
       >
-        {peserta.kehadiran === "Hadir" && peserta.jamMasuk
-          ? `Masuk ${fmtJam(peserta.jamMasuk)}`
-          : peserta.kehadiran
-            ? `Ditandai ${peserta.kehadiran}`
-            : "Belum dicatat"}
+        {isPendingIzin
+          ? "Menunggu persetujuan"
+          : peserta.kehadiran === "Hadir" && peserta.jamMasuk
+            ? `Masuk ${fmtJam(peserta.jamMasuk)}`
+            : peserta.kehadiran
+              ? `Ditandai ${peserta.kehadiran}`
+              : "Belum dicatat"}
       </div>
     </div>
   );

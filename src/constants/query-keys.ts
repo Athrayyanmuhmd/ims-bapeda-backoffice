@@ -1,4 +1,4 @@
-// Centralized query key registry. Every useQuery/invalidateQueries call in the
+﻿// Centralized query key registry. Every useQuery/invalidateQueries call in the
 // app should build its key from here instead of hand-writing arrays — that's
 // what caught the dashboard firing the same "latest 100 peserta" and "latest
 // 100 absensi" requests twice under different labels (["peserta-magang","stats"]
@@ -27,11 +27,11 @@ export const queryKeys = {
     // Same key for both would hand one page the other's truncated data.
     report: (pesertaId: string) => [...queryKeys.absensi.all, "report", pesertaId] as const,
   },
-  jurnal: {
-    all: ["jurnal"] as const,
-    list: (params: unknown) => [...queryKeys.jurnal.all, "list", params] as const,
-    byPeserta: (pesertaId: string) => [...queryKeys.jurnal.all, "by-peserta", pesertaId] as const,
-    report: (pesertaId: string) => [...queryKeys.jurnal.all, "report", pesertaId] as const,
+  logbook: {
+    all: ["logbook"] as const,
+    list: (params: unknown) => [...queryKeys.logbook.all, "list", params] as const,
+    byPeserta: (pesertaId: string) => [...queryKeys.logbook.all, "by-peserta", pesertaId] as const,
+    report: (pesertaId: string) => [...queryKeys.logbook.all, "report", pesertaId] as const,
   },
   penilaian: {
     all: ["penilaian"] as const,
@@ -64,5 +64,9 @@ export const queryKeys = {
     all: ["user"] as const,
     list: (params: unknown) => [...queryKeys.user.all, "list", params] as const,
     options: () => [...queryKeys.user.all, "options"] as const,
+  },
+  notifications: {
+    all: ["notifications"] as const,
+    summary: () => [...queryKeys.notifications.all, "summary"] as const,
   },
 } as const;

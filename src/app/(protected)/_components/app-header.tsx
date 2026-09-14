@@ -1,6 +1,8 @@
 "use client";
 
 import { Icon } from "@iconify/react";
+import { useQuery } from "@tanstack/react-query";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useRef, useState } from "react";
 import type { IModalRef } from "@/components/modal";
@@ -17,7 +19,10 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { NAVIGATION } from "@/constants/navigation";
+import { queryKeys } from "@/constants/query-keys";
+import { services } from "@/services";
 import { useAuth } from "@/stores/auth";
+import { fmtTanggal } from "@/utils/datetime";
 import DialogChangePassword from "./partials/dialog-change-password";
 import DialogLogout from "./partials/dialog-logout";
 
@@ -26,6 +31,18 @@ export default function AppHeader() {
   const pathname = usePathname();
   const logoutDialogRef = useRef<IModalRef>(null);
   const [changePasswordOpen, setChangePasswordOpen] = useState(false);
+
+  const { data: notifRes } = useQuery({
+    queryKey: queryKeys.notifications.summary(),
+    queryFn: () => services.notifications.getSummary(),
+    refetchInterval: 60_000,
+  });
+
+  const summary = notifRes?.content;
+  const totalAlerts =
+    (summary?.counts.pendingIzin ?? 0) +
+    (summary?.counts.belumAbsen ?? 0) +
+    (summary?.counts.endingSoon ?? 0);
 
   const pageTitle =
     NAVIGATION.find((item) => pathname === item.href || pathname.startsWith(`${item.href}/`))
@@ -55,7 +72,94 @@ export default function AppHeader() {
         </div>
 
         <div className="flex shrink-0 items-center gap-2 sm:gap-4">
-          {/* User Menu */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="relative">
+                <Icon icon="mdi:bell-outline" className="size-5" />
+                {totalAlerts > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-amber-500 px-1 text-[10px] font-bold text-white">
+                    {totalAlerts > 99 ? "99+" : totalAlerts}
+                  </span>
+                )}
+                <span className="sr-only">Notifikasi</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-80" align="end" forceMount>
+              <DropdownMenuLabel>Perlu perhatian</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+
+              {(summary?.pendingIzin.length ?? 0) > 0 && (
+                <>
+                  <DropdownMenuLabel className="text-muted-foreground text-xs font-normal">
+                    Izin menunggu ({summary?.counts.pendingIzin})
+                  </DropdownMenuLabel>
+                  {summary?.pendingIzin.slice(0, 4).map((item) => (
+                    <DropdownMenuItem key={item.id} asChild>
+                      <Link href="/absensi" className="flex flex-col items-start gap-0.5">
+                        <span className="font-medium">
+                          {item.name} · {item.jenis}
+                        </span>
+                        <span className="text-muted-foreground text-xs">
+                          {fmtTanggal(item.tanggal)}
+                          {item.divisi ? ` · ${item.divisi}` : ""}
+                        </span>
+                      </Link>
+                    </DropdownMenuItem>
+                  ))}
+                  <DropdownMenuSeparator />
+                </>
+              )}
+
+              {(summary?.belumAbsen.length ?? 0) > 0 && (
+                <>
+                  <DropdownMenuLabel className="text-muted-foreground text-xs font-normal">
+                    Belum absen hari ini ({summary?.counts.belumAbsen})
+                  </DropdownMenuLabel>
+                  {summary?.belumAbsen.slice(0, 4).map((item) => (
+                    <DropdownMenuItem key={item.id} asChild>
+                      <Link href="/absensi" className="flex flex-col items-start gap-0.5">
+                        <span className="font-medium">{item.name}</span>
+                        <span className="text-muted-foreground text-xs">{item.divisi ?? "-"}</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  ))}
+                  <DropdownMenuSeparator />
+                </>
+              )}
+
+              {(summary?.endingSoon.length ?? 0) > 0 && (
+                <>
+                  <DropdownMenuLabel className="text-muted-foreground text-xs font-normal">
+                    Magang segera berakhir ({summary?.counts.endingSoon})
+                  </DropdownMenuLabel>
+                  {summary?.endingSoon.slice(0, 4).map((item) => (
+                    <DropdownMenuItem key={item.id} asChild>
+                      <Link
+                        href={`/peserta-magang/${item.id}`}
+                        className="flex flex-col items-start gap-0.5"
+                      >
+                        <span className="font-medium">{item.name}</span>
+                        <span className="text-muted-foreground text-xs">
+                          {item.daysLeft < 0
+                            ? `Lewat ${Math.abs(item.daysLeft)} hari`
+                            : item.daysLeft === 0
+                              ? "Berakhir hari ini"
+                              : `${item.daysLeft} hari lagi`}
+                        </span>
+                      </Link>
+                    </DropdownMenuItem>
+                  ))}
+                </>
+              )}
+
+              {totalAlerts === 0 && (
+                <div className="text-muted-foreground px-2 py-4 text-center text-sm">
+                  Tidak ada notifikasi.
+                </div>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative size-8 rounded-full">

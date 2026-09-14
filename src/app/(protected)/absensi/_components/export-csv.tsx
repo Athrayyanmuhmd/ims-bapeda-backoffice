@@ -23,6 +23,17 @@ const COLUMNS: CsvColumn<TAbsensi>[] = [
   { header: "Pembimbing Lapangan", value: (r) => r.pembimbingLapangan },
   { header: "Tanggal", value: (r) => toDateInput(r.tanggal) },
   { header: "Kehadiran", value: (r) => r.kehadiran },
+  {
+    header: "Status Izin",
+    value: (r) =>
+      r.izinStatus === "PENDING"
+        ? "Menunggu"
+        : r.izinStatus === "APPROVED"
+          ? "Disetujui"
+          : r.izinStatus === "REJECTED"
+            ? "Ditolak"
+            : "",
+  },
   { header: "Jam Masuk", value: (r) => (r.jamMasuk ? fmtJam(r.jamMasuk) : "") },
   { header: "Jam Keluar", value: (r) => (r.jamKeluar ? fmtJam(r.jamKeluar) : "") },
   { header: "Keterangan", value: (r) => r.keterangan },

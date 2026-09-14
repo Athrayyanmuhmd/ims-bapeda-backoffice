@@ -1,4 +1,4 @@
-import { default as _axios, type AxiosError } from "axios";
+﻿import { default as _axios, type AxiosError } from "axios";
 import { env } from "@/constants/env";
 import type { TResponse } from "@/types/response";
 import { getError } from "@/utils/api";
@@ -8,8 +8,8 @@ import type {
   TPortalCheckInWindow,
   TPortalDokumen,
   TPortalIzinRequest,
-  TPortalJurnal,
-  TPortalJurnalRequest,
+  TPortalLogbook,
+  TPortalLogbookRequest,
   TPortalLoginRequest,
   TPortalLoginResponse,
   TPortalPenilaian,
@@ -39,7 +39,7 @@ portalApi.interceptors.response.use(
     const status = error.response?.status;
     if ((status === 401 || status === 403) && typeof window !== "undefined") {
       await deletePortalSession();
-      window.location.href = "/portal/login";
+      window.location.href = "/login?as=peserta";
     }
     return Promise.reject(error);
   }
@@ -62,7 +62,8 @@ export const getProfile = () => unwrap(portalApi.get<TResponse<TPortalPeserta>>(
 export const changePassword = (data: { currentPassword: string; newPassword: string }) =>
   unwrap(portalApi.post<TResponse<null>>("/change-password", data));
 
-export const getAbsensi = () => unwrap(portalApi.get<TResponse<TPortalAbsensi[]>>("/absensi"));
+export const getAbsensi = (rows = 100) =>
+  unwrap(portalApi.get<TResponse<TPortalAbsensi[]>>("/absensi", { params: { rows } }));
 
 export const getTodayAbsensi = () =>
   unwrap(portalApi.get<TResponse<TPortalAbsensi | null>>("/absensi/today"));
@@ -78,13 +79,13 @@ export const getCheckInWindow = () =>
 export const reportIzin = (data: TPortalIzinRequest) =>
   unwrap(portalApi.post<TResponse<TPortalAbsensi>>("/absensi/izin", data));
 
-export const getJurnal = () => unwrap(portalApi.get<TResponse<TPortalJurnal[]>>("/jurnal"));
+export const getLogbook = () => unwrap(portalApi.get<TResponse<TPortalLogbook[]>>("/logbook"));
 
-export const createJurnal = (data: TPortalJurnalRequest) =>
-  unwrap(portalApi.post<TResponse<TPortalJurnal>>("/jurnal", data));
+export const createLogbook = (data: TPortalLogbookRequest) =>
+  unwrap(portalApi.post<TResponse<TPortalLogbook>>("/logbook", data));
 
-export const updateJurnal = (id: string, kegiatan: string) =>
-  unwrap(portalApi.put<TResponse<TPortalJurnal>>(`/jurnal/${id}`, { kegiatan }));
+export const updateLogbook = (id: string, kegiatan: string) =>
+  unwrap(portalApi.put<TResponse<TPortalLogbook>>(`/logbook/${id}`, { kegiatan }));
 
 export const getPenilaian = () =>
   unwrap(portalApi.get<TResponse<TPortalPenilaian[]>>("/penilaian"));

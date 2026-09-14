@@ -2,6 +2,7 @@ import { z } from "zod";
 import type { TPaginationRequest } from "@/types/request";
 
 export const KEHADIRAN_OPTIONS = ["Hadir", "Sakit", "Izin", "Alpa"] as const;
+export const IZIN_STATUS_OPTIONS = ["PENDING", "APPROVED", "REJECTED"] as const;
 
 const schemaAbsensi = z.object({
   id: z.string(),
@@ -9,11 +10,15 @@ const schemaAbsensi = z.object({
   pesertaMagangId: z.string(),
   divisi: z.string().nullable(),
   pembimbingLapangan: z.string().nullable(),
-  kehadiran: z.string(),
+  kehadiran: z.enum(KEHADIRAN_OPTIONS),
   tanggal: z.string(),
   jamMasuk: z.string().nullable(),
   jamKeluar: z.string().nullable(),
   keterangan: z.string().nullable(),
+  izinStatus: z.enum(IZIN_STATUS_OPTIONS).nullable().optional(),
+  izinJenis: z.enum(KEHADIRAN_OPTIONS).nullable().optional(),
+  reviewedBy: z.string().nullable().optional(),
+  reviewedAt: z.string().nullable().optional(),
   createdAt: z.string(),
   updatedAt: z.string(),
 });
@@ -28,7 +33,7 @@ export type TGetDetailAbsensiResponse = TAbsensi;
 
 export const schemaCreateAbsensiRequest = z.object({
   pesertaMagangId: z.string().min(1, "Peserta magang wajib dipilih"),
-  kehadiran: z.string().min(1, "Kehadiran wajib dipilih"),
+  kehadiran: z.enum(KEHADIRAN_OPTIONS, { message: "Kehadiran wajib dipilih" }),
   tanggal: z.string().min(1, "Tanggal wajib diisi"),
   jamMasuk: z.string().optional(),
   jamKeluar: z.string().optional(),

@@ -44,10 +44,10 @@ export default function Container({ id }: { id: string }) {
       }),
   });
 
-  const { data: jurnalRes } = useQuery({
-    queryKey: queryKeys.jurnal.report(id),
+  const { data: logbookRes } = useQuery({
+    queryKey: queryKeys.logbook.report(id),
     queryFn: () =>
-      services.jurnal.getAllJurnal({
+      services.logbook.getAllLogbook({
         rows: REPORT_ROWS,
         orderKey: "tanggal",
         orderRule: "asc",
@@ -63,7 +63,7 @@ export default function Container({ id }: { id: string }) {
 
   const peserta = pesertaRes?.content;
   const absensi = absensiRes?.content?.entries ?? [];
-  const jurnal = jurnalRes?.content?.entries ?? [];
+  const logbook = logbookRes?.content?.entries ?? [];
   const penilaian = penilaianRes?.content?.entries ?? [];
 
   if (isLoading) {
@@ -85,7 +85,9 @@ export default function Container({ id }: { id: string }) {
 
   const rekap = KEHADIRAN_OPTIONS.map((kehadiran) => ({
     kehadiran,
-    total: absensi.filter((a) => a.kehadiran === kehadiran).length,
+    total: absensi.filter(
+      (a) => a.kehadiran === kehadiran && (a as { izinStatus?: string | null }).izinStatus !== "PENDING"
+    ).length,
   }));
 
   const totalHari = absensi.length;
@@ -175,9 +177,9 @@ export default function Container({ id }: { id: string }) {
         </section>
 
         <section className="mt-5">
-          <h2 className="mb-2 text-sm font-bold uppercase">C. Jurnal Kegiatan</h2>
-          {jurnal.length === 0 ? (
-            <p className="text-sm italic">Belum ada jurnal kegiatan yang tercatat.</p>
+          <h2 className="mb-2 text-sm font-bold uppercase">C. Logbook Kegiatan</h2>
+          {logbook.length === 0 ? (
+            <p className="text-sm italic">Belum ada logbook kegiatan yang tercatat.</p>
           ) : (
             <table className="w-full border-collapse text-sm">
               <thead>
@@ -194,7 +196,7 @@ export default function Container({ id }: { id: string }) {
                 </tr>
               </thead>
               <tbody>
-                {jurnal.map((j, index) => (
+                {logbook.map((j, index) => (
                   <tr key={j.id}>
                     <td className="border border-gray-400 px-2 py-1 align-top tabular-nums">
                       {index + 1}

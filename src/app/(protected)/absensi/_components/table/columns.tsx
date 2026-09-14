@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import type { TAbsensi } from "@/services/absensi/types";
 import { fmtJam, fmtTanggal } from "@/utils/datetime";
-import { KEHADIRAN_BADGE_CLASS } from "@/utils/status-badge";
+import { KEHADIRAN_BADGE_CLASS, IZIN_STATUS_BADGE_CLASS } from "@/utils/status-badge";
 
 interface IColumnProps {
   onEdit?: (row: TAbsensi) => void;
@@ -58,7 +58,17 @@ export const createColumns = ({
       accessorKey: "kehadiran",
       cell: ({ row }) => {
         const kehadiran = row.original?.kehadiran;
+        const izinStatus = row.original?.izinStatus;
         if (!kehadiran) return <span className="text-sm">-</span>;
+        if (izinStatus === "PENDING") {
+          return (
+            <span
+              className={`inline-flex items-center justify-center rounded-full px-3 py-1 text-xs font-semibold ${IZIN_STATUS_BADGE_CLASS.PENDING}`}
+            >
+              Menunggu {row.original.izinJenis ?? kehadiran}
+            </span>
+          );
+        }
         return (
           <span
             className={`inline-flex w-16 items-center justify-center rounded-full px-3 py-1 text-xs font-semibold ${

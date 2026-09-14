@@ -1,4 +1,4 @@
-import type { TNavigation } from "@/types/common";
+﻿import type { TNavigation } from "@/types/common";
 
 export const NAVIGATION: TNavigation[] = [
   {
@@ -17,8 +17,8 @@ export const NAVIGATION: TNavigation[] = [
     icon: "mdi:clock-edit-outline",
   },
   {
-    name: "Jurnal",
-    href: "/jurnal",
+    name: "Logbook",
+    href: "/logbook",
     icon: "mdi:notebook-outline",
   },
   {

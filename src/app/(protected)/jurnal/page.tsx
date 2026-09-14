@@ -1,3 +1,6 @@
-import Container from "./_components/container";
+import { redirect } from "next/navigation";
 
-export default Container;
+// Old /jurnal bookmarks land here after the Logbook rename.
+export default function Page() {
+  redirect("/logbook");
+}

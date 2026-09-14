@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { Icon } from "@iconify/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -114,7 +114,7 @@ export default function TablePesertaMagang() {
         open={!!deleteTarget}
         onOpenChange={(open) => !open && setDeleteTarget(null)}
         title="Hapus Peserta Magang?"
-        description={`Peserta "${deleteTarget?.name}" akan dihapus permanen, beserta seluruh absensi, jurnal, penilaian, dan dokumennya. Untuk mengakhiri magang, ubah statusnya menjadi Selesai.`}
+        description={`Peserta "${deleteTarget?.name}" akan dihapus permanen, beserta seluruh absensi, logbook, penilaian, dan dokumennya. Untuk mengakhiri magang, ubah statusnya menjadi Selesai.`}
         onConfirm={() => deleteTarget && deleteMutation.mutate(deleteTarget.id)}
         isLoading={deleteMutation.isPending}
       />

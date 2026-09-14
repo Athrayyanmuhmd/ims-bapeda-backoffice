@@ -1,4 +1,4 @@
-import { z } from "zod";
+﻿import { z } from "zod";
 
 export const schemaPortalLoginRequest = z.object({
   email: z.string().min(1, "Email wajib diisi").email("Format email tidak valid"),
@@ -23,6 +23,9 @@ export type TPortalPeserta = {
   // Indonesian national/cuti bersama holidays.
   sisaHariKalender?: number | null;
   sisaHariKerja?: number | null;
+  // Full period length (mulai → selesai) for progress bars.
+  totalHariKalender?: number | null;
+  totalHariKerja?: number | null;
 };
 
 export type TPortalLoginResponse = {
@@ -37,9 +40,11 @@ export type TPortalAbsensi = {
   jamMasuk: string | null;
   jamKeluar: string | null;
   keterangan: string | null;
+  izinStatus?: "PENDING" | "APPROVED" | "REJECTED" | null;
+  izinJenis?: string | null;
 };
 
-export type TPortalJurnal = {
+export type TPortalLogbook = {
   id: string;
   tanggal: string;
   kegiatan: string;
@@ -68,6 +73,7 @@ export type TPortalCheckInWindow = {
   label: string;
   isOpen: boolean;
   now: string;
+  autoCheckoutAt?: string;
 };
 
 export const PORTAL_IZIN_OPTIONS = ["Izin", "Sakit"] as const;
@@ -79,12 +85,12 @@ export const schemaPortalIzinRequest = z.object({
 
 export type TPortalIzinRequest = z.infer<typeof schemaPortalIzinRequest>;
 
-export const schemaPortalJurnalRequest = z.object({
+export const schemaPortalLogbookRequest = z.object({
   tanggal: z.string().min(1, "Tanggal wajib diisi"),
   kegiatan: z.string().min(1, "Kegiatan wajib diisi"),
 });
 
-export type TPortalJurnalRequest = z.infer<typeof schemaPortalJurnalRequest>;
+export type TPortalLogbookRequest = z.infer<typeof schemaPortalLogbookRequest>;
 
 export const schemaPortalChangePasswordRequest = z
   .object({

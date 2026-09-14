@@ -1,4 +1,4 @@
-import { Icon } from "@iconify/react";
+﻿import { Icon } from "@iconify/react";
 import type { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import {
@@ -7,12 +7,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import type { TJurnal } from "@/services/jurnal/types";
+import type { TLogbook } from "@/services/logbook/types";
 import { fmtTanggal } from "@/utils/datetime";
 
 interface IColumnProps {
-  onEdit?: (row: TJurnal) => void;
-  onDelete?: (row: TJurnal) => void;
+  onEdit?: (row: TLogbook) => void;
+  onDelete?: (row: TLogbook) => void;
   currentPage: number;
   pageSize: number;
 }
@@ -22,7 +22,7 @@ export const createColumns = ({
   onDelete,
   currentPage,
   pageSize,
-}: IColumnProps): ColumnDef<TJurnal>[] => {
+}: IColumnProps): ColumnDef<TLogbook>[] => {
   return [
     {
       header: "No",

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { Icon } from "@iconify/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -13,30 +13,30 @@ import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/in
 import { queryKeys } from "@/constants/query-keys";
 import { useQueryBuilder } from "@/hooks/use-query-builder";
 import { services } from "@/services";
-import type { TJurnal } from "@/services/jurnal/types";
+import type { TLogbook } from "@/services/logbook/types";
 import { FormDialog } from "../form-dialog";
 import { createColumns } from "./columns";
 
-export default function TableJurnal() {
+export default function TableLogbook() {
   const queryClient = useQueryClient();
   const { params, page, rows, setPage, setSearch } = useQueryBuilder({
     defaultSearchKeys: ["name"],
   });
 
   const [formOpen, setFormOpen] = useState(false);
-  const [selected, setSelected] = useState<TJurnal | null>(null);
-  const [deleteTarget, setDeleteTarget] = useState<TJurnal | null>(null);
+  const [selected, setSelected] = useState<TLogbook | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<TLogbook | null>(null);
 
   const { data, isFetching } = useQuery({
-    queryKey: queryKeys.jurnal.list(params),
-    queryFn: () => services.jurnal.getAllJurnal(params),
+    queryKey: queryKeys.logbook.list(params),
+    queryFn: () => services.logbook.getAllLogbook(params),
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id: string) => services.jurnal.deleteJurnal(id),
+    mutationFn: (id: string) => services.logbook.deleteLogbook(id),
     onSuccess: (res) => {
       toast.success(res.message);
-      queryClient.invalidateQueries({ queryKey: queryKeys.jurnal.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.logbook.all });
       setDeleteTarget(null);
     },
     onError: (error: { message: string }) => {
@@ -63,7 +63,7 @@ export default function TableJurnal() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Jurnal Kegiatan</CardTitle>
+        <CardTitle>Logbook Kegiatan</CardTitle>
         <CardDescription>Logbook harian kegiatan peserta magang.</CardDescription>
       </CardHeader>
 
@@ -86,7 +86,7 @@ export default function TableJurnal() {
             }}
           >
             <Icon icon="lucide:plus" />
-            Tambah Jurnal
+            Tambah Logbook
           </Button>
         </div>
 
@@ -104,13 +104,13 @@ export default function TableJurnal() {
         />
       </CardContent>
 
-      <FormDialog open={formOpen} onOpenChange={setFormOpen} jurnal={selected} />
+      <FormDialog open={formOpen} onOpenChange={setFormOpen} logbook={selected} />
 
       <ConfirmDialog
         open={!!deleteTarget}
         onOpenChange={(open) => !open && setDeleteTarget(null)}
-        title="Hapus Jurnal?"
-        description={`Jurnal kegiatan "${deleteTarget?.name}" pada tanggal tersebut akan dihapus permanen.`}
+        title="Hapus Logbook?"
+        description={`Logbook Kegiatan "${deleteTarget?.name}" pada tanggal tersebut akan dihapus permanen.`}
         onConfirm={() => deleteTarget && deleteMutation.mutate(deleteTarget.id)}
         isLoading={deleteMutation.isPending}
       />

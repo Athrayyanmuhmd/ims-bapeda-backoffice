@@ -61,3 +61,35 @@ export const deleteAbsensi = async (id: string) => {
     throw getError(error);
   }
 };
+
+export const listPendingIzin = async () => {
+  try {
+    const response = await api.get<TResponse<TGetDetailAbsensiResponse[]>>("/absensi/izin/pending");
+    return response.data;
+  } catch (error) {
+    throw getError(error);
+  }
+};
+
+export const approveIzin = async (id: string) => {
+  try {
+    const response = await api.post<TResponse<TGetDetailAbsensiResponse>>(
+      `/absensi/${id}/approve-izin`
+    );
+    return response.data;
+  } catch (error) {
+    throw getError(error);
+  }
+};
+
+export const rejectIzin = async (id: string, catatan?: string) => {
+  try {
+    const response = await api.post<TResponse<TGetDetailAbsensiResponse>>(
+      `/absensi/${id}/reject-izin`,
+      { catatan }
+    );
+    return response.data;
+  } catch (error) {
+    throw getError(error);
+  }
+};

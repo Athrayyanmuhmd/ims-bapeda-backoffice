@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -14,20 +14,20 @@ import { Textarea } from "@/components/ui/textarea";
 import { queryKeys } from "@/constants/query-keys";
 import { services } from "@/services";
 import {
-  schemaCreateJurnalRequest,
-  type TCreateJurnalRequest,
-  type TJurnal,
-} from "@/services/jurnal/types";
+  schemaCreateLogbookRequest,
+  type TCreateLogbookRequest,
+  type TLogbook,
+} from "@/services/logbook/types";
 import { toDateInput } from "@/utils/datetime";
 
 interface FormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  jurnal?: TJurnal | null;
+  logbook?: TLogbook | null;
 }
 
-export function FormDialog({ open, onOpenChange, jurnal }: FormDialogProps) {
-  const isEdit = !!jurnal;
+export function FormDialog({ open, onOpenChange, logbook }: FormDialogProps) {
+  const isEdit = !!logbook;
   const queryClient = useQueryClient();
 
   const { data: pesertaData } = useQuery({
@@ -41,32 +41,32 @@ export function FormDialog({ open, onOpenChange, jurnal }: FormDialogProps) {
     value: p.id,
   }));
 
-  const form = useForm<TCreateJurnalRequest>({
-    resolver: zodResolver(schemaCreateJurnalRequest),
+  const form = useForm<TCreateLogbookRequest>({
+    resolver: zodResolver(schemaCreateLogbookRequest),
     defaultValues: { pesertaMagangId: "", tanggal: "", kegiatan: "" },
   });
 
   useEffect(() => {
     if (open) {
       form.reset({
-        pesertaMagangId: jurnal?.pesertaMagangId ?? "",
-        tanggal: toDateInput(jurnal?.tanggal),
-        kegiatan: jurnal?.kegiatan ?? "",
+        pesertaMagangId: logbook?.pesertaMagangId ?? "",
+        tanggal: toDateInput(logbook?.tanggal),
+        kegiatan: logbook?.kegiatan ?? "",
       });
     }
-  }, [open, jurnal, form]);
+  }, [open, logbook, form]);
 
   const mutation = useMutation({
-    mutationFn: (data: TCreateJurnalRequest) =>
+    mutationFn: (data: TCreateLogbookRequest) =>
       isEdit
-        ? services.jurnal.updateJurnal(jurnal.id, {
+        ? services.logbook.updateLogbook(logbook.id, {
             tanggal: data.tanggal,
             kegiatan: data.kegiatan,
           })
-        : services.jurnal.createJurnal(data),
+        : services.logbook.createLogbook(data),
     onSuccess: (res) => {
       toast.success(res.message);
-      queryClient.invalidateQueries({ queryKey: queryKeys.jurnal.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.logbook.all });
       onOpenChange(false);
     },
     onError: (error: { message: string }) => {
@@ -80,7 +80,7 @@ export function FormDialog({ open, onOpenChange, jurnal }: FormDialogProps) {
     <Modal
       open={open}
       onOpenChange={onOpenChange}
-      title={isEdit ? "Edit Jurnal" : "Tambah Jurnal"}
+      title={isEdit ? "Edit Logbook" : "Tambah Logbook"}
       footer={
         <>
           <Button

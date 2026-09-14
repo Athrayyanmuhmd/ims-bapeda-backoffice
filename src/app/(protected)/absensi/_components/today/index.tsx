@@ -18,6 +18,7 @@ import { RosterItem, type RosterPeserta } from "./roster-item";
 const SUMMARY_CONFIG = [
   { key: "hadir", label: "Hadir", color: "text-green-600" },
   { key: "sakitIzin", label: "Sakit/Izin", color: "text-orange-600" },
+  { key: "pending", label: "Menunggu Izin", color: "text-amber-600" },
   { key: "alpa", label: "Alpa", color: "text-red-600" },
   { key: "belum", label: "Belum Absen", color: "text-muted-foreground" },
 ] as const;
@@ -60,6 +61,9 @@ export default function AbsensiHariIni() {
           absensiId: absensi?.id ?? null,
           kehadiran: (absensi?.kehadiran as RosterPeserta["kehadiran"]) ?? null,
           jamMasuk: absensi?.jamMasuk ?? null,
+          izinStatus: (absensi?.izinStatus as RosterPeserta["izinStatus"]) ?? null,
+          izinJenis: (absensi?.izinJenis as RosterPeserta["izinJenis"]) ?? null,
+          keterangan: absensi?.keterangan ?? null,
         };
       })
       .filter((p) => !search || p.name.toLowerCase().includes(search.toLowerCase()));
@@ -81,9 +85,10 @@ export default function AbsensiHariIni() {
   }, [roster]);
 
   const summary = useMemo(() => {
-    const counts = { hadir: 0, sakitIzin: 0, alpa: 0, belum: 0 };
+    const counts = { hadir: 0, sakitIzin: 0, pending: 0, alpa: 0, belum: 0 };
     roster.forEach((p) => {
-      if (p.kehadiran === "Hadir") counts.hadir++;
+      if (p.izinStatus === "PENDING") counts.pending++;
+      else if (p.kehadiran === "Hadir") counts.hadir++;
       else if (p.kehadiran === "Sakit" || p.kehadiran === "Izin") counts.sakitIzin++;
       else if (p.kehadiran === "Alpa") counts.alpa++;
       else counts.belum++;
@@ -115,15 +120,35 @@ export default function AbsensiHariIni() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.absensi.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.notifications.all });
     },
     onError: (error: { message: string }) => {
       toast.error(error.message);
     },
   });
 
+  const izinMutation = useMutation({
+    mutationFn: ({
+      absensiId,
+      action,
+    }: {
+      absensiId: string;
+      action: "approve" | "reject";
+    }) =>
+      action === "approve"
+        ? services.absensi.approveIzin(absensiId)
+        : services.absensi.rejectIzin(absensiId),
+    onSuccess: (res) => {
+      toast.success(res.message);
+      queryClient.invalidateQueries({ queryKey: queryKeys.absensi.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.notifications.all });
+    },
+    onError: (error: { message: string }) => toast.error(error.message),
+  });
+
   const bulkHadirMutation = useMutation({
     mutationFn: async () => {
-      const belum = roster.filter((p) => !p.kehadiran);
+      const belum = roster.filter((p) => !p.kehadiran && p.izinStatus !== "PENDING");
       const jamMasuk = isToday ? `${dateISO}T${nowJam()}:00` : undefined;
       await Promise.all(
         belum.map((p) =>
@@ -139,6 +164,7 @@ export default function AbsensiHariIni() {
     onSuccess: () => {
       toast.success("Sisanya berhasil ditandai Hadir");
       queryClient.invalidateQueries({ queryKey: queryKeys.absensi.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.notifications.all });
     },
     onError: (error: { message: string }) => {
       toast.error(error.message);
@@ -172,7 +198,7 @@ export default function AbsensiHariIni() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
         {SUMMARY_CONFIG.map((s) => (
           <Card key={s.key}>
             <CardContent className="flex items-center justify-between py-4">
@@ -230,7 +256,7 @@ export default function AbsensiHariIni() {
         </p>
       ) : (
         groups.map(([divisi, list]) => {
-          const done = list.filter((p) => p.kehadiran).length;
+          const done = list.filter((p) => p.kehadiran && p.izinStatus !== "PENDING").length;
           return (
             <div key={divisi} className="flex flex-col gap-2.5">
               <div className="flex items-center gap-2.5 px-0.5">
@@ -250,8 +276,16 @@ export default function AbsensiHariIni() {
                     key={p.pesertaMagangId}
                     peserta={p}
                     dense
-                    isPending={markMutation.isPending}
+                    isPending={markMutation.isPending || izinMutation.isPending}
                     onMark={(kehadiran) => markMutation.mutate({ peserta: p, kehadiran })}
+                    onApproveIzin={() =>
+                      p.absensiId &&
+                      izinMutation.mutate({ absensiId: p.absensiId, action: "approve" })
+                    }
+                    onRejectIzin={() =>
+                      p.absensiId &&
+                      izinMutation.mutate({ absensiId: p.absensiId, action: "reject" })
+                    }
                   />
                 ))}
               </div>

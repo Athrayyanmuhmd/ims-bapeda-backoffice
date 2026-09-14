@@ -64,9 +64,9 @@ export default function Container({ id }: { id: string }) {
     queryFn: () => services.absensi.getAllAbsensi({ rows: 10, filters: { pesertaMagangId: id } }),
   });
 
-  const { data: jurnalRes } = useQuery({
-    queryKey: queryKeys.jurnal.byPeserta(id),
-    queryFn: () => services.jurnal.getAllJurnal({ rows: 10, filters: { pesertaMagangId: id } }),
+  const { data: logbookRes } = useQuery({
+    queryKey: queryKeys.logbook.byPeserta(id),
+    queryFn: () => services.logbook.getAllLogbook({ rows: 10, filters: { pesertaMagangId: id } }),
   });
 
   const { data: penilaianRes } = useQuery({
@@ -82,7 +82,7 @@ export default function Container({ id }: { id: string }) {
 
   const peserta = pesertaRes?.content;
   const absensi = absensiRes?.content?.entries ?? [];
-  const jurnal = jurnalRes?.content?.entries ?? [];
+  const logbook = logbookRes?.content?.entries ?? [];
   const penilaian = penilaianRes?.content?.entries ?? [];
   const dokumen = dokumenRes?.content?.entries ?? [];
 
@@ -238,13 +238,13 @@ export default function Container({ id }: { id: string }) {
         </Section>
 
         <Section
-          title="Jurnal Kegiatan"
+          title="Logbook Kegiatan"
           icon="mdi:notebook-outline"
-          emptyLabel="Belum ada jurnal kegiatan."
+          emptyLabel="Belum ada logbook kegiatan."
         >
-          {jurnal.length > 0 && (
+          {logbook.length > 0 && (
             <ul className="flex flex-col gap-3">
-              {jurnal.map((j) => (
+              {logbook.map((j) => (
                 <li key={j.id} className="text-sm">
                   <p className="text-muted-foreground text-xs">{fmtDate(j.tanggal)}</p>
                   <p className="line-clamp-2">{j.kegiatan}</p>

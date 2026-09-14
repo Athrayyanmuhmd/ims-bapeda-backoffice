@@ -10,3 +10,9 @@ export const KEHADIRAN_BADGE_CLASS: Record<string, string> = {
   Izin: "text-blue-600 bg-blue-50",
   Alpa: "text-red-600 bg-red-50",
 };
+
+export const IZIN_STATUS_BADGE_CLASS: Record<string, string> = {
+  PENDING: "text-amber-700 bg-amber-100",
+  APPROVED: "text-blue-600 bg-blue-50",
+  REJECTED: "text-red-600 bg-red-50",
+};

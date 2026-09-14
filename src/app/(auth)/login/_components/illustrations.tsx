@@ -1,4 +1,4 @@
-import Image from "next/image";
+﻿import Image from "next/image";
 
 export default function Illustrations() {
   return (
@@ -23,7 +23,7 @@ export default function Illustrations() {
               Sistem Absensi Online Magang
             </p>
             <p className="text-primary-foreground/60 mt-2 text-sm leading-relaxed">
-              Kelola kehadiran, jurnal kegiatan, dan penilaian peserta magang Bapeda dalam satu
+              Kelola kehadiran, logbook kegiatan, dan penilaian peserta magang Bapeda dalam satu
               sistem.
             </p>
           </div>
