@@ -5,7 +5,9 @@ import { getError } from "@/utils/api";
 import { deletePortalSession, getPortalSession } from "@/utils/portal-session";
 import type {
   TPortalAbsensi,
+  TPortalCheckInWindow,
   TPortalDokumen,
+  TPortalIzinRequest,
   TPortalJurnal,
   TPortalJurnalRequest,
   TPortalLoginRequest,
@@ -69,6 +71,12 @@ export const checkIn = () => unwrap(portalApi.post<TResponse<TPortalAbsensi>>("/
 
 export const checkOut = () =>
   unwrap(portalApi.post<TResponse<TPortalAbsensi>>("/absensi/check-out"));
+
+export const getCheckInWindow = () =>
+  unwrap(portalApi.get<TResponse<TPortalCheckInWindow>>("/absensi/check-in-window"));
+
+export const reportIzin = (data: TPortalIzinRequest) =>
+  unwrap(portalApi.post<TResponse<TPortalAbsensi>>("/absensi/izin", data));
 
 export const getJurnal = () => unwrap(portalApi.get<TResponse<TPortalJurnal[]>>("/jurnal"));
 

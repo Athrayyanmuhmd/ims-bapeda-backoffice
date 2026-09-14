@@ -62,6 +62,23 @@ export type TPortalDokumen = {
   createdAt: string;
 };
 
+export type TPortalCheckInWindow = {
+  start: string;
+  end: string;
+  label: string;
+  isOpen: boolean;
+  now: string;
+};
+
+export const PORTAL_IZIN_OPTIONS = ["Izin", "Sakit"] as const;
+
+export const schemaPortalIzinRequest = z.object({
+  jenis: z.enum(PORTAL_IZIN_OPTIONS, { message: "Pilih Izin atau Sakit" }),
+  keterangan: z.string().max(500, "Keterangan maksimal 500 karakter").optional(),
+});
+
+export type TPortalIzinRequest = z.infer<typeof schemaPortalIzinRequest>;
+
 export const schemaPortalJurnalRequest = z.object({
   tanggal: z.string().min(1, "Tanggal wajib diisi"),
   kegiatan: z.string().min(1, "Kegiatan wajib diisi"),

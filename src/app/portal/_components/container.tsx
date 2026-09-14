@@ -13,10 +13,12 @@ import { cn } from "@/utils/classname";
 import { fmtJam, fmtTanggal, fmtTanggalLong, todayIsoDate } from "@/utils/datetime";
 import { KEHADIRAN_BADGE_CLASS } from "@/utils/status-badge";
 import ChangePasswordDialog from "./change-password-dialog";
+import IzinDialog from "./izin-dialog";
 import JurnalForm from "./jurnal-form";
 
 const portalKeys = {
   today: ["portal", "absensi", "today"] as const,
+  window: ["portal", "absensi", "window"] as const,
   absensi: ["portal", "absensi"] as const,
   jurnal: ["portal", "jurnal"] as const,
   penilaian: ["portal", "penilaian"] as const,
@@ -52,11 +54,18 @@ export default function Container({ peserta }: { peserta: TPortalPeserta }) {
   const queryClient = useQueryClient();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [changePasswordOpen, setChangePasswordOpen] = useState(false);
+  const [izinOpen, setIzinOpen] = useState(false);
   const [editingJurnal, setEditingJurnal] = useState<TPortalJurnal | null>(null);
 
   const { data: todayRes, isLoading: isLoadingToday } = useQuery({
     queryKey: portalKeys.today,
     queryFn: () => services.portal.getTodayAbsensi(),
+  });
+
+  const { data: windowRes } = useQuery({
+    queryKey: portalKeys.window,
+    queryFn: () => services.portal.getCheckInWindow(),
+    refetchInterval: 60_000,
   });
 
   const { data: profileRes } = useQuery({
@@ -85,6 +94,7 @@ export default function Container({ peserta }: { peserta: TPortalPeserta }) {
   });
 
   const today = todayRes?.content ?? null;
+  const checkInWindow = windowRes?.content ?? null;
   const profile = profileRes?.content ?? peserta;
   const absensi = absensiRes?.content ?? [];
   const jurnal = jurnalRes?.content ?? [];
@@ -94,6 +104,7 @@ export default function Container({ peserta }: { peserta: TPortalPeserta }) {
   const invalidateAbsensi = () => {
     queryClient.invalidateQueries({ queryKey: portalKeys.today });
     queryClient.invalidateQueries({ queryKey: portalKeys.absensi });
+    queryClient.invalidateQueries({ queryKey: portalKeys.window });
   };
 
   const checkInMutation = useMutation({
@@ -123,6 +134,11 @@ export default function Container({ peserta }: { peserta: TPortalPeserta }) {
   const isBusy = checkInMutation.isPending || checkOutMutation.isPending;
   const hasCheckedIn = !!today?.jamMasuk;
   const hasCheckedOut = !!today?.jamKeluar;
+  const hasIzin =
+    today?.kehadiran === "Izin" || today?.kehadiran === "Sakit" || today?.kehadiran === "Alpa";
+  const canCheckIn = !hasCheckedIn && !hasIzin && (checkInWindow?.isOpen ?? true);
+  const canCheckOut = hasCheckedIn && !hasCheckedOut && !hasIzin;
+  const canAjukanIzin = !hasCheckedIn && !hasIzin;
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-3xl flex-col gap-4 bg-[#FAFAFA] p-4 pb-24 sm:pb-4">
@@ -216,7 +232,7 @@ export default function Container({ peserta }: { peserta: TPortalPeserta }) {
             <div className="hidden flex-wrap gap-2 sm:flex">
               <Button
                 onClick={() => checkInMutation.mutate()}
-                disabled={isBusy || hasCheckedIn}
+                disabled={isBusy || !canCheckIn}
                 isLoading={checkInMutation.isPending}
               >
                 <Icon icon="mdi:login" /> Check-in
@@ -224,15 +240,30 @@ export default function Container({ peserta }: { peserta: TPortalPeserta }) {
               <Button
                 variant="outline"
                 onClick={() => checkOutMutation.mutate()}
-                disabled={isBusy || !hasCheckedIn || hasCheckedOut}
+                disabled={isBusy || !canCheckOut}
                 isLoading={checkOutMutation.isPending}
               >
                 <Icon icon="mdi:logout-variant" /> Check-out
               </Button>
+              <Button
+                variant="outline"
+                onClick={() => setIzinOpen(true)}
+                disabled={isBusy || !canAjukanIzin}
+              >
+                <Icon icon="mdi:calendar-remove-outline" /> Izin / Sakit
+              </Button>
             </div>
 
+            {today?.keterangan && (
+              <p className="text-muted-foreground text-xs">Keterangan: {today.keterangan}</p>
+            )}
+
             <p className="text-muted-foreground text-xs">
-              Check-in hanya untuk hari ini. Koreksi tanggal lain: hubungi pembimbing lapangan.
+              Check-in hanya hari kerja pukul {checkInWindow?.label ?? "07:00–09:00 WIB"}.
+              {checkInWindow && !checkInWindow.isOpen && !hasCheckedIn && !hasIzin
+                ? ` Sekarang ${checkInWindow.now} — di luar jendela.`
+                : ""}{" "}
+              Koreksi tanggal lain: hubungi pembimbing lapangan.
             </p>
           </div>
         )}
@@ -291,7 +322,7 @@ export default function Container({ peserta }: { peserta: TPortalPeserta }) {
                 </span>
                 <span
                   className={cn(
-                    "shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold",
+                    "shrink-0 rounded-full px-3 py-1 text-xs font-semibold",
                     KEHADIRAN_BADGE_CLASS[a.kehadiran] ?? "bg-accent text-muted-foreground"
                   )}
                 >
@@ -351,7 +382,7 @@ export default function Container({ peserta }: { peserta: TPortalPeserta }) {
           <Button
             className="flex-1"
             onClick={() => checkInMutation.mutate()}
-            disabled={isBusy || hasCheckedIn}
+            disabled={isBusy || !canCheckIn}
             isLoading={checkInMutation.isPending}
           >
             <Icon icon="mdi:login" /> Check-in
@@ -360,15 +391,24 @@ export default function Container({ peserta }: { peserta: TPortalPeserta }) {
             className="flex-1"
             variant="outline"
             onClick={() => checkOutMutation.mutate()}
-            disabled={isBusy || !hasCheckedIn || hasCheckedOut}
+            disabled={isBusy || !canCheckOut}
             isLoading={checkOutMutation.isPending}
           >
             <Icon icon="mdi:logout-variant" /> Check-out
+          </Button>
+          <Button
+            className="flex-1"
+            variant="outline"
+            onClick={() => setIzinOpen(true)}
+            disabled={isBusy || !canAjukanIzin}
+          >
+            <Icon icon="mdi:calendar-remove-outline" /> Izin
           </Button>
         </div>
       </div>
 
       <ChangePasswordDialog open={changePasswordOpen} onOpenChange={setChangePasswordOpen} />
+      <IzinDialog open={izinOpen} onOpenChange={setIzinOpen} onSaved={invalidateAbsensi} />
     </main>
   );
 }

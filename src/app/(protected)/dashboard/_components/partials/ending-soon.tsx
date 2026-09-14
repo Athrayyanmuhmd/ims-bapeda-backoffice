@@ -76,7 +76,7 @@ export default function EndingSoon() {
                     </p>
                   </div>
                   <span
-                    className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold ${
+                    className={`inline-flex h-6 shrink-0 items-center justify-center rounded-full px-2.5 text-xs font-medium leading-none ${
                       overdue ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-700"
                     }`}
                   >
