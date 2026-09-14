@@ -1,7 +1,7 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/modal";
+import { Button } from "@/components/ui/button";
 
 interface ConfirmDialogProps {
   open: boolean;
@@ -31,7 +31,12 @@ export function ConfirmDialog({
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isLoading}>
             Batal
           </Button>
-          <Button variant="destructive" onClick={onConfirm} isLoading={isLoading} disabled={isLoading}>
+          <Button
+            variant="destructive"
+            onClick={onConfirm}
+            isLoading={isLoading}
+            disabled={isLoading}
+          >
             Hapus
           </Button>
         </>

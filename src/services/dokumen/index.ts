@@ -6,6 +6,7 @@ import type {
   TGetAllDokumenRequest,
   TGetAllDokumenResponse,
   TGetDetailDokumenResponse,
+  TUploadDokumenResponse,
 } from "./types";
 
 export const getAllDokumen = async (data: TGetAllDokumenRequest) => {
@@ -38,6 +39,23 @@ export const createDokumen = async (data: TCreateDokumenRequest) => {
   } catch (error) {
     throw getError(error);
   }
+};
+
+// Hits this app's own route handler, not the API backend — so it uses fetch
+// rather than the `api` axios instance (no bearer token needed, the session
+// cookie is already sent).
+export const uploadDokumenFile = async (file: File) => {
+  const body = new FormData();
+  body.append("file", file);
+
+  const response = await fetch("/api/dokumen/upload", { method: "POST", body });
+  const data = (await response.json()) as TUploadDokumenResponse & { message?: string };
+
+  if (!response.ok) {
+    throw { message: data.message ?? "Gagal mengunggah file" };
+  }
+
+  return data;
 };
 
 export const deleteDokumen = async (id: string) => {

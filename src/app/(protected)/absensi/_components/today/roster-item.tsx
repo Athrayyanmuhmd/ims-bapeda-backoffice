@@ -1,8 +1,8 @@
 "use client";
 
-import { DateTime } from "luxon";
 import { KEHADIRAN_OPTIONS } from "@/services/absensi/types";
 import { cn } from "@/utils/classname";
+import { fmtJam } from "@/utils/datetime";
 
 export interface RosterPeserta {
   pesertaMagangId: string;
@@ -37,16 +37,16 @@ interface RosterItemProps {
 }
 
 export function RosterItem({ peserta, dense, onMark, isPending }: RosterItemProps) {
-  const borderClass = peserta.kehadiran ? STATUS_CLASS[peserta.kehadiran]?.split(" ")[0] : "border-border";
+  const borderClass = peserta.kehadiran
+    ? STATUS_CLASS[peserta.kehadiran]?.split(" ")[0]
+    : "border-border";
 
   return (
     <div
       className={cn(
         "bg-card flex gap-3 rounded-xl border shadow-sm",
-        dense
-          ? "flex-wrap items-center px-3 py-2 sm:flex-nowrap"
-          : "flex-col p-3.5",
-        borderClass,
+        dense ? "flex-wrap items-center px-3 py-2 sm:flex-nowrap" : "flex-col p-3.5",
+        borderClass
       )}
     >
       <div className={cn("flex items-center gap-2.5", dense && "min-w-0 flex-1")}>
@@ -54,14 +54,21 @@ export function RosterItem({ peserta, dense, onMark, isPending }: RosterItemProp
           {initials(peserta.name)}
         </div>
         <div className={cn(dense && "min-w-0")}>
-          <p className={cn("truncate font-semibold", dense ? "text-sm" : "text-[0.88rem]")}>{peserta.name}</p>
+          <p className={cn("truncate font-semibold", dense ? "text-sm" : "text-[0.88rem]")}>
+            {peserta.name}
+          </p>
           <p className="text-muted-foreground truncate text-xs">
             {peserta.divisi ?? "-"} · {peserta.pembimbingLapangan ?? "-"}
           </p>
         </div>
       </div>
 
-      <div className={cn("grid grid-cols-4 gap-1.5", dense && "w-full order-3 sm:order-0 sm:w-72 sm:shrink-0")}>
+      <div
+        className={cn(
+          "grid grid-cols-4 gap-1.5",
+          dense && "w-full order-3 sm:order-0 sm:w-72 sm:shrink-0"
+        )}
+      >
         {KEHADIRAN_OPTIONS.map((option) => (
           <button
             key={option}
@@ -72,7 +79,7 @@ export function RosterItem({ peserta, dense, onMark, isPending }: RosterItemProp
               "rounded-lg border py-1.5 text-[0.7rem] font-bold whitespace-nowrap transition-colors disabled:opacity-50",
               peserta.kehadiran === option
                 ? STATUS_CLASS[option]
-                : "border-input text-muted-foreground hover:bg-accent",
+                : "border-input text-muted-foreground hover:bg-accent"
             )}
           >
             {option}
@@ -83,11 +90,11 @@ export function RosterItem({ peserta, dense, onMark, isPending }: RosterItemProp
       <div
         className={cn(
           "text-muted-foreground font-mono text-[0.7rem] tabular-nums",
-          dense ? "shrink-0 sm:w-24 sm:text-right" : "min-h-[14px]",
+          dense ? "shrink-0 sm:w-24 sm:text-right" : "min-h-[14px]"
         )}
       >
         {peserta.kehadiran === "Hadir" && peserta.jamMasuk
-          ? `Masuk ${DateTime.fromISO(peserta.jamMasuk).toFormat("HH:mm")}`
+          ? `Masuk ${fmtJam(peserta.jamMasuk)}`
           : peserta.kehadiran
             ? `Ditandai ${peserta.kehadiran}`
             : "Belum dicatat"}

@@ -91,7 +91,12 @@ export default function TableManajemenDivisi() {
         </div>
 
         <DataTable
-          pagination={{ currentPage: page, totalPages: totalPage, onPageChange: setPage, isFetching }}
+          pagination={{
+            currentPage: page,
+            totalPages: totalPage,
+            onPageChange: setPage,
+            isFetching,
+          }}
           columns={columns}
           data={entries}
           totalData={totalData}

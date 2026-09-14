@@ -1,10 +1,10 @@
 "use client";
 
 import { Icon } from "@iconify/react";
-import { DateTime } from "luxon";
 import Link from "next/link";
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { tanggalIsoDate, todayInApp, todayIsoDate } from "@/utils/datetime";
 import { useDashboardData } from "../use-dashboard-data";
 
 const initials = (name: string) =>
@@ -16,13 +16,13 @@ const initials = (name: string) =>
     .slice(0, 2);
 
 export default function TodayHighlight() {
-  const today = DateTime.now();
+  const today = todayInApp();
 
   const { pesertaData, absensiData, isLoading } = useDashboardData();
 
   const pesertaAktif = (pesertaData?.content?.entries ?? []).filter((p) => p.status === "AKTIF");
   const todayRecords = (absensiData?.content?.entries ?? []).filter(
-    (a) => DateTime.fromISO(a.tanggal).toISODate() === today.toISODate()
+    (a) => tanggalIsoDate(a.tanggal) === todayIsoDate()
   );
   const markedIds = new Set(todayRecords.map((a) => a.pesertaMagangId));
   const belumAbsen = pesertaAktif.filter((p) => !markedIds.has(p.id));
@@ -37,7 +37,9 @@ export default function TodayHighlight() {
             Buka absensi
           </Link>
         </CardAction>
-        <p className="text-muted-foreground text-sm">{today.setLocale("id").toFormat("cccc, d LLLL yyyy")}</p>
+        <p className="text-muted-foreground text-sm">
+          {today.setLocale("id").toFormat("cccc, d LLLL yyyy")}
+        </p>
       </CardHeader>
       <CardContent>
         {isLoading ? (

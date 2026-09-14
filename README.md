@@ -1,36 +1,103 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SIMAGANG Backoffice
 
-## Getting Started
+Backoffice (panel admin) untuk sistem manajemen magang Bapeda. Mengonsumsi REST API
+dari `ims-bapeda-backend`.
 
-First, run the development server:
+## Tech Stack
+- Next.js 16 (App Router) + React 19
+- TanStack Query + Axios
+- Tailwind CSS v4 + shadcn/ui
+- React Hook Form + Zod
+- Biome (lint & format), Vitest (test)
 
+## Setup
+
+### 1. Install dependencies
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Konfigurasi environment
+Copy `.env.example` menjadi `.env.local`, lalu sesuaikan:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```env
+NEXT_PUBLIC_FE_URL=http://localhost:3000
+NEXT_PUBLIC_BE_URL=http://localhost:3001
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 3. Jalankan
+```bash
+pnpm dev
+```
 
-## Learn More
+Buka `http://localhost:3000` (root otomatis redirect ke `/login`).
 
-To learn more about Next.js, take a look at the following resources:
+## Upload Dokumen (Supabase Storage)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Fitur unggah file pada halaman **Dokumen** memakai Supabase Storage. Tanpa
+konfigurasi di bawah, aplikasi tetap jalan — hanya saja upload dimatikan dan
+dokumen harus diisi dengan menempel link manual (mis. Google Drive).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 1. Buat bucket
+Di Supabase Dashboard → **Storage** → **New bucket**:
+- Name: `dokumen`
+- **Public bucket: NONAKTIF** (biarkan private)
 
-## Deploy on Vercel
+Bucket sengaja private karena dokumen memuat data pribadi (nama, NIM, surat,
+sertifikat). Setiap pembacaan dilewatkan `/api/dokumen/download`, yang memeriksa
+sesi login lalu redirect ke signed URL berumur 60 detik.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 2. Tambahkan environment variables
+```env
+SUPABASE_URL=https://xxxxxxxx.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=eyJ...
+SUPABASE_BUCKET=dokumen
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+`SUPABASE_SERVICE_ROLE_KEY` **hanya dipakai di server** (route handler) dan tidak
+boleh diberi prefix `NEXT_PUBLIC_`. Ambil dari Supabase Dashboard → Project
+Settings → API Keys → `service_role`.
+
+Batas ukuran file: **4MB** (file diproxy lewat serverless function). Format yang
+diterima: PDF, JPG, PNG, DOC, DOCX.
+
+## Fitur
+
+| Halaman | Keterangan |
+|---|---|
+| Dashboard | Ringkasan absensi hari ini, statistik, dan daftar **magang segera berakhir** |
+| Peserta Magang | CRUD peserta + halaman detail + **Cetak Laporan** (print/PDF) |
+| Absensi | Roster harian, riwayat, dan **Export CSV** per rentang tanggal |
+| Jurnal | Catatan kegiatan harian peserta |
+| Penilaian | Nilai & komentar dari pembimbing |
+| Dokumen | Unggah / tempel link dokumen peserta |
+| Manajemen* | User, Divisi, Instansi, Role — khusus role Admin |
+
+### Cetak laporan magang
+`/peserta-magang/[id]/cetak` menghasilkan dokumen siap cetak berisi identitas
+peserta, rekap kehadiran, jurnal kegiatan, penilaian, dan blok tanda tangan.
+Tombol **Cetak / Simpan PDF** memakai dialog print browser — tidak ada dependency
+PDF tambahan. Sidebar dan tombol otomatis disembunyikan saat print (lihat aturan
+`@media print` di `src/styles/globals.css`).
+
+## Perintah
+
+```bash
+pnpm dev        # development server
+pnpm build      # production build
+pnpm lint       # biome check
+pnpm format     # biome format --write
+pnpm test       # vitest
+```
+
+## Catatan
+
+- Role disembunyikan di navigasi lewat `roles` di `src/constants/navigation.ts`,
+  tetapi penegakan hak akses yang sebenarnya ada di backend (lihat README backend).
+- `pnpm lint` bersih dari error dan sudah menjadi gate di CI. Masih ada ~46
+  *warning* yang dibiarkan karena aturannya tidak cocok dengan kode ini:
+  `useNamingConvention` memprotes hal-hal yang formatnya ditentukan pihak lain
+  (nama export route Next `GET`/`POST`, variabel `NEXT_PUBLIC_*`, nilai enum
+  Prisma seperti `SURAT_PENGANTAR`, header HTTP `Authorization`), dan
+  `noArrayIndexKey` memprotes daftar skeleton statis yang indeksnya memang
+  identitasnya.

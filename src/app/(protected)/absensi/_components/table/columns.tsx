@@ -1,6 +1,5 @@
 import { Icon } from "@iconify/react";
 import type { ColumnDef } from "@tanstack/react-table";
-import { DateTime } from "luxon";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -9,6 +8,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { TAbsensi } from "@/services/absensi/types";
+import { fmtJam, fmtTanggal } from "@/utils/datetime";
 import { KEHADIRAN_BADGE_CLASS } from "@/utils/status-badge";
 
 interface IColumnProps {
@@ -74,37 +74,21 @@ export const createColumns = ({
       header: "Tanggal",
       accessorKey: "tanggal",
       cell: ({ row }) => {
-        return (
-          <span className="text-sm">
-            {DateTime.fromISO(row.original?.tanggal ?? "").toLocaleString(DateTime.DATE_MED)}
-          </span>
-        );
+        return <span className="text-sm">{fmtTanggal(row.original?.tanggal)}</span>;
       },
     },
     {
       header: "Jam Masuk",
       accessorKey: "jamMasuk",
       cell: ({ row }) => {
-        return (
-          <span className="text-sm">
-            {row.original?.jamMasuk
-              ? DateTime.fromISO(row.original.jamMasuk).toLocaleString(DateTime.TIME_24_SIMPLE)
-              : "-"}
-          </span>
-        );
+        return <span className="text-sm">{fmtJam(row.original?.jamMasuk)}</span>;
       },
     },
     {
       header: "Jam Keluar",
       accessorKey: "jamKeluar",
       cell: ({ row }) => {
-        return (
-          <span className="text-sm">
-            {row.original?.jamKeluar
-              ? DateTime.fromISO(row.original.jamKeluar).toLocaleString(DateTime.TIME_24_SIMPLE)
-              : "-"}
-          </span>
-        );
+        return <span className="text-sm">{fmtJam(row.original?.jamKeluar)}</span>;
       },
     },
     {

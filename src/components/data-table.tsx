@@ -21,7 +21,6 @@ import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Skeleton } from "@/components/ui/skeleton";
 import {
   Select,
   SelectContent,
@@ -29,6 +28,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -267,68 +267,73 @@ export function DataTable<TData>({
           </div>
         </div>
         {!hideFooter && (
-        <div className="flex flex-col items-center gap-2.5 border-t py-2.5 sm:flex-row sm:justify-between">
-          <p className="text-xs font-normal text-muted-foreground order-2 sm:order-1">Total Data: {totalDataCount}</p>
-          <div className="order-1 flex max-w-full items-center gap-1 overflow-x-auto rounded-lg bg-accent p-1 sm:order-2">
-            <Button
-              className="shrink-0 text-xs font-normal bg-white text-foreground hover:bg-accent"
-              size="sm"
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1 || pagination?.isFetching}
-            >
-              <ChevronLeftIcon className="h-4 w-4" />
-            </Button>
+          <div className="flex flex-col items-center gap-2.5 border-t py-2.5 sm:flex-row sm:justify-between">
+            <p className="text-xs font-normal text-muted-foreground order-2 sm:order-1">
+              Total Data: {totalDataCount}
+            </p>
+            <div className="order-1 flex max-w-full items-center gap-1 overflow-x-auto rounded-lg bg-accent p-1 sm:order-2">
+              <Button
+                className="shrink-0 text-xs font-normal bg-white text-foreground hover:bg-accent"
+                size="sm"
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1 || pagination?.isFetching}
+              >
+                <ChevronLeftIcon className="h-4 w-4" />
+              </Button>
 
-            {pageNumbers.map((page, index) =>
-              page === "..." ? (
-                <span key={`ellipsis-${index}`} className="shrink-0 px-2 text-xs text-muted-foreground">
-                  •••
-                </span>
-              ) : (
-                <Button
-                  key={page}
-                  size="sm"
-                  className={`h-8 w-8 shrink-0 p-0 text-xs font-normal ${
-                    currentPage === page
-                      ? "bg-primary text-white hover:bg-primary/90"
-                      : "bg-white text-foreground hover:bg-accent"
-                  }`}
-                  onClick={() => handlePageChange(page as number)}
-                  disabled={pagination?.isFetching}
-                >
-                  {page}
-                </Button>
-              )
-            )}
+              {pageNumbers.map((page, index) =>
+                page === "..." ? (
+                  <span
+                    key={`ellipsis-${index}`}
+                    className="shrink-0 px-2 text-xs text-muted-foreground"
+                  >
+                    •••
+                  </span>
+                ) : (
+                  <Button
+                    key={page}
+                    size="sm"
+                    className={`h-8 w-8 shrink-0 p-0 text-xs font-normal ${
+                      currentPage === page
+                        ? "bg-primary text-white hover:bg-primary/90"
+                        : "bg-white text-foreground hover:bg-accent"
+                    }`}
+                    onClick={() => handlePageChange(page as number)}
+                    disabled={pagination?.isFetching}
+                  >
+                    {page}
+                  </Button>
+                )
+              )}
 
-            <Button
-              className="shrink-0 text-xs font-normal bg-white text-foreground hover:bg-accent"
-              size="sm"
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages || pagination?.isFetching}
-            >
-              <ChevronRightIcon className="h-4 w-4" />
-            </Button>
+              <Button
+                className="shrink-0 text-xs font-normal bg-white text-foreground hover:bg-accent"
+                size="sm"
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages || pagination?.isFetching}
+              >
+                <ChevronRightIcon className="h-4 w-4" />
+              </Button>
+            </div>
+
+            <div className="order-3 hidden items-center gap-2 lg:flex">
+              <Label htmlFor="rows-per-page" className="text-xs font-normal text-muted-foreground">
+                Tampilan per halaman
+              </Label>
+              <Select value={`${rowsPerPage}`} onValueChange={handlePageSizeChange}>
+                <SelectTrigger className="w-20" id="rows-per-page">
+                  <SelectValue placeholder={rowsPerPage} />
+                </SelectTrigger>
+                <SelectContent>
+                  {rowsPerPageOptions.map((pageSize) => (
+                    <SelectItem key={pageSize} value={`${pageSize}`}>
+                      {pageSize}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
-
-          <div className="order-3 hidden items-center gap-2 lg:flex">
-            <Label htmlFor="rows-per-page" className="text-xs font-normal text-muted-foreground">
-              Tampilan per halaman
-            </Label>
-            <Select value={`${rowsPerPage}`} onValueChange={handlePageSizeChange}>
-              <SelectTrigger className="w-20" id="rows-per-page">
-                <SelectValue placeholder={rowsPerPage} />
-              </SelectTrigger>
-              <SelectContent>
-                {rowsPerPageOptions.map((pageSize) => (
-                  <SelectItem key={pageSize} value={`${pageSize}`}>
-                    {pageSize}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
         )}
       </div>
     </div>

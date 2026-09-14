@@ -1,24 +1,28 @@
 "use client";
 
-import { DateTime } from "luxon";
 import Link from "next/link";
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/utils/classname";
+import { tanggalIsoDate, todayIsoDate } from "@/utils/datetime";
 import { useDashboardData } from "../use-dashboard-data";
 
 export default function AttendanceSummary() {
-  const today = DateTime.now().toISODate();
+  const today = todayIsoDate();
 
   const { pesertaData, absensiData, isLoading } = useDashboardData();
 
-  const totalAktif = (pesertaData?.content?.entries ?? []).filter((p) => p.status === "AKTIF").length;
+  const totalAktif = (pesertaData?.content?.entries ?? []).filter(
+    (p) => p.status === "AKTIF"
+  ).length;
   const todayRecords = (absensiData?.content?.entries ?? []).filter(
-    (a) => DateTime.fromISO(a.tanggal).toISODate() === today
+    (a) => tanggalIsoDate(a.tanggal) === today
   );
 
   const hadir = todayRecords.filter((a) => a.kehadiran === "Hadir").length;
-  const sakitIzin = todayRecords.filter((a) => a.kehadiran === "Sakit" || a.kehadiran === "Izin").length;
+  const sakitIzin = todayRecords.filter(
+    (a) => a.kehadiran === "Sakit" || a.kehadiran === "Izin"
+  ).length;
   const alpa = todayRecords.filter((a) => a.kehadiran === "Alpa").length;
   const belum = Math.max(totalAktif - todayRecords.length, 0);
 

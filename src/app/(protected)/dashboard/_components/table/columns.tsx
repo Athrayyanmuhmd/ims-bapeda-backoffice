@@ -1,6 +1,6 @@
 import type { ColumnDef } from "@tanstack/react-table";
-import { DateTime } from "luxon";
 import type { TAbsensi } from "@/services/absensi/types";
+import { fmtTanggal } from "@/utils/datetime";
 import { KEHADIRAN_BADGE_CLASS } from "@/utils/status-badge";
 
 export const columns: ColumnDef<TAbsensi>[] = [
@@ -17,9 +17,7 @@ export const columns: ColumnDef<TAbsensi>[] = [
   {
     accessorKey: "tanggal",
     header: "Tanggal",
-    cell: ({ row }) => (
-      <span className="text-sm">{DateTime.fromISO(row.original.tanggal).toLocaleString(DateTime.DATE_MED)}</span>
-    ),
+    cell: ({ row }) => <span className="text-sm">{fmtTanggal(row.original.tanggal)}</span>,
   },
   {
     accessorKey: "kehadiran",

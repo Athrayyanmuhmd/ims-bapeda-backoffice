@@ -6,6 +6,7 @@ import * as instansiService from "./instansi";
 import * as jurnalService from "./jurnal";
 import * as penilaianService from "./penilaian";
 import * as pesertaMagangService from "./peserta-magang";
+import * as portalService from "./portal";
 import * as roleService from "./role";
 import * as userService from "./user";
 
@@ -20,4 +21,5 @@ export const services = {
   jurnal: jurnalService,
   penilaian: penilaianService,
   dokumen: dokumenService,
+  portal: portalService,
 };

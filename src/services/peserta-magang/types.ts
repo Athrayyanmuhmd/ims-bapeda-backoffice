@@ -3,6 +3,19 @@ import type { TPaginationRequest } from "@/types/request";
 
 export const STATUS_MAGANG_OPTIONS = ["AKTIF", "SELESAI", "BERHENTI"] as const;
 
+// Indonesian mobile: 08… / 62… / +62… — blank allowed (optional field).
+const phoneIdSchema = z
+  .string()
+  .optional()
+  .refine(
+    (value) => {
+      if (!value) return true;
+      const compact = value.replace(/[\s\-()]/g, "");
+      return /^(\+62|62|0)8[1-9][0-9]{7,11}$/.test(compact);
+    },
+    { message: "Format nomor HP tidak valid (contoh: 081234567890)" }
+  );
+
 const schemaPesertaMagang = z.object({
   id: z.string(),
   name: z.string(),
@@ -18,6 +31,9 @@ const schemaPesertaMagang = z.object({
   tanggalMulai: z.string().nullable(),
   tanggalSelesai: z.string().nullable(),
   status: z.string(),
+  // Whether the peserta can log into the portal. The API reports this as a
+  // boolean; the password hash is never sent.
+  hasPortalAccount: z.boolean().optional(),
   createdAt: z.string(),
   updatedAt: z.string(),
 });
@@ -30,10 +46,16 @@ export type TGetAllPesertaMagangResponse = z.infer<typeof schemaGetAllPesertaMag
 
 export type TGetDetailPesertaMagangResponse = TPesertaMagang;
 
+// Blank = leave portal untouched / inactive. Non-blank must meet the backend min.
+const portalPasswordField = z.union([
+  z.literal(""),
+  z.string().min(8, "Password portal minimal 8 karakter"),
+]);
+
 export const schemaCreatePesertaMagangRequest = z.object({
   name: z.string().min(1, "Nama wajib diisi"),
   email: z.string().min(1, "Email wajib diisi").email("Format email tidak valid"),
-  phoneNumber: z.string().optional(),
+  phoneNumber: phoneIdSchema,
   nim: z.string().optional(),
   divisiId: z.string().optional(),
   instansiId: z.string().optional(),
@@ -41,11 +63,26 @@ export const schemaCreatePesertaMagangRequest = z.object({
   tanggalMulai: z.string().optional(),
   tanggalSelesai: z.string().optional(),
   status: z.string().optional(),
+  // Optional on create: blank = portal stays inactive.
+  portalPassword: portalPasswordField.optional(),
 });
 
 export type TCreatePesertaMagangRequest = z.infer<typeof schemaCreatePesertaMagangRequest>;
 export type TCreatePesertaMagangResponse = TPesertaMagang;
 
-export const schemaUpdatePesertaMagangRequest = schemaCreatePesertaMagangRequest;
-export type TUpdatePesertaMagangRequest = z.infer<typeof schemaUpdatePesertaMagangRequest>;
+// Edit form: same fields + revoke flag (UI-only; maps to portalPassword: null).
+export const schemaUpdatePesertaMagangRequest = schemaCreatePesertaMagangRequest.extend({
+  revokePortalAccess: z.boolean().optional(),
+});
+
+export type TUpdatePesertaMagangForm = z.infer<typeof schemaUpdatePesertaMagangRequest>;
+
+// What the API actually accepts on PUT — revoke becomes portalPassword: null.
+export type TUpdatePesertaMagangRequest = Omit<
+  TUpdatePesertaMagangForm,
+  "revokePortalAccess" | "portalPassword"
+> & {
+  portalPassword?: string | null;
+};
+
 export type TUpdatePesertaMagangResponse = TPesertaMagang;

@@ -2,7 +2,6 @@
 
 import { Icon } from "@iconify/react";
 import { useQuery } from "@tanstack/react-query";
-import { DateTime } from "luxon";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,13 +9,19 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { queryKeys } from "@/constants/query-keys";
 import { services } from "@/services";
 import { cn } from "@/utils/classname";
+import { fmtTanggal } from "@/utils/datetime";
 import { KEHADIRAN_BADGE_CLASS, STATUS_MAGANG_BADGE_CLASS } from "@/utils/status-badge";
 
-const fmtDate = (iso: string | null) => (iso ? DateTime.fromISO(iso).toLocaleString(DateTime.DATE_MED) : "-");
+const fmtDate = fmtTanggal;
 
 function Badge({ label, className }: { label: string; className?: string }) {
   return (
-    <span className={cn("inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold", className)}>
+    <span
+      className={cn(
+        "inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold",
+        className
+      )}
+    >
       {label}
     </span>
   );
@@ -66,7 +71,8 @@ export default function Container({ id }: { id: string }) {
 
   const { data: penilaianRes } = useQuery({
     queryKey: queryKeys.penilaian.byPeserta(id),
-    queryFn: () => services.penilaian.getAllPenilaian({ rows: 10, filters: { pesertaMagangId: id } }),
+    queryFn: () =>
+      services.penilaian.getAllPenilaian({ rows: 10, filters: { pesertaMagangId: id } }),
   });
 
   const { data: dokumenRes } = useQuery({
@@ -124,7 +130,11 @@ export default function Container({ id }: { id: string }) {
   }
 
   if (!peserta) {
-    return <p className="text-muted-foreground py-10 text-center text-sm">Peserta magang tidak ditemukan.</p>;
+    return (
+      <p className="text-muted-foreground py-10 text-center text-sm">
+        Peserta magang tidak ditemukan.
+      </p>
+    );
   }
 
   const initials = peserta.name
@@ -136,11 +146,19 @@ export default function Container({ id }: { id: string }) {
 
   return (
     <div className="flex flex-col gap-4">
-      <Button asChild variant="outline" size="sm" className="w-fit">
-        <Link href="/peserta-magang">
-          <Icon icon="lucide:arrow-left" /> Kembali
-        </Link>
-      </Button>
+      <div className="flex items-center justify-between gap-3">
+        <Button asChild variant="outline" size="sm" className="w-fit">
+          <Link href="/peserta-magang">
+            <Icon icon="lucide:arrow-left" /> Kembali
+          </Link>
+        </Button>
+
+        <Button asChild size="sm" className="w-fit">
+          <Link href={`/peserta-magang/${id}/cetak`}>
+            <Icon icon="lucide:printer" /> Cetak Laporan
+          </Link>
+        </Button>
+      </div>
 
       <Card>
         <CardContent className="flex flex-col gap-6 pt-6">
@@ -149,9 +167,20 @@ export default function Container({ id }: { id: string }) {
               {initials}
             </div>
             <div className="flex-1">
-              <div className="flex items-center gap-2.5">
+              <div className="flex flex-wrap items-center gap-2.5">
                 <h1 className="text-xl font-bold">{peserta.name}</h1>
-                <Badge label={peserta.status} className={STATUS_MAGANG_BADGE_CLASS[peserta.status]} />
+                <Badge
+                  label={peserta.status}
+                  className={STATUS_MAGANG_BADGE_CLASS[peserta.status]}
+                />
+                <Badge
+                  label={peserta.hasPortalAccount ? "Portal aktif" : "Portal nonaktif"}
+                  className={
+                    peserta.hasPortalAccount
+                      ? "bg-emerald-50 text-emerald-700"
+                      : "bg-muted text-muted-foreground"
+                  }
+                />
               </div>
               <p className="text-muted-foreground text-sm">{peserta.email}</p>
             </div>
@@ -191,7 +220,11 @@ export default function Container({ id }: { id: string }) {
       </Card>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <Section title="Absensi Terbaru" icon="mdi:clock-edit-outline" emptyLabel="Belum ada catatan absensi.">
+        <Section
+          title="Absensi Terbaru"
+          icon="mdi:clock-edit-outline"
+          emptyLabel="Belum ada catatan absensi."
+        >
           {absensi.length > 0 && (
             <ul className="flex flex-col gap-3">
               {absensi.map((a) => (
@@ -204,7 +237,11 @@ export default function Container({ id }: { id: string }) {
           )}
         </Section>
 
-        <Section title="Jurnal Kegiatan" icon="mdi:notebook-outline" emptyLabel="Belum ada jurnal kegiatan.">
+        <Section
+          title="Jurnal Kegiatan"
+          icon="mdi:notebook-outline"
+          emptyLabel="Belum ada jurnal kegiatan."
+        >
           {jurnal.length > 0 && (
             <ul className="flex flex-col gap-3">
               {jurnal.map((j) => (
@@ -239,7 +276,9 @@ export default function Container({ id }: { id: string }) {
               {dokumen.map((d) => (
                 <li key={d.id} className="flex items-center justify-between gap-3 text-sm">
                   <div className="min-w-0">
-                    <p className="text-muted-foreground text-xs">{d.jenisDokumen.replace(/_/g, " ")}</p>
+                    <p className="text-muted-foreground text-xs">
+                      {d.jenisDokumen.replace(/_/g, " ")}
+                    </p>
                     <p className="truncate">{d.namaFile}</p>
                   </div>
                   <a

@@ -7,7 +7,7 @@ describe("cn", () => {
   });
 
   it("drops falsy values", () => {
-    expect(cn("flex", false && "hidden", undefined, null, "gap-2")).toBe("flex gap-2");
+    expect(cn("flex", false, undefined, null, "gap-2")).toBe("flex gap-2");
   });
 
   it("resolves conflicting Tailwind utilities to the last one", () => {

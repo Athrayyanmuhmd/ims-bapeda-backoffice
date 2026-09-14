@@ -4,7 +4,7 @@ import { MutationCache, QueryCache, QueryClient, QueryClientProvider } from "@ta
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import type React from "react";
 import { useState } from "react";
-import { toast, Toaster } from "sonner";
+import { Toaster, toast } from "sonner";
 import { ConfigProvider, type TConfig } from "@/stores/config";
 
 type TProvidersProps = {

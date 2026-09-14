@@ -12,7 +12,11 @@ import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field
 import { Input } from "@/components/ui/input";
 import { queryKeys } from "@/constants/query-keys";
 import { services } from "@/services";
-import { schemaUpdateUserRequest, type TUpdateUserRequest, type TUser } from "@/services/user/types";
+import {
+  schemaUpdateUserRequest,
+  type TUpdateUserRequest,
+  type TUser,
+} from "@/services/user/types";
 
 interface FormDialogProps {
   open: boolean;
@@ -40,11 +44,21 @@ export function FormDialog({ open, onOpenChange, user }: FormDialogProps) {
     label: d.name,
     value: d.id,
   }));
-  const roleOptions = (roleData?.content?.entries ?? []).map((r) => ({ label: r.name, value: r.id }));
+  const roleOptions = (roleData?.content?.entries ?? []).map((r) => ({
+    label: r.name,
+    value: r.id,
+  }));
 
   const form = useForm<TUpdateUserRequest>({
     resolver: zodResolver(schemaUpdateUserRequest),
-    defaultValues: { fullName: "", email: "", password: "", phoneNumber: "", divisiId: "", roleId: "" },
+    defaultValues: {
+      fullName: "",
+      email: "",
+      password: "",
+      phoneNumber: "",
+      divisiId: "",
+      roleId: "",
+    },
   });
 
   useEffect(() => {
@@ -64,9 +78,10 @@ export function FormDialog({ open, onOpenChange, user }: FormDialogProps) {
   const mutation = useMutation({
     mutationFn: (data: TUpdateUserRequest) => {
       if (isEdit) {
-        const payload = { ...data };
-        if (!payload.password) delete payload.password;
-        return services.user.updateUser(user.id, payload);
+        // A blank password field means "leave it alone", so the key is omitted
+        // rather than sent empty — otherwise the API would hash "".
+        const { password, ...withoutPassword } = data;
+        return services.user.updateUser(user.id, password ? data : withoutPassword);
       }
       if (!data.password) throw { message: "Password wajib diisi" };
       return services.user.createUser({ ...data, password: data.password });
@@ -90,7 +105,11 @@ export function FormDialog({ open, onOpenChange, user }: FormDialogProps) {
       title={isEdit ? "Edit User" : "Tambah User"}
       footer={
         <>
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={mutation.isPending}>
+          <Button
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            disabled={mutation.isPending}
+          >
             Batal
           </Button>
           <Button onClick={onSubmit} isLoading={mutation.isPending} disabled={mutation.isPending}>

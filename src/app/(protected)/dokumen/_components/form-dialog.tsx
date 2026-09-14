@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { Modal } from "@/components/modal";
@@ -10,9 +10,14 @@ import { SingleSelect } from "@/components/single-select";
 import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/spinner";
 import { queryKeys } from "@/constants/query-keys";
 import { services } from "@/services";
-import { JENIS_DOKUMEN_OPTIONS, schemaCreateDokumenRequest, type TCreateDokumenRequest } from "@/services/dokumen/types";
+import {
+  JENIS_DOKUMEN_OPTIONS,
+  schemaCreateDokumenRequest,
+  type TCreateDokumenRequest,
+} from "@/services/dokumen/types";
 
 const JENIS_LABEL: Record<(typeof JENIS_DOKUMEN_OPTIONS)[number], string> = {
   SURAT_PENGANTAR: "Surat Pengantar",
@@ -22,6 +27,10 @@ const JENIS_LABEL: Record<(typeof JENIS_DOKUMEN_OPTIONS)[number], string> = {
   LAINNYA: "Lainnya",
 };
 
+const ACCEPTED_FILES = ".pdf,.jpg,.jpeg,.png,.doc,.docx";
+
+const EMPTY_FORM = { pesertaMagangId: "", jenisDokumen: "", namaFile: "", urlFile: "" };
+
 interface FormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -29,6 +38,7 @@ interface FormDialogProps {
 
 export function FormDialog({ open, onOpenChange }: FormDialogProps) {
   const queryClient = useQueryClient();
+  const [isUploading, setIsUploading] = useState(false);
 
   const { data: pesertaData } = useQuery({
     queryKey: queryKeys.pesertaMagang.lookup(),
@@ -45,14 +55,36 @@ export function FormDialog({ open, onOpenChange }: FormDialogProps) {
 
   const form = useForm<TCreateDokumenRequest>({
     resolver: zodResolver(schemaCreateDokumenRequest),
-    defaultValues: { pesertaMagangId: "", jenisDokumen: "", namaFile: "", urlFile: "" },
+    defaultValues: EMPTY_FORM,
   });
 
   useEffect(() => {
     if (open) {
-      form.reset({ pesertaMagangId: "", jenisDokumen: "", namaFile: "", urlFile: "" });
+      form.reset(EMPTY_FORM);
+      setIsUploading(false);
     }
   }, [open, form]);
+
+  // Uploads as soon as a file is picked and drops the resulting path into
+  // urlFile, so the rest of the form (and the backend) keeps working with a
+  // single url field whether the file was uploaded or a link was pasted.
+  const onFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    try {
+      const uploaded = await services.dokumen.uploadDokumenFile(file);
+      form.setValue("urlFile", uploaded.urlFile, { shouldValidate: true });
+      form.setValue("namaFile", uploaded.namaFile, { shouldValidate: true });
+      toast.success("File berhasil diunggah");
+    } catch (error) {
+      toast.error((error as { message: string }).message);
+      event.target.value = "";
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   const mutation = useMutation({
     mutationFn: (data: TCreateDokumenRequest) => services.dokumen.createDokumen(data),
@@ -68,6 +100,8 @@ export function FormDialog({ open, onOpenChange }: FormDialogProps) {
 
   const onSubmit = form.handleSubmit((value) => mutation.mutate(value));
 
+  const isBusy = mutation.isPending || isUploading;
+
   return (
     <Modal
       open={open}
@@ -75,10 +109,10 @@ export function FormDialog({ open, onOpenChange }: FormDialogProps) {
       title="Tambah Dokumen"
       footer={
         <>
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={mutation.isPending}>
+          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isBusy}>
             Batal
           </Button>
-          <Button onClick={onSubmit} isLoading={mutation.isPending} disabled={mutation.isPending}>
+          <Button onClick={onSubmit} isLoading={mutation.isPending} disabled={isBusy}>
             Simpan
           </Button>
         </>
@@ -120,6 +154,20 @@ export function FormDialog({ open, onOpenChange }: FormDialogProps) {
             )}
           />
 
+          <Field>
+            <FieldLabel>Unggah File</FieldLabel>
+            <Input type="file" accept={ACCEPTED_FILES} onChange={onFileChange} disabled={isBusy} />
+            <p className="text-muted-foreground flex items-center gap-1.5 text-xs">
+              {isUploading ? (
+                <>
+                  <Spinner className="size-3" /> Mengunggah…
+                </>
+              ) : (
+                "PDF, JPG, PNG, DOC, DOCX — maksimal 4MB."
+              )}
+            </p>
+          </Field>
+
           <Controller
             control={form.control}
             name="namaFile"
@@ -138,7 +186,10 @@ export function FormDialog({ open, onOpenChange }: FormDialogProps) {
             render={({ field, fieldState: { error } }) => (
               <Field>
                 <FieldLabel>Link File</FieldLabel>
-                <Input placeholder="https://drive.google.com/..." {...field} />
+                <Input
+                  placeholder="Terisi otomatis setelah unggah, atau tempel link di sini"
+                  {...field}
+                />
                 <FieldError errors={[error]} />
               </Field>
             )}

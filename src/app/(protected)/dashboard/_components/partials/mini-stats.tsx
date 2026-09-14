@@ -2,6 +2,7 @@
 
 import { DateTime } from "luxon";
 import { MiniStatCard } from "@/components/mini-stat-card";
+import { daysUntil, todayInApp } from "@/utils/datetime";
 import { useDashboardData } from "../use-dashboard-data";
 
 export default function MiniStats() {
@@ -13,25 +14,34 @@ export default function MiniStats() {
   const totalPeserta = pesertaData?.content?.totalData ?? 0;
   const totalAktif = peserta.filter((p) => p.status === "AKTIF").length;
 
-  const now = DateTime.now();
+  const now = todayInApp();
+  // tanggal is a UTC-midnight calendar date, so compare it in UTC — reading it
+  // locally could place an end-of-month record in the wrong month.
   const monthRecords = (absensiData?.content?.entries ?? []).filter((a) => {
-    const d = DateTime.fromISO(a.tanggal);
-    return d.hasSame(now, "month") && d.hasSame(now, "year");
+    const d = DateTime.fromISO(a.tanggal, { zone: "utc" });
+    return d.month === now.month && d.year === now.year;
   });
   const rataKehadiran =
     monthRecords.length > 0
-      ? Math.round((monthRecords.filter((a) => a.kehadiran === "Hadir").length / monthRecords.length) * 100)
+      ? Math.round(
+          (monthRecords.filter((a) => a.kehadiran === "Hadir").length / monthRecords.length) * 100
+        )
       : 0;
 
   const segeraSelesai = peserta.filter((p) => {
     if (p.status !== "AKTIF" || !p.tanggalSelesai) return false;
-    const daysLeft = DateTime.fromISO(p.tanggalSelesai).diff(now, "days").days;
+    const daysLeft = daysUntil(p.tanggalSelesai);
     return daysLeft >= 0 && daysLeft <= 30;
   }).length;
 
   return (
     <div className="grid grid-cols-2 gap-4">
-      <MiniStatCard icon="mdi:account-group-outline" label="Total Peserta" value={totalPeserta} loading={isLoading} />
+      <MiniStatCard
+        icon="mdi:account-group-outline"
+        label="Total Peserta"
+        value={totalPeserta}
+        loading={isLoading}
+      />
       <MiniStatCard
         icon="mdi:check-decagram-outline"
         label="Peserta Aktif"

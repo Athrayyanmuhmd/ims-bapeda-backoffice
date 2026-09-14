@@ -42,7 +42,9 @@ export default function AppSidebar() {
                   />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="font-display truncate font-semibold tracking-tight">SIMAGANG Bapeda</span>
+                  <span className="font-display truncate font-semibold tracking-tight">
+                    SIMAGANG Bapeda
+                  </span>
                 </div>
               </Link>
             </SidebarMenuButton>
@@ -54,7 +56,9 @@ export default function AppSidebar() {
           <SidebarGroupLabel>Menu</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {NAVIGATION.filter((item) => !item.roles || item.roles.includes(user?.role ?? "")).map((item) => (
+              {NAVIGATION.filter(
+                (item) => !item.roles || item.roles.includes(user?.role ?? "")
+              ).map((item) => (
                 <SidebarMenuItem key={item.href}>
                   <SidebarMenuButton asChild isActive={pathname === item.href} tooltip={item.name}>
                     <Link href={item.href} onClick={() => setOpenMobile(false)}>

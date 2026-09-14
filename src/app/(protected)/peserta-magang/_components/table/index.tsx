@@ -14,11 +14,13 @@ import { queryKeys } from "@/constants/query-keys";
 import { useQueryBuilder } from "@/hooks/use-query-builder";
 import { services } from "@/services";
 import type { TPesertaMagang } from "@/services/peserta-magang/types";
+import { useAuth } from "@/stores/auth";
 import { FormDialog } from "../form-dialog";
 import { createColumns } from "./columns";
 
 export default function TablePesertaMagang() {
   const queryClient = useQueryClient();
+  const isAdmin = useAuth((s) => s.user?.role) === "Admin";
   const { params, page, rows, setPage, setSearch } = useQueryBuilder({
     defaultSearchKeys: ["name"],
   });
@@ -51,7 +53,9 @@ export default function TablePesertaMagang() {
       setSelected(row);
       setFormOpen(true);
     },
-    onDelete: (row) => setDeleteTarget(row),
+    // Admin-only server-side too (peserta-magang routes) — this just avoids
+    // offering an action that would come back 403.
+    onDelete: isAdmin ? (row) => setDeleteTarget(row) : undefined,
     currentPage: page,
     pageSize: rows,
   });
@@ -91,7 +95,12 @@ export default function TablePesertaMagang() {
         </div>
 
         <DataTable
-          pagination={{ currentPage: page, totalPages: totalPage, onPageChange: setPage, isFetching }}
+          pagination={{
+            currentPage: page,
+            totalPages: totalPage,
+            onPageChange: setPage,
+            isFetching,
+          }}
           columns={columns}
           data={entries}
           totalData={totalData}
@@ -105,7 +114,7 @@ export default function TablePesertaMagang() {
         open={!!deleteTarget}
         onOpenChange={(open) => !open && setDeleteTarget(null)}
         title="Hapus Peserta Magang?"
-        description={`Peserta "${deleteTarget?.name}" akan dihapus permanen.`}
+        description={`Peserta "${deleteTarget?.name}" akan dihapus permanen, beserta seluruh absensi, jurnal, penilaian, dan dokumennya. Untuk mengakhiri magang, ubah statusnya menjadi Selesai.`}
         onConfirm={() => deleteTarget && deleteMutation.mutate(deleteTarget.id)}
         isLoading={deleteMutation.isPending}
       />

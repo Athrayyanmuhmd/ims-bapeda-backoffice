@@ -58,7 +58,10 @@ export function FormDialog({ open, onOpenChange, penilaian }: FormDialogProps) {
   const mutation = useMutation({
     mutationFn: (data: TCreatePenilaianRequest) =>
       isEdit
-        ? services.penilaian.updatePenilaian(penilaian.id, { nilai: data.nilai, komentar: data.komentar })
+        ? services.penilaian.updatePenilaian(penilaian.id, {
+            nilai: data.nilai,
+            komentar: data.komentar,
+          })
         : services.penilaian.createPenilaian(data),
     onSuccess: (res) => {
       toast.success(res.message);
@@ -79,7 +82,11 @@ export function FormDialog({ open, onOpenChange, penilaian }: FormDialogProps) {
       title={isEdit ? "Edit Penilaian" : "Tambah Penilaian"}
       footer={
         <>
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={mutation.isPending}>
+          <Button
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            disabled={mutation.isPending}
+          >
             Batal
           </Button>
           <Button onClick={onSubmit} isLoading={mutation.isPending} disabled={mutation.isPending}>

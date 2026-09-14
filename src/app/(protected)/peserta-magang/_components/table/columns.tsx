@@ -74,8 +74,26 @@ export const createColumns = ({
         const status = row.original?.status;
         const className = STATUS_MAGANG_BADGE_CLASS[status] ?? "text-red-600 bg-red-50";
         return (
-          <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${className}`}>
+          <span
+            className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${className}`}
+          >
             {status}
+          </span>
+        );
+      },
+    },
+    {
+      header: "Portal",
+      accessorKey: "hasPortalAccount",
+      cell: ({ row }) => {
+        const active = row.original?.hasPortalAccount;
+        return (
+          <span
+            className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${
+              active ? "bg-emerald-50 text-emerald-700" : "bg-muted text-muted-foreground"
+            }`}
+          >
+            {active ? "Aktif" : "Nonaktif"}
           </span>
         );
       },
@@ -107,14 +125,18 @@ export const createColumns = ({
                   <Icon icon="lucide:pen" />
                   <span>Edit</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem
-                  variant="destructive"
-                  className="inline-flex items-center gap-2 cursor-pointer"
-                  onClick={() => onDelete?.(row.original)}
-                >
-                  <Icon icon="lucide:trash" />
-                  <span>Delete</span>
-                </DropdownMenuItem>
+                {/* Omitted entirely for non-Admin rather than shown-but-inert:
+                    deleting a peserta cascades to all their records. */}
+                {onDelete && (
+                  <DropdownMenuItem
+                    variant="destructive"
+                    className="inline-flex items-center gap-2 cursor-pointer"
+                    onClick={() => onDelete(row.original)}
+                  >
+                    <Icon icon="lucide:trash" />
+                    <span>Delete</span>
+                  </DropdownMenuItem>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

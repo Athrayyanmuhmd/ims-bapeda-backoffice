@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import AbsensiHariIni from "./today";
 import TableAbsensi from "./table";
+import AbsensiHariIni from "./today";
 
 type TTab = "today" | "history";
 
@@ -18,10 +18,18 @@ export default function Container() {
           <p className="text-muted-foreground text-sm">Catat kehadiran harian peserta magang.</p>
         </div>
         <div className="bg-accent flex items-center gap-1 rounded-lg p-1">
-          <Button size="sm" variant={tab === "today" ? "default" : "ghost"} onClick={() => setTab("today")}>
+          <Button
+            size="sm"
+            variant={tab === "today" ? "default" : "ghost"}
+            onClick={() => setTab("today")}
+          >
             Hari Ini
           </Button>
-          <Button size="sm" variant={tab === "history" ? "default" : "ghost"} onClick={() => setTab("history")}>
+          <Button
+            size="sm"
+            variant={tab === "history" ? "default" : "ghost"}
+            onClick={() => setTab("history")}
+          >
             Riwayat
           </Button>
         </div>

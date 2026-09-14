@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    env:
+      # Placeholders so @t3-oss/env validation passes during `next build`; the
+      # build never calls the API, and real values come from Vercel env vars.
+      NEXT_PUBLIC_FE_URL: http://localhost:3000
+      NEXT_PUBLIC_BE_URL: http://localhost:3001
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # Gates on error-level rules only; the ~46 remaining warnings
+      # (useNamingConvention on Prisma enum keys and Next route exports,
+      # noArrayIndexKey on static skeleton lists) don't fail the build.
+      - name: Lint
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm exec tsc --noEmit
+
+      - name: Test
+        run: pnpm test
+
+      # Catches what tsc can't: server/client boundary violations and other
+      # App Router build-time errors.
+      - name: Build
+        run: pnpm build

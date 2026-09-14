@@ -1,9 +1,9 @@
 import { redirect } from "next/navigation";
 import type React from "react";
+import Providers from "@/components/auth-providers";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import type { TAuthUser } from "@/stores/auth";
 import { getSession } from "@/utils/session";
-import Providers from "@/components/auth-providers";
 import AppHeader from "./_components/app-header";
 import AppSidebar from "./_components/app-sidebar";
 
@@ -18,7 +18,7 @@ type TLayoutProps = {
 export default async function Layout({ children }: TLayoutProps) {
   const session = await getSession();
 
-  if (!session?.accessToken || !session.user) {
+  if (!(session?.accessToken && session.user)) {
     redirect("/login");
   }
 

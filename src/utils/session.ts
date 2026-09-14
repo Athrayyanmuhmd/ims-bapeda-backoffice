@@ -3,6 +3,7 @@
 import { cookies } from "next/headers";
 import { tokenCookieKey, userCookieKey } from "@/constants/session";
 import type { TLoginResponse } from "@/services/auth/types";
+import { sessionCookieOptions } from "@/utils/cookie-options";
 
 export async function getSession() {
   const cookieStore = await cookies();
@@ -20,16 +21,12 @@ export async function getSession() {
 export async function setSession(value: TLoginResponse) {
   const token = value.token;
   const user = value.user;
+  const options = sessionCookieOptions();
 
   const cookieStore = await cookies();
 
-  cookieStore.set(tokenCookieKey, token, {
-    httpOnly: true,
-  });
-
-  cookieStore.set(userCookieKey, JSON.stringify(user), {
-    httpOnly: true,
-  });
+  cookieStore.set(tokenCookieKey, token, options);
+  cookieStore.set(userCookieKey, JSON.stringify(user), options);
 
   return {
     accessToken: token,

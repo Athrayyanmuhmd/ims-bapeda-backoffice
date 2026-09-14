@@ -30,6 +30,8 @@ export const schemaCreatePenilaianRequest = z.object({
 export type TCreatePenilaianRequest = z.infer<typeof schemaCreatePenilaianRequest>;
 export type TCreatePenilaianResponse = TPenilaian;
 
-export const schemaUpdatePenilaianRequest = schemaCreatePenilaianRequest.omit({ pesertaMagangId: true });
+export const schemaUpdatePenilaianRequest = schemaCreatePenilaianRequest.omit({
+  pesertaMagangId: true,
+});
 export type TUpdatePenilaianRequest = z.infer<typeof schemaUpdatePenilaianRequest>;
 export type TUpdatePenilaianResponse = TPenilaian;

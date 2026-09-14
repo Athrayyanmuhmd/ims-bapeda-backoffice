@@ -59,7 +59,9 @@ export default function TableDokumen() {
     <Card>
       <CardHeader>
         <CardTitle>Dokumen</CardTitle>
-        <CardDescription>Surat pengantar, surat balasan, sertifikat, dan laporan peserta magang.</CardDescription>
+        <CardDescription>
+          Surat pengantar, surat balasan, sertifikat, dan laporan peserta magang.
+        </CardDescription>
       </CardHeader>
 
       <CardContent className="flex flex-col gap-4">
@@ -81,7 +83,12 @@ export default function TableDokumen() {
         </div>
 
         <DataTable
-          pagination={{ currentPage: page, totalPages: totalPage, onPageChange: setPage, isFetching }}
+          pagination={{
+            currentPage: page,
+            totalPages: totalPage,
+            onPageChange: setPage,
+            isFetching,
+          }}
           columns={columns}
           data={entries}
           totalData={totalData}

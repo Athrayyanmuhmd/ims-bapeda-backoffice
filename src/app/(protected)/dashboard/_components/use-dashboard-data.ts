@@ -13,7 +13,8 @@ export function useDashboardData() {
 
   const { data: absensiData, isLoading: isLoadingAbsensi } = useQuery({
     queryKey: queryKeys.absensi.recent(),
-    queryFn: () => services.absensi.getAllAbsensi({ rows: 100, orderKey: "tanggal", orderRule: "desc" }),
+    queryFn: () =>
+      services.absensi.getAllAbsensi({ rows: 100, orderKey: "tanggal", orderRule: "desc" }),
   });
 
   return {

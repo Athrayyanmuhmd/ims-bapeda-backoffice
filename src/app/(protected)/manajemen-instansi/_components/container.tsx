@@ -5,7 +5,7 @@ import TableManajemenInstansi from "./table";
 
 export default function Container() {
   return (
-    <RequireRole role="Admin">
+    <RequireRole allowedRole="Admin">
       <TableManajemenInstansi />
     </RequireRole>
   );

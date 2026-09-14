@@ -2,7 +2,6 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { DateTime } from "luxon";
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -19,6 +18,7 @@ import {
   type TCreateJurnalRequest,
   type TJurnal,
 } from "@/services/jurnal/types";
+import { toDateInput } from "@/utils/datetime";
 
 interface FormDialogProps {
   open: boolean;
@@ -50,7 +50,7 @@ export function FormDialog({ open, onOpenChange, jurnal }: FormDialogProps) {
     if (open) {
       form.reset({
         pesertaMagangId: jurnal?.pesertaMagangId ?? "",
-        tanggal: jurnal?.tanggal ? DateTime.fromISO(jurnal.tanggal).toISODate() ?? "" : "",
+        tanggal: toDateInput(jurnal?.tanggal),
         kegiatan: jurnal?.kegiatan ?? "",
       });
     }
@@ -59,7 +59,10 @@ export function FormDialog({ open, onOpenChange, jurnal }: FormDialogProps) {
   const mutation = useMutation({
     mutationFn: (data: TCreateJurnalRequest) =>
       isEdit
-        ? services.jurnal.updateJurnal(jurnal.id, { tanggal: data.tanggal, kegiatan: data.kegiatan })
+        ? services.jurnal.updateJurnal(jurnal.id, {
+            tanggal: data.tanggal,
+            kegiatan: data.kegiatan,
+          })
         : services.jurnal.createJurnal(data),
     onSuccess: (res) => {
       toast.success(res.message);
@@ -80,7 +83,11 @@ export function FormDialog({ open, onOpenChange, jurnal }: FormDialogProps) {
       title={isEdit ? "Edit Jurnal" : "Tambah Jurnal"}
       footer={
         <>
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={mutation.isPending}>
+          <Button
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            disabled={mutation.isPending}
+          >
             Batal
           </Button>
           <Button onClick={onSubmit} isLoading={mutation.isPending} disabled={mutation.isPending}>

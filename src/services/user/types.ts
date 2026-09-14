@@ -31,7 +31,17 @@ export const schemaCreateUserRequest = z.object({
   fullName: z.string().min(1, "Nama wajib diisi"),
   email: z.string().min(1, "Email wajib diisi").email("Format email tidak valid"),
   password: z.string().min(8, "Password minimal 8 karakter"),
-  phoneNumber: z.string().optional(),
+  phoneNumber: z
+    .string()
+    .optional()
+    .refine(
+      (value) => {
+        if (!value) return true;
+        const compact = value.replace(/[\s\-()]/g, "");
+        return /^(\+62|62|0)8[1-9][0-9]{7,11}$/.test(compact);
+      },
+      { message: "Format nomor HP tidak valid (contoh: 081234567890)" }
+    ),
   divisiId: z.string().optional(),
   roleId: z.string().optional(),
 });
@@ -44,7 +54,17 @@ export const schemaUpdateUserRequest = z.object({
   fullName: z.string().min(1, "Nama wajib diisi"),
   email: z.string().min(1, "Email wajib diisi").email("Format email tidak valid"),
   password: z.string().min(8, "Password minimal 8 karakter").optional().or(z.literal("")),
-  phoneNumber: z.string().optional(),
+  phoneNumber: z
+    .string()
+    .optional()
+    .refine(
+      (value) => {
+        if (!value) return true;
+        const compact = value.replace(/[\s\-()]/g, "");
+        return /^(\+62|62|0)8[1-9][0-9]{7,11}$/.test(compact);
+      },
+      { message: "Format nomor HP tidak valid (contoh: 081234567890)" }
+    ),
   divisiId: z.string().optional(),
   roleId: z.string().optional(),
   status: z.string().optional(),
@@ -52,3 +72,28 @@ export const schemaUpdateUserRequest = z.object({
 
 export type TUpdateUserRequest = z.infer<typeof schemaUpdateUserRequest>;
 export type TUpdateUserResponse = TUser;
+
+// change own password — mirrors the backend's rules (min 8, must differ) so the
+// user sees them before a round trip, not instead of the server checking.
+export const schemaChangePasswordRequest = z
+  .object({
+    currentPassword: z.string().min(1, "Password saat ini wajib diisi"),
+    newPassword: z.string().min(8, "Password baru minimal 8 karakter"),
+    confirmPassword: z.string().min(1, "Konfirmasi password wajib diisi"),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Konfirmasi password tidak sama",
+    path: ["confirmPassword"],
+  })
+  .refine((data) => data.newPassword !== data.currentPassword, {
+    message: "Password baru harus berbeda dari password saat ini",
+    path: ["newPassword"],
+  });
+
+export type TChangePasswordForm = z.infer<typeof schemaChangePasswordRequest>;
+
+// confirmPassword is a UI-only field; it never goes to the API.
+export type TChangePasswordRequest = {
+  currentPassword: string;
+  newPassword: string;
+};

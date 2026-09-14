@@ -27,7 +27,9 @@ export default function TableAttendance() {
             Lihat semua
           </Link>
         </CardAction>
-        <p className="text-muted-foreground text-sm">Catatan kehadiran peserta magang paling baru</p>
+        <p className="text-muted-foreground text-sm">
+          Catatan kehadiran peserta magang paling baru
+        </p>
       </CardHeader>
       <CardContent>
         <DataTable data={entries} columns={columns} loading={isLoading} hideFooter />

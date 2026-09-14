@@ -1,6 +1,7 @@
 import type { TResponse, TResponseGetAll } from "@/types/response";
 import { api, getError, getParams } from "@/utils/api";
 import type {
+  TChangePasswordRequest,
   TCreateUserRequest,
   TCreateUserResponse,
   TGetAllUserRequest,
@@ -45,6 +46,18 @@ export const createUser = async (data: TCreateUserRequest) => {
 export const updateUser = async (id: string, data: TUpdateUserRequest) => {
   try {
     const response = await api.put<TResponse<TUpdateUserResponse>>(`/users/${id}`, data);
+
+    return response.data;
+  } catch (error) {
+    throw getError(error);
+  }
+};
+
+// Always acts on the logged-in user — the backend takes the target from the
+// token, so there's no id to pass here.
+export const changeOwnPassword = async (data: TChangePasswordRequest) => {
+  try {
+    const response = await api.post<TResponse<null>>("/users/change-password", data);
 
     return response.data;
   } catch (error) {

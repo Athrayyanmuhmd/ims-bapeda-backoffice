@@ -81,7 +81,11 @@ export function SimpleFormDialog<T extends NameDescriptionEntity>({
       title={isEdit ? `Edit ${label}` : `Tambah ${label}`}
       footer={
         <>
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={mutation.isPending}>
+          <Button
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            disabled={mutation.isPending}
+          >
             Batal
           </Button>
           <Button onClick={onSubmit} isLoading={mutation.isPending} disabled={mutation.isPending}>

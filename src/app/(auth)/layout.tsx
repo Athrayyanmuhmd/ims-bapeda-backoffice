@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import type React from "react";
-import { getSession } from "@/utils/session";
 import Providers from "@/components/auth-providers";
+import { getSession } from "@/utils/session";
 
 type TLayoutProps = {
   children: React.ReactNode;

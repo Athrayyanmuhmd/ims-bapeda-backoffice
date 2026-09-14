@@ -1,6 +1,5 @@
 import { Icon } from "@iconify/react";
 import type { ColumnDef } from "@tanstack/react-table";
-import { DateTime } from "luxon";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -9,6 +8,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { TJurnal } from "@/services/jurnal/types";
+import { fmtTanggal } from "@/utils/datetime";
 
 interface IColumnProps {
   onEdit?: (row: TJurnal) => void;
@@ -44,8 +44,7 @@ export const createColumns = ({
     {
       header: "Tanggal",
       accessorKey: "tanggal",
-      cell: ({ row }) =>
-        DateTime.fromISO(row.original.tanggal).toLocaleString(DateTime.DATE_MED),
+      cell: ({ row }) => fmtTanggal(row.original.tanggal),
     },
     {
       header: "Kegiatan",

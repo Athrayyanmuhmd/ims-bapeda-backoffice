@@ -68,7 +68,11 @@ export function FormDialog({ open, onOpenChange, instansi }: FormDialogProps) {
       title={isEdit ? "Edit Instansi" : "Tambah Instansi"}
       footer={
         <>
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={mutation.isPending}>
+          <Button
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            disabled={mutation.isPending}
+          >
             Batal
           </Button>
           <Button onClick={onSubmit} isLoading={mutation.isPending} disabled={mutation.isPending}>

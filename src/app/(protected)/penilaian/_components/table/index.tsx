@@ -64,7 +64,9 @@ export default function TablePenilaian() {
     <Card>
       <CardHeader>
         <CardTitle>Penilaian</CardTitle>
-        <CardDescription>Nilai dan komentar akhir dari pembimbing untuk peserta magang.</CardDescription>
+        <CardDescription>
+          Nilai dan komentar akhir dari pembimbing untuk peserta magang.
+        </CardDescription>
       </CardHeader>
 
       <CardContent className="flex flex-col gap-4">
@@ -91,7 +93,12 @@ export default function TablePenilaian() {
         </div>
 
         <DataTable
-          pagination={{ currentPage: page, totalPages: totalPage, onPageChange: setPage, isFetching }}
+          pagination={{
+            currentPage: page,
+            totalPages: totalPage,
+            onPageChange: setPage,
+            isFetching,
+          }}
           columns={columns}
           data={entries}
           totalData={totalData}

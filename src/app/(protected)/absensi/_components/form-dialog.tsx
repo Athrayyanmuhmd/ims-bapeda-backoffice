@@ -2,7 +2,6 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { DateTime } from "luxon";
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -16,6 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { queryKeys } from "@/constants/query-keys";
 import { services } from "@/services";
 import { KEHADIRAN_OPTIONS, type TAbsensi } from "@/services/absensi/types";
+import { toDateInput, toTimeInput } from "@/utils/datetime";
 
 const schemaForm = z.object({
   pesertaMagangId: z.string().min(1, "Peserta magang wajib dipilih"),
@@ -66,9 +66,9 @@ export function FormDialog({ open, onOpenChange, absensi }: FormDialogProps) {
       form.reset({
         pesertaMagangId: absensi?.pesertaMagangId ?? "",
         kehadiran: absensi?.kehadiran ?? "",
-        tanggal: absensi?.tanggal ? DateTime.fromISO(absensi.tanggal).toISODate() ?? "" : "",
-        jamMasuk: absensi?.jamMasuk ? DateTime.fromISO(absensi.jamMasuk).toFormat("HH:mm") : "",
-        jamKeluar: absensi?.jamKeluar ? DateTime.fromISO(absensi.jamKeluar).toFormat("HH:mm") : "",
+        tanggal: toDateInput(absensi?.tanggal),
+        jamMasuk: toTimeInput(absensi?.jamMasuk),
+        jamKeluar: toTimeInput(absensi?.jamKeluar),
         keterangan: absensi?.keterangan ?? "",
       });
     }
@@ -108,7 +108,11 @@ export function FormDialog({ open, onOpenChange, absensi }: FormDialogProps) {
       title={isEdit ? "Edit Absensi" : "Tambah Absensi"}
       footer={
         <>
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={mutation.isPending}>
+          <Button
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            disabled={mutation.isPending}
+          >
             Batal
           </Button>
           <Button onClick={onSubmit} isLoading={mutation.isPending} disabled={mutation.isPending}>

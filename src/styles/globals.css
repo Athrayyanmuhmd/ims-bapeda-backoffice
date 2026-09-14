@@ -127,3 +127,36 @@
     overflow-x: hidden;
   }
 }
+
+/* Printing the laporan magang: hide the app chrome (sidebar, header, buttons)
+   so Ctrl+P produces just the document. Uses visibility rather than display so
+   it doesn't need to know how the sidebar/header are structured — anything
+   outside [data-print-area] simply stops rendering ink. */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  [data-print-area],
+  [data-print-area] * {
+    visibility: visible;
+  }
+
+  [data-print-area] {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 0;
+  }
+
+  /* Keep table rows and signature blocks from splitting across pages. */
+  tr,
+  [data-print-keep] {
+    break-inside: avoid;
+  }
+
+  @page {
+    margin: 18mm 16mm;
+  }
+}

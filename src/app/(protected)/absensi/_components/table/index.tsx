@@ -14,6 +14,7 @@ import { queryKeys } from "@/constants/query-keys";
 import { useQueryBuilder } from "@/hooks/use-query-builder";
 import { services } from "@/services";
 import type { TAbsensi } from "@/services/absensi/types";
+import { ExportCsv } from "../export-csv";
 import { FormDialog } from "../form-dialog";
 import { createColumns } from "./columns";
 
@@ -90,8 +91,15 @@ export default function TableAbsensi() {
           </Button>
         </div>
 
+        <ExportCsv />
+
         <DataTable
-          pagination={{ currentPage: page, totalPages: totalPage, onPageChange: setPage, isFetching }}
+          pagination={{
+            currentPage: page,
+            totalPages: totalPage,
+            onPageChange: setPage,
+            isFetching,
+          }}
           columns={columns}
           data={entries}
           totalData={totalData}

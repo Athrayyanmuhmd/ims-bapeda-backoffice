@@ -2,26 +2,30 @@
 
 import { Icon } from "@iconify/react";
 import { usePathname } from "next/navigation";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import type { IModalRef } from "@/components/modal";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { NAVIGATION } from "@/constants/navigation";
 import { useAuth } from "@/stores/auth";
+import DialogChangePassword from "./partials/dialog-change-password";
 import DialogLogout from "./partials/dialog-logout";
 
 export default function AppHeader() {
   const { user } = useAuth();
   const pathname = usePathname();
   const logoutDialogRef = useRef<IModalRef>(null);
+  const [changePasswordOpen, setChangePasswordOpen] = useState(false);
 
   const pageTitle =
     NAVIGATION.find((item) => pathname === item.href || pathname.startsWith(`${item.href}/`))
@@ -68,6 +72,14 @@ export default function AppHeader() {
                   <p className="text-xs leading-none text-muted-foreground">{user?.email || ""}</p>
                 </div>
               </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className="inline-flex w-full cursor-pointer items-center gap-2"
+                onClick={() => setChangePasswordOpen(true)}
+              >
+                <Icon icon="mdi:key-outline" className="size-4" />
+                <span>Ganti Password</span>
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 
@@ -78,6 +90,7 @@ export default function AppHeader() {
         </div>
       </header>
       <DialogLogout dialogRef={logoutDialogRef} />
+      <DialogChangePassword open={changePasswordOpen} onOpenChange={setChangePasswordOpen} />
     </>
   );
 }

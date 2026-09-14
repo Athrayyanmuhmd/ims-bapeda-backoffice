@@ -26,7 +26,10 @@ describe("schemaUpdateAbsensiRequest", () => {
   });
 
   it("does not require pesertaMagangId (can't be changed after creation)", () => {
-    const result = schemaUpdateAbsensiRequest.safeParse({ kehadiran: "Hadir", tanggal: "2026-07-16" });
+    const result = schemaUpdateAbsensiRequest.safeParse({
+      kehadiran: "Hadir",
+      tanggal: "2026-07-16",
+    });
     expect(result.success).toBe(true);
     expect(result.success && "pesertaMagangId" in result.data).toBe(false);
   });

@@ -18,15 +18,28 @@ const ACCENT_CLASS: Record<NonNullable<MiniStatCardProps["accent"]>, string> = {
   red: "bg-red-50 text-red-600",
 };
 
-export function MiniStatCard({ icon, label, value, accent = "primary", loading = false }: MiniStatCardProps) {
+export function MiniStatCard({
+  icon,
+  label,
+  value,
+  accent = "primary",
+  loading = false,
+}: MiniStatCardProps) {
   return (
     <Card>
       <CardContent className="flex flex-col gap-3">
-        <div className={cn("flex size-9 items-center justify-center rounded-full", ACCENT_CLASS[accent])}>
+        <div
+          className={cn(
+            "flex size-9 items-center justify-center rounded-full",
+            ACCENT_CLASS[accent]
+          )}
+        >
           <Icon icon={icon} className="size-4.5" />
         </div>
         <div>
-          <p className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">{label}</p>
+          <p className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
+            {label}
+          </p>
           {loading ? (
             <Skeleton className="mt-1.5 h-7 w-12" />
           ) : (

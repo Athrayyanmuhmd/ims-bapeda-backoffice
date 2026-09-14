@@ -22,16 +22,23 @@ export const queryKeys = {
     recent: () => [...queryKeys.absensi.all, "recent"] as const,
     rosterByDate: (date: string) => [...queryKeys.absensi.all, "roster", date] as const,
     byPeserta: (pesertaId: string) => [...queryKeys.absensi.all, "by-peserta", pesertaId] as const,
+    // Distinct from byPeserta on purpose: the printable laporan needs the full
+    // history (rows:500), byPeserta is the rows:10 preview on the detail page.
+    // Same key for both would hand one page the other's truncated data.
+    report: (pesertaId: string) => [...queryKeys.absensi.all, "report", pesertaId] as const,
   },
   jurnal: {
     all: ["jurnal"] as const,
     list: (params: unknown) => [...queryKeys.jurnal.all, "list", params] as const,
     byPeserta: (pesertaId: string) => [...queryKeys.jurnal.all, "by-peserta", pesertaId] as const,
+    report: (pesertaId: string) => [...queryKeys.jurnal.all, "report", pesertaId] as const,
   },
   penilaian: {
     all: ["penilaian"] as const,
     list: (params: unknown) => [...queryKeys.penilaian.all, "list", params] as const,
-    byPeserta: (pesertaId: string) => [...queryKeys.penilaian.all, "by-peserta", pesertaId] as const,
+    byPeserta: (pesertaId: string) =>
+      [...queryKeys.penilaian.all, "by-peserta", pesertaId] as const,
+    report: (pesertaId: string) => [...queryKeys.penilaian.all, "report", pesertaId] as const,
   },
   dokumen: {
     all: ["dokumen"] as const,
