@@ -38,8 +38,10 @@ portalApi.interceptors.response.use(
     // revoked or the magang ends, and the session is equally dead either way.
     const status = error.response?.status;
     if ((status === 401 || status === 403) && typeof window !== "undefined") {
+      const url = error.config?.url ?? "";
+      if (url.includes("/login")) return Promise.reject(error);
       await deletePortalSession();
-      window.location.href = "/login?as=peserta";
+      window.location.href = "/login";
     }
     return Promise.reject(error);
   }

@@ -169,7 +169,7 @@ export default function Container({ peserta }: { peserta: TPortalPeserta }) {
   const onLogout = async () => {
     setIsLoggingOut(true);
     await fetch("/api/portal-logout", { method: "GET" });
-    window.location.href = "/login?as=peserta";
+    window.location.href = "/login";
   };
 
   const isBusy = checkInMutation.isPending || checkOutMutation.isPending;

@@ -24,8 +24,12 @@ api.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
     if (error.response?.status === 401 && typeof window !== "undefined") {
-      await deleteSession();
-      window.location.href = "/login";
+      const url = error.config?.url ?? "";
+      // Failed credential checks must not bounce the login page mid-flow.
+      if (!url.includes("/login")) {
+        await deleteSession();
+        window.location.href = "/login";
+      }
     }
     return Promise.reject(error);
   }

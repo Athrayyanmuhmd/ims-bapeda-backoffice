@@ -55,9 +55,7 @@ export async function GET(request: Request) {
     return NextResponse.redirect(url);
   }
 
-  const referer = request.headers.get("referer") ?? "";
-  const target = referer.includes("/portal") ? "/portal/login" : "/login";
-  return NextResponse.redirect(new URL(target, request.url));
+  return NextResponse.redirect(new URL("/login", request.url));
 }
 
 async function portalOwnsPath(token: string, path: string): Promise<boolean> {

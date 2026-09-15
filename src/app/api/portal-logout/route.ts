@@ -10,5 +10,5 @@ export async function GET() {
   cookieStore.delete(portalTokenCookieKey);
   cookieStore.delete(portalPesertaCookieKey);
 
-  return NextResponse.redirect(new URL("/portal/login", process.env.NEXT_PUBLIC_FE_URL));
+  return NextResponse.redirect(new URL("/login", process.env.NEXT_PUBLIC_FE_URL));
 }

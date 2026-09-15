@@ -13,7 +13,7 @@ export default async function Page() {
   const session = await getPortalSession();
 
   if (!session?.accessToken || !session.peserta) {
-    redirect("/portal/login");
+    redirect("/login");
   }
 
   const peserta = JSON.parse(session.peserta) as TPortalPeserta;

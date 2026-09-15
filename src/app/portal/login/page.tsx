@@ -2,5 +2,5 @@
 
 // Bookmark lama /portal/login → satu pintu masuk di /login.
 export default function Page() {
-  redirect("/login?as=peserta");
+  redirect("/login");
 }
