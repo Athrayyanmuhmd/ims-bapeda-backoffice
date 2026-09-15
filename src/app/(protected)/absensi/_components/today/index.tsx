@@ -200,10 +200,15 @@ export default function AbsensiHariIni() {
 
       <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
         {SUMMARY_CONFIG.map((s) => (
-          <Card key={s.key}>
+          <Card
+            key={s.key}
+            className="border-[#E2E8EA] shadow-[0_1px_2px_rgba(15,76,92,0.04)]"
+          >
             <CardContent className="flex items-center justify-between py-4">
-              <span className="text-muted-foreground text-xs font-semibold">{s.label}</span>
-              <span className={cn("font-mono text-2xl font-bold tabular-nums", s.color)}>
+              <span className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
+                {s.label}
+              </span>
+              <span className={cn("font-display text-2xl font-semibold tabular-nums", s.color)}>
                 {summary[s.key]}
               </span>
             </CardContent>
@@ -211,12 +216,13 @@ export default function AbsensiHariIni() {
         ))}
       </div>
 
-      <div className="flex flex-wrap items-center gap-2.5">
-        <InputGroup className="max-w-sm flex-1">
+      <div className="flex flex-wrap items-center gap-2.5 rounded-xl border border-[#E2E8EA] bg-white p-3 shadow-[0_1px_2px_rgba(15,76,92,0.04)]">
+        <InputGroup className="max-w-sm flex-1 border-transparent bg-[#F7FAFB]">
           <InputGroupInput
             placeholder="Cari nama peserta..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
+            className="bg-transparent"
           />
           <InputGroupAddon align="inline-start">
             <Icon icon="lucide:search" />

@@ -40,7 +40,7 @@ export default async function Layout({ children }: TLayoutProps) {
               production-only React #300 (hook-count mismatch) on every
               navigation. Dropped both — revisit with AnimatePresence if the
               fade transition comes back, test a full nav cycle before it ships. */}
-          <section className="flex max-w-full min-w-0 flex-1 flex-col gap-4 overflow-x-hidden bg-[#FAFAFA] p-4">
+          <section className="flex max-w-full min-w-0 flex-1 flex-col gap-5 overflow-x-hidden bg-[#F4F7F8] p-4 sm:p-6">
             {children}
           </section>
         </SidebarInset>

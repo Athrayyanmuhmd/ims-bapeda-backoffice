@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 
 export default function CtaBanner() {
   return (
-    <Card className="bg-primary border-none">
+    <Card className="bg-primary border-none shadow-[0_8px_24px_-12px_rgba(23,94,134,0.55)]">
       <CardContent className="relative overflow-hidden">
         <Icon
           icon="mdi:calendar-check-outline"

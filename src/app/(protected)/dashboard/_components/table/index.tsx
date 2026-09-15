@@ -19,7 +19,7 @@ export default function TableAttendance() {
   const entries = (data?.content?.entries ?? []).slice(0, 8);
 
   return (
-    <Card className="h-full">
+    <Card className="h-full border-[#E2E8EA] shadow-[0_1px_2px_rgba(15,76,92,0.04)]">
       <CardHeader>
         <CardTitle>Absensi Terbaru</CardTitle>
         <CardAction>

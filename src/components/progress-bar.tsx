@@ -1,12 +1,11 @@
 "use client";
 
 import { BProgress } from "@bprogress/core";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 
 export function ProgressBar() {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
 
   useEffect(() => {
     BProgress.configure({
@@ -70,7 +69,7 @@ export function ProgressBar() {
         style.parentNode.removeChild(style);
       }
     };
-  }, [pathname, searchParams]);
+  }, [pathname]);
 
   return null;
 }

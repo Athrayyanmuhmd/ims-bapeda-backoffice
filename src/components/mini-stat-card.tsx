@@ -26,11 +26,11 @@ export function MiniStatCard({
   loading = false,
 }: MiniStatCardProps) {
   return (
-    <Card>
+    <Card className="border-[#E2E8EA] shadow-[0_1px_2px_rgba(15,76,92,0.04)]">
       <CardContent className="flex flex-col gap-3">
         <div
           className={cn(
-            "flex size-9 items-center justify-center rounded-full",
+            "flex size-9 items-center justify-center rounded-xl",
             ACCENT_CLASS[accent]
           )}
         >

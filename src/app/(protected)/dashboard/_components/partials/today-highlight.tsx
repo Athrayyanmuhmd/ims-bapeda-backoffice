@@ -29,7 +29,7 @@ export default function TodayHighlight() {
   const hadirCount = todayRecords.filter((a) => a.kehadiran === "Hadir").length;
 
   return (
-    <Card className="h-full">
+    <Card className="h-full border-[#E2E8EA] shadow-[0_1px_2px_rgba(15,76,92,0.04)]">
       <CardHeader>
         <CardTitle>Absensi Hari Ini</CardTitle>
         <CardAction>

@@ -7,9 +7,10 @@ import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { DataTable } from "@/components/data-table";
+import { ListPageCard } from "@/components/list-page-card";
+import { ListToolbar } from "@/components/list-toolbar";
+import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
 import { queryKeys } from "@/constants/query-keys";
 import { useQueryBuilder } from "@/hooks/use-query-builder";
 import { services } from "@/services";
@@ -61,34 +62,29 @@ export default function TableManajemenInstansi() {
   const totalPage = data?.content?.totalPage ?? 1;
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Manajemen Instansi</CardTitle>
-        <CardDescription>Sekolah/kampus asal peserta magang.</CardDescription>
-      </CardHeader>
+    <div className="flex flex-col gap-5">
+      <PageHeader
+        eyebrow="Administrasi"
+        title="Manajemen Instansi"
+        description="Sekolah/kampus asal peserta magang."
+      />
 
-      <CardContent className="flex flex-col gap-4">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <InputGroup className="w-full sm:max-w-sm">
-            <InputGroupInput
-              placeholder="Cari nama instansi..."
-              onChange={(e) => debouncedSearch(e.target.value)}
-            />
-            <InputGroupAddon align="inline-start">
-              <Icon icon="lucide:search" />
-            </InputGroupAddon>
-          </InputGroup>
-
-          <Button
-            onClick={() => {
-              setSelected(null);
-              setFormOpen(true);
-            }}
-          >
-            <Icon icon="lucide:plus" />
-            Tambah Instansi
-          </Button>
-        </div>
+      <ListPageCard>
+        <ListToolbar
+          searchPlaceholder="Cari nama instansi..."
+          onSearch={debouncedSearch}
+          action={
+            <Button
+              onClick={() => {
+                setSelected(null);
+                setFormOpen(true);
+              }}
+            >
+              <Icon icon="lucide:plus" />
+              Tambah Instansi
+            </Button>
+          }
+        />
 
         <DataTable
           pagination={{
@@ -102,7 +98,7 @@ export default function TableManajemenInstansi() {
           totalData={totalData}
           loading={isFetching}
         />
-      </CardContent>
+      </ListPageCard>
 
       <FormDialog open={formOpen} onOpenChange={setFormOpen} instansi={selected} />
 
@@ -114,6 +110,6 @@ export default function TableManajemenInstansi() {
         onConfirm={() => deleteTarget && deleteMutation.mutate(deleteTarget.id)}
         isLoading={deleteMutation.isPending}
       />
-    </Card>
+    </div>
   );
 }

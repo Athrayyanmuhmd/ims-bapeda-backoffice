@@ -39,7 +39,7 @@ function Section({
   children: React.ReactNode | null;
 }) {
   return (
-    <Card>
+    <Card className="border-[#E2E8EA] shadow-[0_1px_2px_rgba(15,76,92,0.04)]">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-base">
           <Icon icon={icon} className="size-4" />
@@ -145,9 +145,9 @@ export default function Container({ id }: { id: string }) {
     .toUpperCase();
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between gap-3">
-        <Button asChild variant="outline" size="sm" className="w-fit">
+    <div className="flex flex-col gap-5">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <Button asChild variant="outline" size="sm" className="w-fit border-[#CFD8DB]">
           <Link href="/peserta-magang">
             <Icon icon="lucide:arrow-left" /> Kembali
           </Link>
@@ -160,15 +160,15 @@ export default function Container({ id }: { id: string }) {
         </Button>
       </div>
 
-      <Card>
+      <Card className="border-[#E2E8EA] shadow-[0_1px_2px_rgba(15,76,92,0.04)]">
         <CardContent className="flex flex-col gap-6 pt-6">
           <div className="flex flex-wrap items-center gap-4">
-            <div className="bg-accent flex size-14 shrink-0 items-center justify-center rounded-xl text-lg font-bold">
+            <div className="bg-primary/10 text-primary flex size-14 shrink-0 items-center justify-center rounded-xl font-display text-lg font-bold">
               {initials}
             </div>
             <div className="flex-1">
               <div className="flex flex-wrap items-center gap-2.5">
-                <h1 className="text-xl font-bold">{peserta.name}</h1>
+                <h1 className="font-display text-xl font-semibold tracking-tight">{peserta.name}</h1>
                 <Badge
                   label={peserta.status}
                   className={STATUS_MAGANG_BADGE_CLASS[peserta.status]}

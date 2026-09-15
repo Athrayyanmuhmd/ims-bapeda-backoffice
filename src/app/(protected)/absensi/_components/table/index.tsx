@@ -7,9 +7,9 @@ import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { DataTable } from "@/components/data-table";
+import { ListPageCard } from "@/components/list-page-card";
+import { ListToolbar } from "@/components/list-toolbar";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
 import { queryKeys } from "@/constants/query-keys";
 import { useQueryBuilder } from "@/hooks/use-query-builder";
 import { services } from "@/services";
@@ -62,50 +62,38 @@ export default function TableAbsensi() {
   const totalPage = data?.content?.totalPage ?? 1;
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Riwayat Absensi</CardTitle>
-        <CardDescription>Cari dan koreksi data absensi yang sudah tercatat.</CardDescription>
-      </CardHeader>
+    <ListPageCard>
+      <ListToolbar
+        searchPlaceholder="Cari nama peserta..."
+        onSearch={debouncedSearch}
+        action={
+          <div className="flex flex-wrap items-center gap-2">
+            <ExportCsv />
+            <Button
+              onClick={() => {
+                setSelected(null);
+                setFormOpen(true);
+              }}
+            >
+              <Icon icon="lucide:plus" />
+              Tambah Absensi
+            </Button>
+          </div>
+        }
+      />
 
-      <CardContent className="flex flex-col gap-4">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <InputGroup className="w-full sm:max-w-sm">
-            <InputGroupInput
-              placeholder="Cari nama peserta..."
-              onChange={(e) => debouncedSearch(e.target.value)}
-            />
-            <InputGroupAddon align="inline-start">
-              <Icon icon="lucide:search" />
-            </InputGroupAddon>
-          </InputGroup>
-
-          <Button
-            onClick={() => {
-              setSelected(null);
-              setFormOpen(true);
-            }}
-          >
-            <Icon icon="lucide:plus" />
-            Tambah Absensi
-          </Button>
-        </div>
-
-        <ExportCsv />
-
-        <DataTable
-          pagination={{
-            currentPage: page,
-            totalPages: totalPage,
-            onPageChange: setPage,
-            isFetching,
-          }}
-          columns={columns}
-          data={entries}
-          totalData={totalData}
-          loading={isFetching}
-        />
-      </CardContent>
+      <DataTable
+        pagination={{
+          currentPage: page,
+          totalPages: totalPage,
+          onPageChange: setPage,
+          isFetching,
+        }}
+        columns={columns}
+        data={entries}
+        totalData={totalData}
+        loading={isFetching}
+      />
 
       <FormDialog open={formOpen} onOpenChange={setFormOpen} absensi={selected} />
 
@@ -117,6 +105,6 @@ export default function TableAbsensi() {
         onConfirm={() => deleteTarget && deleteMutation.mutate(deleteTarget.id)}
         isLoading={deleteMutation.isPending}
       />
-    </Card>
+    </ListPageCard>
   );
 }
