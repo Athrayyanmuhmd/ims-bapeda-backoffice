@@ -34,6 +34,10 @@ const schemaPesertaMagang = z.object({
   // Whether the peserta can log into the portal. The API reports this as a
   // boolean; the password hash is never sent.
   hasPortalAccount: z.boolean().optional(),
+  // Detail-only: working days in magang period (weekends + national holidays out).
+  // hariKerjaPeriode = mulai..min(today, selesai); totalHariKerja = full mulai..selesai.
+  hariKerjaPeriode: z.number().nullable().optional(),
+  totalHariKerja: z.number().nullable().optional(),
   createdAt: z.string(),
   updatedAt: z.string(),
 });

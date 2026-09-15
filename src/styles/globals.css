@@ -129,11 +129,13 @@
 }
 
 /* Printing the laporan magang: full A4 width. Hide chrome with display:none
-   (visibility:hidden alone still reserves sidebar width and shrinks the sheet). */
+   (visibility:hidden alone still reserves sidebar width and shrinks the sheet).
+   @page margin:0 so Chrome has no band for date/URL/page headers & footers;
+   real margins live on [data-print-area] padding instead. */
 @media print {
   @page {
     size: A4 portrait;
-    margin: 18mm 16mm;
+    margin: 0;
   }
 
   html,
@@ -151,7 +153,6 @@
   [data-slot="sidebar-gap"],
   [data-slot="sidebar-container"],
   [data-sidebar],
-  header,
   [data-print-hide] {
     display: none !important;
   }
@@ -190,9 +191,16 @@
     width: 100% !important;
     max-width: none !important;
     margin: 0 !important;
-    padding: 0 !important;
+    /* Content inset replaces @page margin (keeps A4 readable, no browser chrome). */
+    padding: 18mm 16mm !important;
     box-shadow: none !important;
     background: white !important;
+  }
+
+  /* Keep logo ink on the sheet even if "Background graphics" is off. */
+  [data-print-area] img {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
   }
 
   /* Keep table rows and signature blocks from splitting across pages. */

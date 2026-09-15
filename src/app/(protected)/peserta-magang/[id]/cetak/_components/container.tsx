@@ -8,7 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { queryKeys } from "@/constants/query-keys";
 import { services } from "@/services";
 import { KEHADIRAN_OPTIONS } from "@/services/absensi/types";
-import { fmtTanggalLong, fmtTanggalShort, todayInApp } from "@/utils/datetime";
+import { fmtTanggalLong, fmtTanggalShort, hariKerjaEfektif, todayInApp } from "@/utils/datetime";
 
 // Full history, not the 10-row preview the detail page shows.
 // ponytail: one capped request per section instead of paging. A single magang
@@ -90,9 +90,13 @@ export default function Container({ id }: { id: string }) {
     ).length,
   }));
 
-  const totalHari = absensi.length;
   const totalHadir = rekap.find((r) => r.kehadiran === "Hadir")?.total ?? 0;
-  const persenKehadiran = totalHari > 0 ? Math.round((totalHadir / totalHari) * 100) : 0;
+  // Prefer API (includes national holidays); fall back to weekday-only client count.
+  const hariKerja =
+    peserta.hariKerjaPeriode ??
+    hariKerjaEfektif(peserta.tanggalMulai, peserta.tanggalSelesai);
+  const persenKehadiran =
+    hariKerja > 0 ? Math.min(100, Math.round((totalHadir / hariKerja) * 100)) : 0;
 
   const rataNilai =
     penilaian.length > 0
@@ -101,28 +105,72 @@ export default function Container({ id }: { id: string }) {
 
   const periode = `${fmtDate(peserta.tanggalMulai)} s.d. ${fmtDate(peserta.tanggalSelesai)}`;
 
+  function handlePrint() {
+    // Browser print chrome uses document.title for the header label ("SIMAGANG").
+    const previousTitle = document.title;
+    document.title = " ";
+    const restore = () => {
+      document.title = previousTitle;
+      window.removeEventListener("afterprint", restore);
+    };
+    window.addEventListener("afterprint", restore);
+    window.print();
+  }
+
   return (
     <div className="flex flex-col gap-4 print:gap-0">
       {/* Screen-only controls — also display:none via [data-print-hide]. */}
-      <div data-print-hide className="flex items-center justify-between print:hidden">
+      <div data-print-hide className="flex flex-col gap-2 print:hidden sm:flex-row sm:items-center sm:justify-between">
         <Button asChild variant="outline" size="sm">
           <Link href={`/peserta-magang/${id}`}>
             <Icon icon="lucide:arrow-left" /> Kembali
           </Link>
         </Button>
-        <Button size="sm" onClick={() => window.print()}>
+        <Button size="sm" onClick={handlePrint}>
           <Icon icon="lucide:printer" /> Cetak / Simpan PDF
         </Button>
       </div>
 
       <div
         data-print-area
-        className="mx-auto w-full max-w-[210mm] bg-white p-8 text-black shadow-sm print:mx-0 print:max-w-none print:p-0 print:shadow-none"
+        className="mx-auto w-full max-w-[210mm] bg-white p-8 text-black shadow-sm print:mx-0 print:max-w-none print:shadow-none"
       >
-        <header className="border-b-2 border-black pb-3 text-center">
-          <h1 className="text-lg font-bold tracking-wide uppercase">Laporan Kegiatan Magang</h1>
-          <p className="text-sm">Badan Perencanaan Pembangunan Daerah (BAPEDA)</p>
-        </header>
+        {/* Kop surat perangkat daerah — format naskah dinas Kota Banda Aceh. */}
+        <div className="border-b-[3px] border-double border-black pb-3">
+          <div className="flex items-start gap-4">
+            <img
+              src="/logo.png"
+              alt="Logo Bapeda"
+              width={88}
+              height={88}
+              className="mt-0.5 size-[72px] shrink-0 object-contain sm:size-[88px] print:size-[22mm]"
+            />
+            <div className="min-w-0 flex-1 text-center">
+              <p className="text-[13px] font-bold tracking-[0.12em] uppercase sm:text-sm">
+                Pemerintah Kota Banda Aceh
+              </p>
+              <p className="mt-0.5 text-base leading-tight font-bold tracking-wide uppercase sm:text-lg">
+                Badan Perencanaan Pembangunan Daerah
+              </p>
+              <p className="mt-1.5 text-[11px] leading-snug sm:text-xs">
+                Jalan Nyak Adam Kamil No. 19, Neusu Jaya, Baiturrahman, Kota Banda Aceh
+              </p>
+              <p className="text-[11px] leading-snug sm:text-xs">
+                Telp. (0651) 32398 &nbsp;·&nbsp; Fax. (0651) 32397 &nbsp;·&nbsp; Email:
+                bappeda@bandaacehkota.go.id
+              </p>
+            </div>
+            {/* Mirror spacer so the text block stays visually centered with the logo. */}
+            <div className="hidden size-[72px] shrink-0 sm:block print:block print:size-[22mm]" aria-hidden />
+          </div>
+        </div>
+
+        <div className="mt-5 mb-1 text-center">
+          <h1 className="text-base font-bold tracking-wide uppercase sm:text-lg">
+            Laporan Kegiatan Magang
+          </h1>
+          <p className="text-xs text-gray-700 sm:text-sm">Sistem Manajemen Magang (SIMAGANG)</p>
+        </div>
 
         <section className="mt-5">
           <h2 className="mb-2 text-sm font-bold uppercase">A. Identitas Peserta</h2>
@@ -153,7 +201,7 @@ export default function Container({ id }: { id: string }) {
                   </th>
                 ))}
                 <th className="border border-gray-400 px-2 py-1 text-left font-semibold">
-                  Total Hari
+                  Hari Kerja
                 </th>
                 <th className="border border-gray-400 px-2 py-1 text-left font-semibold">
                   % Kehadiran
@@ -167,13 +215,17 @@ export default function Container({ id }: { id: string }) {
                     {r.total}
                   </td>
                 ))}
-                <td className="border border-gray-400 px-2 py-1 tabular-nums">{totalHari}</td>
+                <td className="border border-gray-400 px-2 py-1 tabular-nums">{hariKerja}</td>
                 <td className="border border-gray-400 px-2 py-1 tabular-nums">
                   {persenKehadiran}%
                 </td>
               </tr>
             </tbody>
           </table>
+          <p className="mt-1.5 text-[11px] text-gray-600">
+            Hari kerja = hari kerja efektif (Sen–Jum, non-libur nasional) dari tanggal mulai s.d.
+            hari ini atau tanggal selesai. % kehadiran = Hadir ÷ Hari Kerja.
+          </p>
         </section>
 
         <section className="mt-5">
