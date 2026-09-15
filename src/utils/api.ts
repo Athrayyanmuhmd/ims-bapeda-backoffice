@@ -8,6 +8,13 @@ export const api = _axios.create({
 });
 
 api.interceptors.request.use(async (config) => {
+  const url = config.url ?? "";
+  // Login must not touch the session server-action — a failed cookie read there
+  // would surface as a bogus "server error" before credentials are even checked.
+  if (url.includes("/login") || url.includes("/verify-token")) {
+    return config;
+  }
+
   const session = await getSession();
 
   if (session?.accessToken) {
@@ -37,6 +44,15 @@ api.interceptors.response.use(
 
 export const getError = (error: AxiosError | unknown) => {
   if (_axios.isAxiosError(error)) {
+    if (!error.response) {
+      return {
+        content: null,
+        message: "Tidak dapat terhubung ke server. Cek koneksi atau status API.",
+        errors: [],
+        status: undefined,
+      };
+    }
+
     return {
       content: error.response?.data?.content || null,
       message: error.response?.data?.message || "Something went wrong",

@@ -22,6 +22,11 @@ import type {
 const portalApi = _axios.create({ baseURL: `${env.NEXT_PUBLIC_BE_URL}/portal` });
 
 portalApi.interceptors.request.use(async (config) => {
+  const url = config.url ?? "";
+  if (url.includes("/login")) {
+    return config;
+  }
+
   const session = await getPortalSession();
 
   if (session?.accessToken) {
