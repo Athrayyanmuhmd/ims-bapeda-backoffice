@@ -36,7 +36,7 @@ export default function AttendanceSummary() {
   ];
 
   return (
-    <Card className="h-full border-[#E2E8EA] shadow-[0_1px_2px_rgba(15,76,92,0.04)]">
+    <Card className="border-[#E2E8EA] shadow-[0_1px_2px_rgba(15,76,92,0.04)]">
       <CardHeader>
         <CardTitle>Ringkasan Kehadiran</CardTitle>
         <CardAction>
@@ -60,7 +60,7 @@ export default function AttendanceSummary() {
               ))}
             </div>
 
-            <div className="grid grid-cols-4 gap-2">
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
               {[
                 { label: "Aktif", value: totalAktif },
                 { label: "Hadir", value: hadir },

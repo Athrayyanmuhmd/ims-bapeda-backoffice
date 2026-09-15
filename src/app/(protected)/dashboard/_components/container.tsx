@@ -6,7 +6,6 @@ import AttendanceSummary from "./partials/attendance-summary";
 import CtaBanner from "./partials/cta-banner";
 import EndingSoon from "./partials/ending-soon";
 import MiniStats from "./partials/mini-stats";
-import TodayHighlight from "./partials/today-highlight";
 import TableAttendance from "./table";
 
 export default function Container() {
@@ -21,12 +20,7 @@ export default function Container() {
         icon="material-symbols:dashboard-outline"
       />
 
-      <div className="grid min-w-0 gap-5 lg:grid-cols-3 lg:items-stretch">
-        <div className="flex h-full min-w-0 flex-col lg:col-span-2">
-          <TodayHighlight />
-        </div>
-        <AttendanceSummary />
-      </div>
+      <AttendanceSummary />
 
       <div className="grid min-w-0 gap-5 lg:grid-cols-3 lg:items-stretch">
         <div className="flex h-full min-w-0 flex-col lg:col-span-2">
