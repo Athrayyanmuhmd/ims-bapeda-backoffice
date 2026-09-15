@@ -37,16 +37,23 @@ function Section({
   title,
   children,
   action,
+  className,
 }: {
   eyebrow: string;
   title: string;
   children: React.ReactNode;
   action?: React.ReactNode;
+  className?: string;
 }) {
   return (
-    <section className="rounded-2xl border border-[#E4E0D8] bg-[#FFFEFB] p-4 shadow-[0_1px_0_rgba(15,76,92,0.04)] sm:p-5">
-      <div className="mb-4 flex items-start justify-between gap-3">
-        <div>
+    <section
+      className={cn(
+        "rounded-xl border border-[#E2E8EA] bg-white p-4 shadow-[0_1px_2px_rgba(15,76,92,0.04)] sm:p-5",
+        className
+      )}
+    >
+      <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
+        <div className="min-w-0">
           <p className="text-[11px] font-semibold tracking-[0.14em] text-[#0F4C5C]/70 uppercase">
             {eyebrow}
           </p>
@@ -61,17 +68,11 @@ function Section({
   );
 }
 
-function StatusChip({
-  label,
-  tone,
-}: {
-  label: string;
-  tone: string;
-}) {
+function StatusChip({ label, tone }: { label: string; tone: string }) {
   return (
     <span
       className={cn(
-        "inline-flex h-7 min-w-[4.5rem] items-center justify-center rounded-md px-2.5 text-xs font-semibold",
+        "inline-flex h-7 min-w-[4.5rem] items-center justify-center rounded-md px-2.5 text-xs font-semibold whitespace-nowrap",
         tone
       )}
     >
@@ -82,9 +83,9 @@ function StatusChip({
 
 function TimeBlock({ label, value }: { label: string; value: string }) {
   return (
-    <div className="min-w-0 flex-1 rounded-xl bg-[#F3F0EA] px-3 py-3">
+    <div className="min-w-0 flex-1 rounded-lg border border-[#E8EEF0] bg-[#F7FAFB] px-3 py-3 sm:px-4">
       <p className="text-[11px] font-medium tracking-wide text-[#5C6B72] uppercase">{label}</p>
-      <p className="mt-1 font-display text-2xl font-semibold tabular-nums tracking-tight text-[#0F4C5C]">
+      <p className="mt-1 font-display text-xl font-semibold tabular-nums tracking-tight text-[#0F4C5C] sm:text-2xl">
         {value}
       </p>
     </div>
@@ -209,7 +210,7 @@ export default function Container({ peserta }: { peserta: TPortalPeserta }) {
     ? STATUS_TONE.PENDING
     : today?.kehadiran
       ? (STATUS_TONE[today.kehadiran] ?? "bg-[#F3F0EA] text-[#5C6B72]")
-      : "bg-[#F3F0EA] text-[#5C6B72]";
+      : "bg-[#EEF2F3] text-[#5C6B72]";
 
   const initials = profile.name
     .split(" ")
@@ -218,42 +219,57 @@ export default function Container({ peserta }: { peserta: TPortalPeserta }) {
     .join("")
     .toUpperCase();
 
+  const metaLine = [profile.divisi, profile.instansi, profile.nim ? `NIM ${profile.nim}` : null]
+    .filter(Boolean)
+    .join(" · ");
+
   return (
-    <div className="min-h-screen bg-[radial-gradient(ellipse_at_top,_#E7F0F2_0%,_#F7F4EF_45%,_#F3EFE7_100%)]">
-      <main className="mx-auto flex w-full max-w-2xl flex-col gap-4 px-4 pt-5 pb-28 sm:gap-5 sm:pt-8 sm:pb-10">
-        {/* Identity bar */}
-        <header className="rounded-2xl border border-[#D7E4E7] bg-[#0F4C5C] p-4 text-[#F4FBFC] shadow-[0_12px_40px_-24px_rgba(15,76,92,0.7)] sm:p-5">
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex min-w-0 items-start gap-3">
-              <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-white/10 font-display text-sm font-semibold tracking-wide">
-                {initials}
-              </div>
-              <div className="min-w-0">
-                <p className="text-[11px] font-semibold tracking-[0.16em] text-white/70 uppercase">
-                  Portal Peserta
-                </p>
-                <h1 className="font-display truncate text-xl font-semibold tracking-tight sm:text-2xl">
-                  {profile.name}
-                </h1>
-                <p className="mt-1 truncate text-sm text-white/75">
-                  {[profile.divisi, profile.pembimbingLapangan ? `Pembimbing ${profile.pembimbingLapangan}` : null]
-                    .filter(Boolean)
-                    .join(" · ") || "—"}
-                </p>
-                {(profile.instansi || profile.nim) && (
-                  <p className="mt-0.5 truncate text-xs text-white/60">
-                    {[profile.instansi, profile.nim ? `NIM ${profile.nim}` : null]
-                      .filter(Boolean)
-                      .join(" · ")}
-                  </p>
-                )}
-              </div>
+    <div className="min-h-screen bg-[#F4F7F8]">
+      {/* Enterprise top bar */}
+      <header className="sticky top-0 z-30 border-b border-[#D7E2E5] bg-white/95 backdrop-blur">
+        <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-3 px-4 sm:h-16 sm:px-6 lg:px-8">
+          <div className="flex min-w-0 items-center gap-3 sm:gap-6">
+            <div className="min-w-0">
+              <p className="text-[10px] font-semibold tracking-[0.16em] text-[#0F4C5C]/70 uppercase sm:text-[11px]">
+                SIMAGANG
+              </p>
+              <p className="font-display truncate text-sm font-semibold text-[#0F4C5C] sm:text-base">
+                Portal Peserta
+              </p>
             </div>
-            <div className="flex shrink-0 gap-1.5">
+            <nav className="hidden items-center gap-1 border-l border-[#E2E8EA] pl-4 md:flex lg:pl-6">
+              <Link
+                href="/portal"
+                className="rounded-md bg-[#0F4C5C]/08 px-3 py-1.5 text-sm font-medium text-[#0F4C5C]"
+              >
+                Beranda
+              </Link>
+              <Link
+                href="/portal/kehadiran"
+                className="rounded-md px-3 py-1.5 text-sm font-medium text-[#5C6B72] transition-colors hover:bg-[#F0F4F5] hover:text-[#0F4C5C]"
+              >
+                Kehadiran
+              </Link>
+            </nav>
+          </div>
+
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="hidden min-w-0 text-right lg:block">
+              <p className="truncate text-sm font-medium text-[#1C2A30]">{profile.name}</p>
+              <p className="truncate text-xs text-[#5C6B72]">
+                {profile.pembimbingLapangan
+                  ? `Pembimbing: ${profile.pembimbingLapangan}`
+                  : "Peserta magang"}
+              </p>
+            </div>
+            <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[#0F4C5C] text-xs font-semibold text-white sm:size-10 sm:text-sm">
+              {initials}
+            </div>
+            <div className="flex items-center gap-0.5 border-l border-[#E2E8EA] pl-2">
               <Button
                 variant="ghost"
                 size="icon"
-                className="size-9 text-white hover:bg-white/10 hover:text-white"
+                className="size-9 text-[#5C6B72] hover:bg-[#F0F4F5] hover:text-[#0F4C5C]"
                 onClick={() => setChangePasswordOpen(true)}
                 aria-label="Ganti password"
               >
@@ -262,7 +278,7 @@ export default function Container({ peserta }: { peserta: TPortalPeserta }) {
               <Button
                 variant="ghost"
                 size="icon"
-                className="size-9 text-white hover:bg-white/10 hover:text-white"
+                className="size-9 text-[#5C6B72] hover:bg-[#F0F4F5] hover:text-[#0F4C5C]"
                 onClick={onLogout}
                 disabled={isLoggingOut}
                 aria-label="Keluar"
@@ -271,271 +287,352 @@ export default function Container({ peserta }: { peserta: TPortalPeserta }) {
               </Button>
             </div>
           </div>
-        </header>
+        </div>
+      </header>
 
-        {/* Progress */}
-        {(profile.sisaHariKerja != null || profile.tanggalSelesai) && (
-          <section className="rounded-2xl border border-[#E4E0D8] bg-[#FFFEFB] p-4 sm:p-5">
-            <div className="flex items-end justify-between gap-3">
-              <div>
-                <p className="text-[11px] font-semibold tracking-[0.14em] text-[#0F4C5C]/70 uppercase">
-                  Periode
-                </p>
-                <h2 className="font-display text-lg font-semibold text-[#1C2A30]">
-                  Sisa masa magang
-                </h2>
-                <p className="mt-1 text-xs text-[#5C6B72]">
-                  Berakhir {fmtTanggalLong(profile.tanggalSelesai)}
-                </p>
-              </div>
-              <div className="text-right">
-                <p className="font-display text-3xl font-semibold tabular-nums text-[#0F4C5C]">
-                  {profile.sisaHariKerja ?? "—"}
-                </p>
-                <p className="text-xs text-[#5C6B72]">hari kerja tersisa</p>
-              </div>
-            </div>
-
-            {totalKerja > 0 && (
-              <div className="mt-4">
-                <div className="mb-1.5 flex justify-between text-xs text-[#5C6B72]">
-                  <span>
-                    {selesaiKerja} dari {totalKerja} hari kerja
-                  </span>
-                  <span className="tabular-nums font-medium text-[#0F4C5C]">{progressKerja}%</span>
-                </div>
-                <div
-                  className="h-2 overflow-hidden rounded-full bg-[#E7EFEC]"
-                  role="progressbar"
-                  aria-valuenow={progressKerja}
-                  aria-valuemin={0}
-                  aria-valuemax={100}
-                >
-                  <div
-                    className="h-full rounded-full bg-[#0F4C5C] transition-[width] duration-500"
-                    style={{ width: `${progressKerja}%` }}
-                  />
-                </div>
-              </div>
-            )}
-          </section>
-        )}
-
-        {/* Today attendance — primary job */}
-        <Section
-          eyebrow="Hari ini"
-          title={fmtTanggalLong(`${todayIsoDate()}T00:00:00.000Z`)}
-          action={<StatusChip label={todayStatusLabel} tone={todayStatusTone} />}
-        >
-          {isLoadingToday ? (
-            <Skeleton className="h-28 w-full rounded-xl" />
-          ) : (
-            <div className="flex flex-col gap-4">
-              <div className="flex gap-2.5">
-                <TimeBlock label="Masuk" value={fmtJam(today?.jamMasuk)} />
-                <TimeBlock label="Keluar" value={fmtJam(today?.jamKeluar)} />
-              </div>
-
-              <div className="hidden gap-2 sm:grid sm:grid-cols-3">
-                <Button
-                  className="bg-[#0F4C5C] hover:bg-[#0C3D4A]"
-                  onClick={() => checkInMutation.mutate()}
-                  disabled={isBusy || !canCheckIn}
-                  isLoading={checkInMutation.isPending}
-                >
-                  <Icon icon="mdi:login" /> Check-in
-                </Button>
-                <Button
-                  variant="outline"
-                  className="border-[#CFD8DB]"
-                  onClick={() => checkOutMutation.mutate()}
-                  disabled={isBusy || !canCheckOut}
-                  isLoading={checkOutMutation.isPending}
-                >
-                  <Icon icon="mdi:logout-variant" /> Check-out
-                </Button>
-                <Button
-                  variant="outline"
-                  className="border-[#CFD8DB]"
-                  onClick={() => setIzinOpen(true)}
-                  disabled={isBusy || !canAjukanIzin}
-                >
-                  <Icon icon="mdi:calendar-remove-outline" /> Izin / Sakit
-                </Button>
-              </div>
-
-              {isPendingIzin && (
-                <p className="rounded-xl bg-[#FFF6DB] px-3 py-2 text-xs text-[#8A6A12]">
-                  Pengajuan izin menunggu persetujuan pembimbing.
-                </p>
-              )}
-
-              {today?.keterangan && (
-                <p className="text-xs text-[#5C6B72]">Keterangan: {today.keterangan}</p>
-              )}
-            </div>
-          )}
-        </Section>
-
-        {/* Logbook */}
-        <Section eyebrow="Kegiatan" title="Logbook">
-          <LogbookForm
-            embedded
-            editing={editingLogbook}
-            onCancelEdit={() => setEditingLogbook(null)}
-            onSaved={() => {
-              setEditingLogbook(null);
-              queryClient.invalidateQueries({ queryKey: portalKeys.logbook });
-            }}
-          />
-
-          <div className="mt-5 border-t border-[#EDE8E0] pt-4">
-            <p className="mb-3 text-[11px] font-semibold tracking-[0.12em] text-[#7A8790] uppercase">
-              Entri terakhir
-            </p>
-            {logbook.length === 0 ? (
-              <p className="text-sm text-[#5C6B72]">Belum ada catatan kegiatan.</p>
-            ) : (
-              <ul className="flex flex-col gap-3">
-                {logbook.slice(0, 5).map((entry) => (
-                  <li
-                    key={entry.id}
-                    className="flex items-start justify-between gap-3 rounded-xl bg-[#F7F4EF] px-3 py-3"
-                  >
-                    <div className="min-w-0">
-                      <p className="text-xs font-medium text-[#0F4C5C]">
-                        {fmtTanggal(entry.tanggal)}
-                      </p>
-                      <p className="mt-1 text-sm leading-relaxed whitespace-pre-wrap text-[#1C2A30]">
-                        {entry.kegiatan}
-                      </p>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="shrink-0 text-[#0F4C5C]"
-                      onClick={() => {
-                        setEditingLogbook(entry);
-                        window.scrollTo({ top: 0, behavior: "smooth" });
-                      }}
-                    >
-                      Edit
-                    </Button>
-                  </li>
-                ))}
-              </ul>
-            )}
+      <main className="mx-auto w-full max-w-7xl px-4 py-5 pb-28 sm:px-6 sm:py-8 sm:pb-10 lg:px-8">
+        {/* Page heading */}
+        <div className="mb-5 flex flex-col gap-1 sm:mb-6 sm:flex-row sm:items-end sm:justify-between">
+          <div className="min-w-0">
+            <h1 className="font-display text-2xl font-semibold tracking-tight text-[#1C2A30] sm:text-3xl">
+              Halo, {profile.name.split(" ")[0]}
+            </h1>
+            <p className="mt-1 truncate text-sm text-[#5C6B72]">{metaLine || "—"}</p>
           </div>
-        </Section>
+          <Link
+            href="/portal/kehadiran"
+            className="mt-2 inline-flex items-center gap-1.5 text-sm font-medium text-[#0F4C5C] hover:underline md:hidden"
+          >
+            Lihat kalender kehadiran
+            <Icon icon="mdi:chevron-right" className="size-4" />
+          </Link>
+        </div>
 
-        {/* Attendance history preview */}
-        <Section
-          eyebrow="Riwayat"
-          title="Kehadiran"
-          action={
-            <Button
-              asChild
-              variant="outline"
-              size="sm"
-              className="border-[#CFD8DB] text-[#0F4C5C]"
+        {/* Summary strip */}
+        <div className="mb-4 grid gap-3 sm:mb-5 sm:grid-cols-3">
+          <div className="rounded-xl border border-[#E2E8EA] bg-white px-4 py-3 shadow-[0_1px_2px_rgba(15,76,92,0.04)]">
+            <p className="text-[11px] font-semibold tracking-[0.12em] text-[#7A8790] uppercase">
+              Status hari ini
+            </p>
+            <div className="mt-2">
+              <StatusChip label={todayStatusLabel} tone={todayStatusTone} />
+            </div>
+          </div>
+          <div className="rounded-xl border border-[#E2E8EA] bg-white px-4 py-3 shadow-[0_1px_2px_rgba(15,76,92,0.04)]">
+            <p className="text-[11px] font-semibold tracking-[0.12em] text-[#7A8790] uppercase">
+              Sisa hari kerja
+            </p>
+            <p className="mt-1 font-display text-2xl font-semibold tabular-nums text-[#0F4C5C]">
+              {profile.sisaHariKerja ?? "—"}
+              <span className="ml-1 text-sm font-normal text-[#5C6B72]">hari</span>
+            </p>
+          </div>
+          <div className="rounded-xl border border-[#E2E8EA] bg-white px-4 py-3 shadow-[0_1px_2px_rgba(15,76,92,0.04)]">
+            <p className="text-[11px] font-semibold tracking-[0.12em] text-[#7A8790] uppercase">
+              Progress magang
+            </p>
+            <div className="mt-2 flex items-center gap-3">
+              <div className="h-2 min-w-0 flex-1 overflow-hidden rounded-full bg-[#E7EFEC]">
+                <div
+                  className="h-full rounded-full bg-[#0F4C5C] transition-[width] duration-500"
+                  style={{ width: `${progressKerja}%` }}
+                />
+              </div>
+              <span className="shrink-0 text-sm font-semibold tabular-nums text-[#0F4C5C]">
+                {totalKerja > 0 ? `${progressKerja}%` : "—"}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Primary workspace: 12-col enterprise grid */}
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:gap-5">
+          {/* Left / main */}
+          <div className="flex flex-col gap-4 lg:col-span-7 xl:col-span-8">
+            <Section
+              eyebrow="Hari ini"
+              title={fmtTanggalLong(`${todayIsoDate()}T00:00:00.000Z`)}
+              action={<StatusChip label={todayStatusLabel} tone={todayStatusTone} />}
             >
-              <Link href="/portal/kehadiran">Lihat kehadiran</Link>
-            </Button>
-          }
-        >
-          {absensi.length === 0 ? (
-            <p className="text-sm text-[#5C6B72]">Belum ada catatan kehadiran.</p>
-          ) : (
-            <ul className="flex flex-col">
-              <li className="mb-2 grid grid-cols-[6.5rem_1fr_auto] gap-2 px-1 text-[10px] font-semibold tracking-[0.12em] text-[#7A8790] uppercase">
-                <span>Tanggal</span>
-                <span>Jam</span>
-                <span className="text-right">Status</span>
-              </li>
-              {absensi.slice(0, 5).map((row) => {
-                const pending = row.izinStatus === "PENDING";
-                const label = pending
-                  ? `Menunggu ${row.izinJenis ?? row.kehadiran}`
-                  : row.kehadiran;
-                const tone = pending
-                  ? STATUS_TONE.PENDING
-                  : (STATUS_TONE[row.kehadiran] ?? "bg-[#F3F0EA] text-[#5C6B72]");
+              {isLoadingToday ? (
+                <Skeleton className="h-28 w-full rounded-xl" />
+              ) : (
+                <div className="flex flex-col gap-4">
+                  <div className="flex flex-col gap-2.5 sm:flex-row">
+                    <TimeBlock label="Masuk" value={fmtJam(today?.jamMasuk)} />
+                    <TimeBlock label="Keluar" value={fmtJam(today?.jamKeluar)} />
+                  </div>
 
-                return (
-                  <li
-                    key={row.id}
-                    className="grid grid-cols-[6.5rem_1fr_auto] items-center gap-2 border-t border-[#EDE8E0] py-2.5 first:border-t-0"
-                  >
-                    <span className="text-sm tabular-nums text-[#1C2A30]">
-                      {fmtTanggal(row.tanggal)}
-                    </span>
-                    <span className="truncate text-xs tabular-nums text-[#5C6B72]">
-                      {formatJamRange(row.jamMasuk, row.jamKeluar)}
-                    </span>
-                    <StatusChip label={label} tone={tone} />
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </Section>
-
-        {/* Scores + docs */}
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Section eyebrow="Hasil" title="Penilaian">
-            {penilaian.length === 0 ? (
-              <p className="text-sm text-[#5C6B72]">Belum ada penilaian.</p>
-            ) : (
-              <ul className="flex flex-col gap-3">
-                {penilaian.map((item) => (
-                  <li key={item.id} className="rounded-xl bg-[#F7F4EF] px-3 py-3">
-                    <div className="flex items-baseline justify-between gap-2">
-                      <p className="font-display text-2xl font-semibold tabular-nums text-[#0F4C5C]">
-                        {item.nilai}
-                      </p>
-                      <p className="text-xs text-[#5C6B72]">oleh {item.penilai}</p>
-                    </div>
-                    {item.komentar && (
-                      <p className="mt-1 text-sm text-[#1C2A30]">{item.komentar}</p>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </Section>
-
-          <Section eyebrow="Berkas" title="Dokumen">
-            {dokumen.length === 0 ? (
-              <p className="text-sm text-[#5C6B72]">Belum ada dokumen.</p>
-            ) : (
-              <ul className="flex flex-col gap-2">
-                {dokumen.map((doc) => (
-                  <li
-                    key={doc.id}
-                    className="flex items-center justify-between gap-2 rounded-xl bg-[#F7F4EF] px-3 py-2.5"
-                  >
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-medium text-[#1C2A30]">{doc.namaFile}</p>
-                      <p className="text-[11px] text-[#5C6B72]">
-                        {doc.jenisDokumen.replaceAll("_", " ")} · {fmtTanggal(doc.createdAt)}
-                      </p>
-                    </div>
-                    <Button asChild variant="outline" size="sm" className="shrink-0 border-[#CFD8DB]">
-                      <a href={doc.urlFile} target="_blank" rel="noreferrer">
-                        Buka
-                      </a>
+                  <div className="hidden gap-2 sm:grid sm:grid-cols-3">
+                    <Button
+                      className="bg-[#0F4C5C] hover:bg-[#0C3D4A]"
+                      onClick={() => checkInMutation.mutate()}
+                      disabled={isBusy || !canCheckIn}
+                      isLoading={checkInMutation.isPending}
+                    >
+                      <Icon icon="mdi:login" /> Check-in
                     </Button>
-                  </li>
-                ))}
-              </ul>
+                    <Button
+                      variant="outline"
+                      className="border-[#CFD8DB]"
+                      onClick={() => checkOutMutation.mutate()}
+                      disabled={isBusy || !canCheckOut}
+                      isLoading={checkOutMutation.isPending}
+                    >
+                      <Icon icon="mdi:logout-variant" /> Check-out
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="border-[#CFD8DB]"
+                      onClick={() => setIzinOpen(true)}
+                      disabled={isBusy || !canAjukanIzin}
+                    >
+                      <Icon icon="mdi:calendar-remove-outline" /> Izin / Sakit
+                    </Button>
+                  </div>
+
+                  {isPendingIzin && (
+                    <p className="rounded-lg bg-[#FFF6DB] px-3 py-2 text-xs text-[#8A6A12]">
+                      Pengajuan izin menunggu persetujuan pembimbing.
+                    </p>
+                  )}
+
+                  {today?.keterangan && (
+                    <p className="text-xs text-[#5C6B72]">Keterangan: {today.keterangan}</p>
+                  )}
+                </div>
+              )}
+            </Section>
+
+            <Section eyebrow="Kegiatan" title="Logbook" className="scroll-mt-24">
+              <div id="logbook-form">
+                <LogbookForm
+                  embedded
+                  editing={editingLogbook}
+                  onCancelEdit={() => setEditingLogbook(null)}
+                  onSaved={() => {
+                    setEditingLogbook(null);
+                    queryClient.invalidateQueries({ queryKey: portalKeys.logbook });
+                  }}
+                />
+              </div>
+
+              <div className="mt-5 border-t border-[#EDE8E0] pt-4">
+                <p className="mb-3 text-[11px] font-semibold tracking-[0.12em] text-[#7A8790] uppercase">
+                  Entri terakhir
+                </p>
+                {logbook.length === 0 ? (
+                  <p className="text-sm text-[#5C6B72]">Belum ada catatan kegiatan.</p>
+                ) : (
+                  <ul className="flex flex-col gap-2">
+                    {logbook.slice(0, 6).map((entry) => (
+                      <li
+                        key={entry.id}
+                        className="flex items-start justify-between gap-3 rounded-lg border border-[#EEF2F3] bg-[#F7FAFB] px-3 py-3"
+                      >
+                        <div className="min-w-0">
+                          <p className="text-xs font-medium text-[#0F4C5C]">
+                            {fmtTanggal(entry.tanggal)}
+                          </p>
+                          <p className="mt-1 text-sm leading-relaxed whitespace-pre-wrap text-[#1C2A30]">
+                            {entry.kegiatan}
+                          </p>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="shrink-0 text-[#0F4C5C]"
+                          onClick={() => {
+                            setEditingLogbook(entry);
+                            document
+                              .getElementById("logbook-form")
+                              ?.scrollIntoView({ behavior: "smooth", block: "start" });
+                          }}
+                        >
+                          Edit
+                        </Button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </Section>
+          </div>
+
+          {/* Right rail */}
+          <aside className="flex flex-col gap-4 lg:col-span-5 xl:col-span-4">
+            {(profile.sisaHariKerja != null || profile.tanggalSelesai) && (
+              <Section eyebrow="Periode" title="Masa magang">
+                <div className="flex items-end justify-between gap-3">
+                  <div>
+                    <p className="text-xs text-[#5C6B72]">
+                      Berakhir {fmtTanggalLong(profile.tanggalSelesai)}
+                    </p>
+                    {profile.pembimbingLapangan && (
+                      <p className="mt-1 text-sm text-[#1C2A30]">
+                        Pembimbing:{" "}
+                        <span className="font-medium">{profile.pembimbingLapangan}</span>
+                      </p>
+                    )}
+                  </div>
+                  <div className="text-right">
+                    <p className="font-display text-3xl font-semibold tabular-nums text-[#0F4C5C]">
+                      {profile.sisaHariKerja ?? "—"}
+                    </p>
+                    <p className="text-xs text-[#5C6B72]">hari kerja tersisa</p>
+                  </div>
+                </div>
+
+                {totalKerja > 0 && (
+                  <div className="mt-4">
+                    <div className="mb-1.5 flex justify-between text-xs text-[#5C6B72]">
+                      <span>
+                        {selesaiKerja} dari {totalKerja} hari kerja
+                      </span>
+                      <span className="tabular-nums font-medium text-[#0F4C5C]">
+                        {progressKerja}%
+                      </span>
+                    </div>
+                    <div
+                      className="h-2 overflow-hidden rounded-full bg-[#E7EFEC]"
+                      role="progressbar"
+                      aria-valuenow={progressKerja}
+                      aria-valuemin={0}
+                      aria-valuemax={100}
+                    >
+                      <div
+                        className="h-full rounded-full bg-[#0F4C5C] transition-[width] duration-500"
+                        style={{ width: `${progressKerja}%` }}
+                      />
+                    </div>
+                  </div>
+                )}
+              </Section>
             )}
-          </Section>
+
+            <Section
+              eyebrow="Riwayat"
+              title="Kehadiran"
+              action={
+                <Button
+                  asChild
+                  variant="outline"
+                  size="sm"
+                  className="border-[#CFD8DB] text-[#0F4C5C]"
+                >
+                  <Link href="/portal/kehadiran">Kalender</Link>
+                </Button>
+              }
+            >
+              {absensi.length === 0 ? (
+                <p className="text-sm text-[#5C6B72]">Belum ada catatan kehadiran.</p>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full min-w-[18rem] text-left text-sm">
+                    <thead>
+                      <tr className="border-b border-[#EDE8E0] text-[10px] font-semibold tracking-[0.12em] text-[#7A8790] uppercase">
+                        <th className="pb-2 pr-2 font-semibold">Tanggal</th>
+                        <th className="pb-2 pr-2 font-semibold">Jam</th>
+                        <th className="pb-2 text-right font-semibold">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {absensi.slice(0, 6).map((row) => {
+                        const pending = row.izinStatus === "PENDING";
+                        const label = pending
+                          ? `Menunggu ${row.izinJenis ?? row.kehadiran}`
+                          : row.kehadiran;
+                        const tone = pending
+                          ? STATUS_TONE.PENDING
+                          : (STATUS_TONE[row.kehadiran] ?? "bg-[#EEF2F3] text-[#5C6B72]");
+
+                        return (
+                          <tr key={row.id} className="border-b border-[#F0F3F4] last:border-0">
+                            <td className="py-2.5 pr-2 tabular-nums text-[#1C2A30]">
+                              {fmtTanggal(row.tanggal)}
+                            </td>
+                            <td className="max-w-[7rem] truncate py-2.5 pr-2 text-xs tabular-nums text-[#5C6B72] sm:max-w-none">
+                              {formatJamRange(row.jamMasuk, row.jamKeluar)}
+                            </td>
+                            <td className="py-2.5 text-right">
+                              <StatusChip label={label} tone={tone} />
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </Section>
+
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
+              <Section eyebrow="Hasil" title="Penilaian">
+                {penilaian.length === 0 ? (
+                  <p className="text-sm text-[#5C6B72]">Belum ada penilaian.</p>
+                ) : (
+                  <ul className="flex flex-col gap-3">
+                    {penilaian.map((item) => (
+                      <li
+                        key={item.id}
+                        className="rounded-lg border border-[#EEF2F3] bg-[#F7FAFB] px-3 py-3"
+                      >
+                        <div className="flex items-baseline justify-between gap-2">
+                          <p className="font-display text-2xl font-semibold tabular-nums text-[#0F4C5C]">
+                            {item.nilai}
+                          </p>
+                          <p className="text-xs text-[#5C6B72]">oleh {item.penilai}</p>
+                        </div>
+                        {item.komentar && (
+                          <p className="mt-1 text-sm text-[#1C2A30]">{item.komentar}</p>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </Section>
+
+              <Section eyebrow="Berkas" title="Dokumen">
+                {dokumen.length === 0 ? (
+                  <p className="text-sm text-[#5C6B72]">Belum ada dokumen.</p>
+                ) : (
+                  <ul className="flex flex-col gap-2">
+                    {dokumen.map((doc) => (
+                      <li
+                        key={doc.id}
+                        className="flex items-center justify-between gap-2 rounded-lg border border-[#EEF2F3] bg-[#F7FAFB] px-3 py-2.5"
+                      >
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-medium text-[#1C2A30]">
+                            {doc.namaFile}
+                          </p>
+                          <p className="text-[11px] text-[#5C6B72]">
+                            {doc.jenisDokumen.replaceAll("_", " ")} · {fmtTanggal(doc.createdAt)}
+                          </p>
+                        </div>
+                        <Button
+                          asChild
+                          variant="outline"
+                          size="sm"
+                          className="shrink-0 border-[#CFD8DB]"
+                        >
+                          <a href={doc.urlFile} target="_blank" rel="noreferrer">
+                            Buka
+                          </a>
+                        </Button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </Section>
+            </div>
+          </aside>
         </div>
       </main>
 
       {/* Mobile action dock */}
-      <div className="fixed inset-x-0 bottom-0 z-20 border-t border-[#D7E4E7] bg-[#FFFEFB]/95 p-3 backdrop-blur sm:hidden">
-        <div className="mx-auto grid max-w-2xl grid-cols-3 gap-2">
+      <div className="fixed inset-x-0 bottom-0 z-20 border-t border-[#D7E2E5] bg-white/95 p-3 backdrop-blur sm:hidden">
+        <div className="mx-auto grid max-w-lg grid-cols-3 gap-2">
           <Button
             className="bg-[#0F4C5C] hover:bg-[#0C3D4A]"
             onClick={() => checkInMutation.mutate()}

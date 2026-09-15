@@ -77,7 +77,6 @@ export default function KehadiranCalendar({ peserta }: { peserta: TPortalPeserta
 
   const monthStart = cursor.startOf("month");
   const monthEnd = cursor.endOf("month");
-  // Luxon weekday: Mon=1 … Sun=7 → grid offset 0…6 with Monday first
   const lead = monthStart.weekday - 1;
   const cells: (DateTime | null)[] = [];
   for (let i = 0; i < lead; i++) cells.push(null);
@@ -107,200 +106,234 @@ export default function KehadiranCalendar({ peserta }: { peserta: TPortalPeserta
   }, [absensi, cursor]);
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(ellipse_at_top,_#E7F0F2_0%,_#F7F4EF_45%,_#F3EFE7_100%)]">
-      <main className="mx-auto flex w-full max-w-2xl flex-col gap-4 px-4 pt-5 pb-10 sm:pt-8">
-        <header className="flex items-center gap-3">
-          <Button asChild variant="outline" size="icon" className="border-[#CFD8DB]">
-            <Link href="/portal" aria-label="Kembali">
-              <Icon icon="mdi:arrow-left" className="size-5" />
-            </Link>
-          </Button>
-          <div className="min-w-0">
-            <h1 className="font-display text-xl font-semibold tracking-tight text-[#1C2A30]">
-              Kalender kehadiran
-            </h1>
-          </div>
-        </header>
-
-        <section className="rounded-2xl border border-[#E4E0D8] bg-[#FFFEFB] p-4 sm:p-5">
-          <div className="mb-4 flex items-center justify-between gap-2">
-            <Button
-              variant="outline"
-              size="icon"
-              className="border-[#CFD8DB]"
-              disabled={!canPrev}
-              onClick={() => setCursor((m) => m.minus({ months: 1 }))}
-              aria-label="Bulan sebelumnya"
-            >
-              <Icon icon="mdi:chevron-left" />
-            </Button>
-            <h2 className="font-display text-lg font-semibold capitalize text-[#0F4C5C]">
-              {monthLabel}
-            </h2>
-            <Button
-              variant="outline"
-              size="icon"
-              className="border-[#CFD8DB]"
-              disabled={!canNext}
-              onClick={() => setCursor((m) => m.plus({ months: 1 }))}
-              aria-label="Bulan berikutnya"
-            >
-              <Icon icon="mdi:chevron-right" />
-            </Button>
-          </div>
-
-          {isLoading ? (
-            <Skeleton className="h-72 w-full rounded-xl" />
-          ) : (
-            <>
-              <div className="mb-2 grid grid-cols-7 gap-1.5">
-                {WEEKDAYS.map((day) => (
-                  <div
-                    key={day}
-                    className="py-1 text-center text-[10px] font-semibold tracking-wide text-[#7A8790] uppercase"
-                  >
-                    {day}
-                  </div>
-                ))}
-              </div>
-
-              <div className="grid grid-cols-7 gap-1.5">
-                {cells.map((day, index) => {
-                  if (!day) {
-                    return <div key={`empty-${index}`} className="aspect-square" />;
-                  }
-
-                  const iso = day.toISODate()!;
-                  const row = byDate.get(iso);
-                  const status = statusOf(row);
-                  const inPeriod = iso >= startBound && iso <= endBound;
-                  const isToday = iso === today;
-                  const isSelected = iso === selectedIso;
-                  const isWeekend = day.weekday >= 6;
-                  const isFuture = iso > today;
-
-                  return (
-                    <button
-                      key={iso}
-                      type="button"
-                      disabled={!inPeriod}
-                      onClick={() => setSelectedIso(iso)}
-                      className={cn(
-                        "relative flex aspect-square flex-col items-center justify-center rounded-xl text-sm transition-colors",
-                        !inPeriod && "opacity-25",
-                        inPeriod && !status && (isWeekend ? "bg-[#F0ECE4]" : "bg-[#F7F4EF]"),
-                        inPeriod && status && STATUS_STYLE[status],
-                        isSelected && "ring-2 ring-[#0F4C5C] ring-offset-2",
-                        isToday && !status && "ring-1 ring-[#0F4C5C]/40",
-                        isFuture && inPeriod && !status && "text-[#9AA4AA]"
-                      )}
-                    >
-                      <span
-                        className={cn(
-                          "font-display text-sm font-semibold tabular-nums",
-                          status ? "text-white" : "text-[#1C2A30]"
-                        )}
-                      >
-                        {day.day}
-                      </span>
-                      {status && (
-                        <span className="mt-0.5 hidden text-[9px] font-medium text-white/90 sm:block">
-                          {status === "PENDING" ? "…" : status.slice(0, 1)}
-                        </span>
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-
-              <div className="mt-4 flex flex-wrap gap-3">
-                {LEGEND.map((item) => (
-                  <div key={item.key} className="flex items-center gap-1.5 text-xs text-[#5C6B72]">
-                    <span className={cn("size-2.5 rounded-full", item.className)} />
-                    {item.key}
-                  </div>
-                ))}
-              </div>
-            </>
-          )}
-        </section>
-
-        <section className="rounded-2xl border border-[#E4E0D8] bg-[#FFFEFB] p-4 sm:p-5">
-          <p className="text-[11px] font-semibold tracking-[0.14em] text-[#0F4C5C]/70 uppercase">
-            Detail hari
-          </p>
-          <h3 className="font-display mt-1 text-lg font-semibold text-[#1C2A30]">
-            {selectedIso
-              ? DateTime.fromISO(selectedIso, { zone: "utc" })
-                  .setLocale("id")
-                  .toFormat("cccc, d LLLL yyyy")
-              : "Pilih tanggal"}
-          </h3>
-
-          {!selectedIso ? (
-            <p className="mt-3 text-sm text-[#5C6B72]">Ketuk tanggal di kalender.</p>
-          ) : !selected ? (
-            <p className="mt-3 text-sm text-[#5C6B72]">
-              {selectedIso > today
-                ? "Belum terjadi."
-                : selectedIso < startBound || selectedIso > endBound
-                  ? "Di luar periode magang."
-                  : "Tidak ada catatan kehadiran."}
-            </p>
-          ) : (
-            <div className="mt-4 grid grid-cols-2 gap-2.5 sm:grid-cols-3">
-              <div className="rounded-xl bg-[#F7F4EF] px-3 py-3">
-                <p className="text-[11px] text-[#5C6B72] uppercase">Status</p>
-                <p className="mt-1 font-medium text-[#1C2A30]">{labelOf(selected)}</p>
-              </div>
-              <div className="rounded-xl bg-[#F7F4EF] px-3 py-3">
-                <p className="text-[11px] text-[#5C6B72] uppercase">Masuk</p>
-                <p className="mt-1 font-display text-lg font-semibold tabular-nums text-[#0F4C5C]">
-                  {fmtJam(selected.jamMasuk)}
-                </p>
-              </div>
-              <div className="col-span-2 rounded-xl bg-[#F7F4EF] px-3 py-3 sm:col-span-1">
-                <p className="text-[11px] text-[#5C6B72] uppercase">Keluar</p>
-                <p className="mt-1 font-display text-lg font-semibold tabular-nums text-[#0F4C5C]">
-                  {fmtJam(selected.jamKeluar)}
-                </p>
-              </div>
-              {selected.keterangan && (
-                <div className="col-span-2 rounded-xl bg-[#F7F4EF] px-3 py-3 sm:col-span-3">
-                  <p className="text-[11px] text-[#5C6B72] uppercase">Keterangan</p>
-                  <p className="mt-1 text-sm text-[#1C2A30]">{selected.keterangan}</p>
-                </div>
-              )}
-              <p className="col-span-2 text-xs text-[#7A8790] sm:col-span-3">
-                {formatJamRange(selected)}
+    <div className="min-h-screen bg-[#F4F7F8]">
+      <header className="sticky top-0 z-30 border-b border-[#D7E2E5] bg-white/95 backdrop-blur">
+        <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-3 px-4 sm:h-16 sm:px-6 lg:px-8">
+          <div className="flex min-w-0 items-center gap-3 sm:gap-6">
+            <div className="min-w-0">
+              <p className="text-[10px] font-semibold tracking-[0.16em] text-[#0F4C5C]/70 uppercase sm:text-[11px]">
+                SIMAGANG
+              </p>
+              <p className="font-display truncate text-sm font-semibold text-[#0F4C5C] sm:text-base">
+                Portal Peserta
               </p>
             </div>
-          )}
-        </section>
-
-        <section className="rounded-2xl border border-[#E4E0D8] bg-[#FFFEFB] p-4 sm:p-5">
-          <p className="text-[11px] font-semibold tracking-[0.14em] text-[#0F4C5C]/70 uppercase">
-            Ringkasan bulan ini
-          </p>
-          <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-5">
-            {(
-              [
-                ["Hadir", summary.Hadir],
-                ["Izin", summary.Izin],
-                ["Sakit", summary.Sakit],
-                ["Alpa", summary.Alpa],
-                ["Menunggu", summary.PENDING],
-              ] as const
-            ).map(([label, value]) => (
-              <div key={label} className="rounded-xl bg-[#F7F4EF] px-3 py-2.5 text-center">
-                <p className="font-display text-xl font-semibold tabular-nums text-[#0F4C5C]">
-                  {value}
-                </p>
-                <p className="text-[11px] text-[#5C6B72]">{label}</p>
-              </div>
-            ))}
+            <nav className="hidden items-center gap-1 border-l border-[#E2E8EA] pl-4 md:flex lg:pl-6">
+              <Link
+                href="/portal"
+                className="rounded-md px-3 py-1.5 text-sm font-medium text-[#5C6B72] transition-colors hover:bg-[#F0F4F5] hover:text-[#0F4C5C]"
+              >
+                Beranda
+              </Link>
+              <Link
+                href="/portal/kehadiran"
+                className="rounded-md bg-[#0F4C5C]/08 px-3 py-1.5 text-sm font-medium text-[#0F4C5C]"
+              >
+                Kehadiran
+              </Link>
+            </nav>
           </div>
-        </section>
+          <Button asChild variant="outline" size="sm" className="border-[#CFD8DB] md:hidden">
+            <Link href="/portal">
+              <Icon icon="mdi:arrow-left" className="size-4" />
+              Beranda
+            </Link>
+          </Button>
+        </div>
+      </header>
+
+      <main className="mx-auto flex w-full max-w-7xl flex-col gap-4 px-4 py-5 sm:gap-5 sm:px-6 sm:py-8 lg:px-8">
+        <div>
+          <h1 className="font-display text-2xl font-semibold tracking-tight text-[#1C2A30] sm:text-3xl">
+            Kalender kehadiran
+          </h1>
+          <p className="mt-1 text-sm text-[#5C6B72]">Ringkasan status absensi selama masa magang</p>
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:gap-5">
+          <section className="rounded-xl border border-[#E2E8EA] bg-white p-4 shadow-[0_1px_2px_rgba(15,76,92,0.04)] sm:p-5 lg:col-span-8">
+            <div className="mb-4 flex items-center justify-between gap-2">
+              <Button
+                variant="outline"
+                size="icon"
+                className="border-[#CFD8DB]"
+                disabled={!canPrev}
+                onClick={() => setCursor((m) => m.minus({ months: 1 }))}
+                aria-label="Bulan sebelumnya"
+              >
+                <Icon icon="mdi:chevron-left" />
+              </Button>
+              <h2 className="font-display text-lg font-semibold capitalize text-[#0F4C5C]">
+                {monthLabel}
+              </h2>
+              <Button
+                variant="outline"
+                size="icon"
+                className="border-[#CFD8DB]"
+                disabled={!canNext}
+                onClick={() => setCursor((m) => m.plus({ months: 1 }))}
+                aria-label="Bulan berikutnya"
+              >
+                <Icon icon="mdi:chevron-right" />
+              </Button>
+            </div>
+
+            {isLoading ? (
+              <Skeleton className="h-72 w-full rounded-xl" />
+            ) : (
+              <>
+                <div className="mb-2 grid grid-cols-7 gap-1.5">
+                  {WEEKDAYS.map((day) => (
+                    <div
+                      key={day}
+                      className="py-1 text-center text-[10px] font-semibold tracking-wide text-[#7A8790] uppercase"
+                    >
+                      {day}
+                    </div>
+                  ))}
+                </div>
+
+                <div className="grid grid-cols-7 gap-1.5">
+                  {cells.map((day, index) => {
+                    if (!day) {
+                      return <div key={`empty-${index}`} className="aspect-square" />;
+                    }
+
+                    const iso = day.toISODate()!;
+                    const row = byDate.get(iso);
+                    const status = statusOf(row);
+                    const inPeriod = iso >= startBound && iso <= endBound;
+                    const isToday = iso === today;
+                    const isSelected = iso === selectedIso;
+                    const isWeekend = day.weekday >= 6;
+                    const isFuture = iso > today;
+
+                    return (
+                      <button
+                        key={iso}
+                        type="button"
+                        disabled={!inPeriod}
+                        onClick={() => setSelectedIso(iso)}
+                        className={cn(
+                          "relative flex aspect-square flex-col items-center justify-center rounded-xl text-sm transition-colors",
+                          !inPeriod && "opacity-25",
+                          inPeriod && !status && (isWeekend ? "bg-[#EEF2F3]" : "bg-[#F7FAFB]"),
+                          inPeriod && status && STATUS_STYLE[status],
+                          isSelected && "ring-2 ring-[#0F4C5C] ring-offset-2",
+                          isToday && !status && "ring-1 ring-[#0F4C5C]/40",
+                          isFuture && inPeriod && !status && "text-[#9AA4AA]"
+                        )}
+                      >
+                        <span
+                          className={cn(
+                            "font-display text-sm font-semibold tabular-nums",
+                            status ? "text-white" : "text-[#1C2A30]"
+                          )}
+                        >
+                          {day.day}
+                        </span>
+                        {status && (
+                          <span className="mt-0.5 hidden text-[9px] font-medium text-white/90 sm:block">
+                            {status === "PENDING" ? "…" : status.slice(0, 1)}
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <div className="mt-4 flex flex-wrap gap-3">
+                  {LEGEND.map((item) => (
+                    <div key={item.key} className="flex items-center gap-1.5 text-xs text-[#5C6B72]">
+                      <span className={cn("size-2.5 rounded-full", item.className)} />
+                      {item.key}
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+          </section>
+
+          <div className="flex flex-col gap-4 lg:col-span-4">
+            <section className="rounded-xl border border-[#E2E8EA] bg-white p-4 shadow-[0_1px_2px_rgba(15,76,92,0.04)] sm:p-5">
+              <p className="text-[11px] font-semibold tracking-[0.14em] text-[#0F4C5C]/70 uppercase">
+                Detail hari
+              </p>
+              <h3 className="font-display mt-1 text-lg font-semibold text-[#1C2A30]">
+                {selectedIso
+                  ? DateTime.fromISO(selectedIso, { zone: "utc" })
+                      .setLocale("id")
+                      .toFormat("cccc, d LLLL yyyy")
+                  : "Pilih tanggal"}
+              </h3>
+
+              {!selectedIso ? (
+                <p className="mt-3 text-sm text-[#5C6B72]">Ketuk tanggal di kalender.</p>
+              ) : !selected ? (
+                <p className="mt-3 text-sm text-[#5C6B72]">
+                  {selectedIso > today
+                    ? "Belum terjadi."
+                    : selectedIso < startBound || selectedIso > endBound
+                      ? "Di luar periode magang."
+                      : "Tidak ada catatan kehadiran."}
+                </p>
+              ) : (
+                <div className="mt-4 grid grid-cols-2 gap-2.5">
+                  <div className="rounded-lg border border-[#EEF2F3] bg-[#F7FAFB] px-3 py-3">
+                    <p className="text-[11px] text-[#5C6B72] uppercase">Status</p>
+                    <p className="mt-1 font-medium text-[#1C2A30]">{labelOf(selected)}</p>
+                  </div>
+                  <div className="rounded-lg border border-[#EEF2F3] bg-[#F7FAFB] px-3 py-3">
+                    <p className="text-[11px] text-[#5C6B72] uppercase">Masuk</p>
+                    <p className="mt-1 font-display text-lg font-semibold tabular-nums text-[#0F4C5C]">
+                      {fmtJam(selected.jamMasuk)}
+                    </p>
+                  </div>
+                  <div className="col-span-2 rounded-lg border border-[#EEF2F3] bg-[#F7FAFB] px-3 py-3">
+                    <p className="text-[11px] text-[#5C6B72] uppercase">Keluar</p>
+                    <p className="mt-1 font-display text-lg font-semibold tabular-nums text-[#0F4C5C]">
+                      {fmtJam(selected.jamKeluar)}
+                    </p>
+                  </div>
+                  {selected.keterangan && (
+                    <div className="col-span-2 rounded-lg border border-[#EEF2F3] bg-[#F7FAFB] px-3 py-3">
+                      <p className="text-[11px] text-[#5C6B72] uppercase">Keterangan</p>
+                      <p className="mt-1 text-sm text-[#1C2A30]">{selected.keterangan}</p>
+                    </div>
+                  )}
+                  <p className="col-span-2 text-xs text-[#7A8790]">{formatJamRange(selected)}</p>
+                </div>
+              )}
+            </section>
+
+            <section className="rounded-xl border border-[#E2E8EA] bg-white p-4 shadow-[0_1px_2px_rgba(15,76,92,0.04)] sm:p-5">
+              <p className="text-[11px] font-semibold tracking-[0.14em] text-[#0F4C5C]/70 uppercase">
+                Ringkasan bulan ini
+              </p>
+              <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3">
+                {(
+                  [
+                    ["Hadir", summary.Hadir],
+                    ["Izin", summary.Izin],
+                    ["Sakit", summary.Sakit],
+                    ["Alpa", summary.Alpa],
+                    ["Menunggu", summary.PENDING],
+                  ] as const
+                ).map(([label, value]) => (
+                  <div
+                    key={label}
+                    className="rounded-lg border border-[#EEF2F3] bg-[#F7FAFB] px-3 py-2.5 text-center"
+                  >
+                    <p className="font-display text-xl font-semibold tabular-nums text-[#0F4C5C]">
+                      {value}
+                    </p>
+                    <p className="text-[11px] text-[#5C6B72]">{label}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </div>
+        </div>
       </main>
     </div>
   );
