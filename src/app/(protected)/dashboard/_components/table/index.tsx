@@ -19,7 +19,7 @@ export default function TableAttendance() {
   const entries = (data?.content?.entries ?? []).slice(0, 8);
 
   return (
-    <Card>
+    <Card className="h-full">
       <CardHeader>
         <CardTitle>Absensi Terbaru</CardTitle>
         <CardAction>
@@ -31,7 +31,7 @@ export default function TableAttendance() {
           Catatan kehadiran peserta magang paling baru
         </p>
       </CardHeader>
-      <CardContent>
+      <CardContent className="flex-1">
         <DataTable data={entries} columns={columns} loading={isLoading} hideFooter />
       </CardContent>
     </Card>

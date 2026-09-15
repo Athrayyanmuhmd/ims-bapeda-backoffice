@@ -36,7 +36,7 @@ export default function AttendanceSummary() {
   ];
 
   return (
-    <Card>
+    <Card className="h-full">
       <CardHeader>
         <CardTitle>Ringkasan Kehadiran</CardTitle>
         <CardAction>

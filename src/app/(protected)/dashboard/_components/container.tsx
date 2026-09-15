@@ -22,21 +22,23 @@ export default function Container() {
         </h1>
       </div>
 
-      <div className="grid min-w-0 gap-6 lg:grid-cols-3">
-        <div className="min-w-0 lg:col-span-2">
+      <div className="grid min-w-0 gap-6 lg:grid-cols-3 lg:items-stretch">
+        <div className="flex h-full min-w-0 flex-col lg:col-span-2">
           <TodayHighlight />
         </div>
         <AttendanceSummary />
       </div>
 
-      <div className="grid min-w-0 gap-6 lg:grid-cols-3">
-        <div className="min-w-0 lg:col-span-2">
+      <div className="grid min-w-0 gap-6 lg:grid-cols-3 lg:items-stretch">
+        <div className="flex h-full min-w-0 flex-col lg:col-span-2">
           <TableAttendance />
         </div>
-        <div className="flex flex-col gap-6">
+        <div className="flex h-full flex-col gap-6">
           <MiniStats />
           <EndingSoon />
-          <CtaBanner />
+          <div className="mt-auto">
+            <CtaBanner />
+          </div>
         </div>
       </div>
     </div>
