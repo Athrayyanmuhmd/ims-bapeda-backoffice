@@ -59,17 +59,24 @@ export default function LoginForm() {
   const onSubmit = form.handleSubmit((value) => {
     mutation.mutate(value, {
       onSuccess: async (result) => {
-        if (result.kind === "staff") {
-          setSession(result.res.content as TLoginResponse);
-          toast.success(result.res.message);
-          window.location.href = "/dashboard";
-          return;
-        }
+        try {
+          if (result.kind === "staff") {
+            // Must await: setSession is a server action. Redirecting before the
+            // cookie lands makes /dashboard bounce back to /login (toast still
+            // said success) — especially visible in a fresh/other browser.
+            await setSession(result.res.content as TLoginResponse);
+            toast.success(result.res.message);
+            window.location.assign("/dashboard");
+            return;
+          }
 
-        const content = result.res.content as TPortalLoginResponse;
-        await setPortalSession({ token: content.token, peserta: content.peserta });
-        toast.success(result.res.message);
-        window.location.href = "/portal";
+          const content = result.res.content as TPortalLoginResponse;
+          await setPortalSession({ token: content.token, peserta: content.peserta });
+          toast.success(result.res.message);
+          window.location.assign("/portal");
+        } catch {
+          toast.error("Login berhasil, tetapi sesi gagal disimpan. Coba lagi.");
+        }
       },
       onError: (error: LoginError) => toast.error(error.message || "Email atau password salah"),
     });
