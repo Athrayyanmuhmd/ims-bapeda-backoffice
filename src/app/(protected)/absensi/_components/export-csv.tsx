@@ -3,8 +3,8 @@
 import { Icon } from "@iconify/react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { DateField } from "@/components/date-field";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { services } from "@/services";
 import type { TAbsensi } from "@/services/absensi/types";
 import { type CsvColumn, downloadCsv, toCsv } from "@/utils/csv";
@@ -90,28 +90,27 @@ export function ExportCsv() {
   };
 
   return (
-    <div className="flex w-full min-w-0 flex-col gap-2 md:flex-row md:flex-wrap md:items-center">
-      <Input
-        type="date"
-        aria-label="Dari tanggal"
-        title="Dari tanggal"
-        value={dariTanggal}
-        max={sampaiTanggal || undefined}
-        onChange={(e) => setDariTanggal(e.target.value)}
-        className="h-9 w-full min-w-0 max-w-full border-[#D7E2E5] bg-white md:w-auto md:min-w-[10.5rem]"
-      />
-      <Input
-        type="date"
-        aria-label="Sampai tanggal"
-        title="Sampai tanggal"
-        value={sampaiTanggal}
-        min={dariTanggal || undefined}
-        onChange={(e) => setSampaiTanggal(e.target.value)}
-        className="h-9 w-full min-w-0 max-w-full border-[#D7E2E5] bg-white md:w-auto md:min-w-[10.5rem]"
-      />
+    <div className="flex w-full min-w-0 flex-col gap-3">
+      <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2">
+        <DateField
+          label="Dari tanggal"
+          value={dariTanggal}
+          max={sampaiTanggal || undefined}
+          onChange={setDariTanggal}
+        />
+        <DateField
+          label="Sampai tanggal"
+          value={sampaiTanggal}
+          min={dariTanggal || undefined}
+          onChange={setSampaiTanggal}
+        />
+      </div>
+      {isRangeInverted && (
+        <p className="text-destructive text-xs">Tanggal mulai harus sebelum tanggal selesai.</p>
+      )}
       <Button
         variant="outline"
-        className="h-9 w-full shrink-0 border-[#D7E2E5] bg-white md:w-auto"
+        className="h-10 w-full shrink-0 border-[#D7E2E5] bg-white sm:w-auto sm:self-start"
         onClick={onExport}
         isLoading={isExporting}
         disabled={isExporting || isRangeInverted}

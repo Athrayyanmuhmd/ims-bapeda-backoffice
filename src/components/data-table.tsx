@@ -17,7 +17,7 @@ import {
   useReactTable,
   type VisibilityState,
 } from "@tanstack/react-table";
-import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import { ChevronLeftIcon, ChevronRightIcon, MoveHorizontalIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -214,9 +214,13 @@ export function DataTable<TData>({
   const pageNumbers = getPageNumbers();
 
   return (
-    <div className="flex w-full flex-col justify-start gap-6">
-      <div className="relative flex max-w-full min-w-0 flex-col gap-4">
-        <div className="w-full min-w-0 overflow-x-auto overflow-y-hidden">
+    <div className="flex w-full min-w-0 flex-col justify-start gap-4 sm:gap-6">
+      <div className="relative flex max-w-full min-w-0 flex-col gap-3">
+        <p className="text-muted-foreground flex items-center gap-1.5 text-[11px] sm:hidden">
+          <MoveHorizontalIcon className="size-3.5 shrink-0" />
+          Geser tabel ke samping untuk melihat semua kolom
+        </p>
+        <div className="w-full min-w-0 overflow-x-auto overscroll-x-contain rounded-lg border border-[#E8EEF0] [-webkit-overflow-scrolling:touch]">
           <div className="min-w-fit">
             <Table>
               <TableHeader className="bg-accent sticky top-0 z-10">

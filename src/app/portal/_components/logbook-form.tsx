@@ -7,16 +7,16 @@ import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { DateField } from "@/components/date-field";
 import { services } from "@/services";
 import {
   schemaPortalLogbookRequest,
   type TPortalLogbook,
   type TPortalLogbookRequest,
 } from "@/services/portal/types";
-import { todayIsoDate } from "@/utils/datetime";
 import { cn } from "@/utils/classname";
+import { todayIsoDate } from "@/utils/datetime";
 
 interface LogbookFormProps {
   onSaved: () => void;
@@ -94,14 +94,12 @@ export default function LogbookForm({
           name="tanggal"
           render={({ field, fieldState: { error } }) => (
             <Field>
-              <FieldLabel className="text-[#5C6B72]">Tanggal</FieldLabel>
-              <Input
-                type="date"
+              <DateField
+                label="Tanggal"
+                value={field.value}
                 max={today}
                 disabled={isEdit}
-                className="w-full min-w-0 max-w-full border-[#DFD9CF] bg-white"
-                lang="id-ID"
-                {...field}
+                onChange={field.onChange}
               />
               {!isEdit && (
                 <p className="text-[11px] text-[#7A8790]">
