@@ -391,6 +391,21 @@ export default function Container({ peserta }: { peserta: TPortalPeserta }) {
                     </Button>
                   </div>
 
+                  {!hasCheckedIn &&
+                    !hasFinalIzin &&
+                    !isPendingIzin &&
+                    checkInWindow &&
+                    !checkInWindow.isOpen && (
+                      <p className="rounded-lg bg-[#EEF2F3] px-3 py-2 text-xs text-[#5C6B72]">
+                        Check-in dibuka pukul{" "}
+                        <span className="font-semibold text-[#0F4C5C]">
+                          {checkInWindow.label}
+                        </span>
+                        . Di luar jam tersebut tombol Check-in nonaktif — gunakan Izin / Sakit jika
+                        berhalangan hadir.
+                      </p>
+                    )}
+
                   {isPendingIzin && (
                     <p className="rounded-lg bg-[#FFF6DB] px-3 py-2 text-xs text-[#8A6A12]">
                       Pengajuan izin menunggu persetujuan pembimbing.
@@ -632,6 +647,15 @@ export default function Container({ peserta }: { peserta: TPortalPeserta }) {
 
       {/* Mobile action dock */}
       <div className="fixed inset-x-0 bottom-0 z-20 border-t border-[#D7E2E5] bg-white/95 p-3 backdrop-blur sm:hidden">
+        {!hasCheckedIn &&
+          !hasFinalIzin &&
+          !isPendingIzin &&
+          checkInWindow &&
+          !checkInWindow.isOpen && (
+            <p className="mx-auto mb-2 max-w-lg text-center text-[11px] text-[#5C6B72]">
+              Check-in dibuka {checkInWindow.label}
+            </p>
+          )}
         <div className="mx-auto grid max-w-lg grid-cols-3 gap-2">
           <Button
             className="bg-[#0F4C5C] hover:bg-[#0C3D4A]"
