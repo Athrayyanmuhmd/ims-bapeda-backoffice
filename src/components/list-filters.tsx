@@ -38,17 +38,20 @@ export function ListFilters({
   const { data: divisiData } = useQuery({
     queryKey: queryKeys.divisi.options(),
     queryFn: () => services.divisi.getAllDivisi({ rows: 100 }),
+    meta: { silent: true },
   });
 
   const { data: instansiData } = useQuery({
     queryKey: queryKeys.instansi.options(),
     queryFn: () => services.instansi.getAllInstansi({ rows: 100 }),
+    meta: { silent: true },
   });
 
   const { data: userData } = useQuery({
     queryKey: queryKeys.user.options(),
     queryFn: () => services.user.getAllUser({ rows: 100 }),
     enabled: showPembimbing,
+    meta: { silent: true },
   });
 
   const divisiOptions = (divisiData?.content?.entries ?? []).map((d) => ({

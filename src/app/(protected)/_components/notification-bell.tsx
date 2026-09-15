@@ -3,7 +3,7 @@
 import { Icon } from "@iconify/react";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { useState, type ComponentProps } from "react";
+import { useMemo, useState, type ComponentProps } from "react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -20,7 +20,14 @@ import {
 } from "@/components/ui/sheet";
 import { queryKeys } from "@/constants/query-keys";
 import { useIsMobile } from "@/hooks/use-mobile";
+import {
+  belumAbsenKey,
+  endingSoonKey,
+  useNotifSeen,
+  type NotifKind,
+} from "@/hooks/use-notif-seen";
 import { getSummary, type TNotificationSummary } from "@/services/notifications";
+import { useAuth } from "@/stores/auth";
 import { cn } from "@/utils/classname";
 import { fmtTanggal } from "@/utils/datetime";
 
@@ -156,16 +163,29 @@ function NotifRow({
   );
 }
 
-function NotificationBody({
-  summary,
-  total,
-  onNavigate,
-}: {
-  summary?: TNotificationSummary;
+type VisibleSummary = {
+  pendingIzin: TNotificationSummary["pendingIzin"];
+  belumAbsen: TNotificationSummary["belumAbsen"];
+  endingSoon: TNotificationSummary["endingSoon"];
+  counts: {
+    pendingIzin: number;
+    belumAbsen: number;
+    endingSoon: number;
+  };
   total: number;
-  onNavigate?: () => void;
+  allKeys: { kind: NotifKind; key: string }[];
+};
+
+function NotificationBody({
+  visible,
+  onMarkItem,
+  onMarkAll,
+}: {
+  visible: VisibleSummary;
+  onMarkItem: (kind: NotifKind, key: string) => void;
+  onMarkAll?: () => void;
 }) {
-  if (total === 0) {
+  if (visible.total === 0) {
     return (
       <div className="flex flex-col items-center gap-2 px-4 py-10 text-center">
         <span className="bg-muted flex size-12 items-center justify-center rounded-2xl">
@@ -173,7 +193,7 @@ function NotificationBody({
         </span>
         <p className="text-sm font-medium">Semua aman</p>
         <p className="text-muted-foreground text-xs leading-relaxed">
-          Tidak ada izin pending, absensi tertunda, atau magang yang segera berakhir.
+          Tidak ada item yang belum dilihat, atau semua sudah ditindaklanjuti.
         </p>
       </div>
     );
@@ -181,69 +201,86 @@ function NotificationBody({
 
   return (
     <div className="flex flex-col gap-4">
-      {(summary?.pendingIzin.length ?? 0) > 0 && (
+      {onMarkAll ? (
+        <div className="flex justify-end px-1">
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="text-muted-foreground h-8 px-2 text-xs"
+            onClick={onMarkAll}
+          >
+            <Icon icon="mdi:check-all" className="size-4" />
+            Tandai semua dilihat
+          </Button>
+        </div>
+      ) : null}
+
+      {visible.pendingIzin.length > 0 && (
         <section className="flex flex-col gap-1.5">
           <SectionHeader
             icon="mdi:file-document-alert-outline"
             title="Izin menunggu"
-            count={summary?.counts.pendingIzin ?? 0}
+            count={visible.counts.pendingIzin}
             tone="orange"
           />
           <div className="flex flex-col">
-            {summary?.pendingIzin.slice(0, 5).map((item) => (
+            {visible.pendingIzin.slice(0, 5).map((item) => (
               <NotifRow
                 key={item.id}
                 href="/absensi"
                 name={`${item.name} · ${item.jenis}`}
                 meta={`${fmtTanggal(item.tanggal)}${item.divisi ? ` · ${item.divisi}` : ""}`}
                 tone="orange"
-                onNavigate={onNavigate}
+                onNavigate={() => onMarkItem("pendingIzin", item.id)}
               />
             ))}
           </div>
         </section>
       )}
 
-      {(summary?.belumAbsen.length ?? 0) > 0 && (
+      {visible.belumAbsen.length > 0 && (
         <section className="flex flex-col gap-1.5">
           <SectionHeader
             icon="mdi:clock-alert-outline"
             title="Belum absen hari ini"
-            count={summary?.counts.belumAbsen ?? 0}
+            count={visible.counts.belumAbsen}
             tone="amber"
           />
           <div className="flex flex-col">
-            {summary?.belumAbsen.slice(0, 5).map((item) => (
+            {visible.belumAbsen.slice(0, 5).map((item) => (
               <NotifRow
                 key={item.id}
                 href="/absensi"
                 name={item.name}
                 meta={item.divisi ?? "Tanpa divisi"}
                 tone="amber"
-                onNavigate={onNavigate}
+                onNavigate={() => onMarkItem("belumAbsen", belumAbsenKey(item.id))}
               />
             ))}
           </div>
         </section>
       )}
 
-      {(summary?.endingSoon.length ?? 0) > 0 && (
+      {visible.endingSoon.length > 0 && (
         <section className="flex flex-col gap-1.5">
           <SectionHeader
             icon="mdi:calendar-end"
             title="Magang segera berakhir"
-            count={summary?.counts.endingSoon ?? 0}
+            count={visible.counts.endingSoon}
             tone="teal"
           />
           <div className="flex flex-col">
-            {summary?.endingSoon.slice(0, 5).map((item) => (
+            {visible.endingSoon.slice(0, 5).map((item) => (
               <NotifRow
                 key={item.id}
                 href={`/peserta-magang/${item.id}`}
                 name={item.name}
                 meta={endingLabel(item.daysLeft)}
                 tone={endingTone(item.daysLeft)}
-                onNavigate={onNavigate}
+                onNavigate={() =>
+                  onMarkItem("endingSoon", endingSoonKey(item.id, item.tanggalSelesai))
+                }
               />
             ))}
           </div>
@@ -256,24 +293,71 @@ function NotificationBody({
 export function NotificationBell() {
   const isMobile = useIsMobile();
   const [open, setOpen] = useState(false);
+  const userId = useAuth((s) => s.user?.id);
+  const { isSeen, markSeen, markManySeen } = useNotifSeen(userId);
 
   const { data: notifRes } = useQuery({
     queryKey: queryKeys.notifications.summary(),
     queryFn: () => getSummary(),
     refetchInterval: 60_000,
+    meta: { silent: true },
   });
 
   const summary = notifRes?.content ?? undefined;
-  const total =
-    (summary?.counts.pendingIzin ?? 0) +
-    (summary?.counts.belumAbsen ?? 0) +
-    (summary?.counts.endingSoon ?? 0);
+
+  const visible = useMemo((): VisibleSummary => {
+    const pendingIzin = (summary?.pendingIzin ?? []).filter(
+      (item) => !isSeen("pendingIzin", item.id)
+    );
+    const belumAbsen = (summary?.belumAbsen ?? []).filter(
+      (item) => !isSeen("belumAbsen", belumAbsenKey(item.id))
+    );
+    const endingSoon = (summary?.endingSoon ?? []).filter(
+      (item) => !isSeen("endingSoon", endingSoonKey(item.id, item.tanggalSelesai))
+    );
+
+    return {
+      pendingIzin,
+      belumAbsen,
+      endingSoon,
+      counts: {
+        pendingIzin: pendingIzin.length,
+        belumAbsen: belumAbsen.length,
+        endingSoon: endingSoon.length,
+      },
+      total: pendingIzin.length + belumAbsen.length + endingSoon.length,
+      allKeys: [
+        ...pendingIzin.map((item) => ({ kind: "pendingIzin" as const, key: item.id })),
+        ...belumAbsen.map((item) => ({
+          kind: "belumAbsen" as const,
+          key: belumAbsenKey(item.id),
+        })),
+        ...endingSoon.map((item) => ({
+          kind: "endingSoon" as const,
+          key: endingSoonKey(item.id, item.tanggalSelesai),
+        })),
+      ],
+    };
+  }, [summary, isSeen]);
+
+  const onMarkItem = (kind: NotifKind, key: string) => {
+    markSeen(kind, key);
+    setOpen(false);
+  };
+
+  const body = (
+    <NotificationBody
+      visible={visible}
+      onMarkItem={onMarkItem}
+      onMarkAll={visible.total > 0 ? () => markManySeen(visible.allKeys) : undefined}
+    />
+  );
 
   if (isMobile) {
     return (
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger asChild>
-          <NotifBellButton total={total} />
+          <NotifBellButton total={visible.total} />
         </SheetTrigger>
         <SheetContent
           side="bottom"
@@ -283,18 +367,12 @@ export function NotificationBell() {
           <SheetHeader className="border-b border-[#E2E8EA] px-4 pt-3 pb-3 text-left">
             <SheetTitle className="font-display text-lg">Perlu perhatian</SheetTitle>
             <SheetDescription>
-              {total > 0
-                ? `${total} item membutuhkan tindak lanjut`
+              {visible.total > 0
+                ? `${visible.total} item belum dilihat`
                 : "Tidak ada alert saat ini"}
             </SheetDescription>
           </SheetHeader>
-          <div className="overflow-y-auto px-3 py-3">
-            <NotificationBody
-              summary={summary}
-              total={total}
-              onNavigate={() => setOpen(false)}
-            />
-          </div>
+          <div className="overflow-y-auto px-3 py-3">{body}</div>
         </SheetContent>
       </Sheet>
     );
@@ -303,7 +381,7 @@ export function NotificationBell() {
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
-        <NotifBellButton total={total} />
+        <NotifBellButton total={visible.total} />
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align="end"
@@ -314,12 +392,12 @@ export function NotificationBell() {
         <div className="border-b border-[#E2E8EA] px-4 py-3">
           <p className="font-display text-sm font-semibold">Perlu perhatian</p>
           <p className="text-muted-foreground text-xs">
-            {total > 0 ? `${total} item membutuhkan tindak lanjut` : "Tidak ada alert saat ini"}
+            {visible.total > 0
+              ? `${visible.total} item belum dilihat`
+              : "Tidak ada alert saat ini"}
           </p>
         </div>
-        <div className="max-h-[min(28rem,70vh)] overflow-y-auto px-2 py-3">
-          <NotificationBody summary={summary} total={total} onNavigate={() => setOpen(false)} />
-        </div>
+        <div className="max-h-[min(28rem,70vh)] overflow-y-auto px-2 py-3">{body}</div>
       </DropdownMenuContent>
     </DropdownMenu>
   );

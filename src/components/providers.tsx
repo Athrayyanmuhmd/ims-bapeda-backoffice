@@ -15,12 +15,29 @@ type TProvidersProps = {
 interface ApiError {
   message?: string;
   status?: number;
+  name?: string;
 }
 
-// 401s are already handled by the axios interceptor (session gets cleared and
-// the user is bounced to /login), so surfacing them again here would just be
-// a duplicate, confusing toast on top of the redirect.
-const shouldToast = (error: ApiError) => error.status !== 401;
+type QueryMeta = {
+  /** Skip the global error toast (dropdown options, polling, background prefetch). */
+  silent?: boolean;
+};
+
+// 401s are already handled by the axios interceptor (session cleared + redirect).
+// Aborted/cancelled fetches happen on every route change — never toast those.
+const shouldToast = (error: ApiError) => {
+  if (error.status === 401) return false;
+  if (error.name === "CanceledError" || error.name === "AbortError") return false;
+  const message = error.message?.toLowerCase() ?? "";
+  if (message.includes("canceled") || message.includes("cancelled") || message.includes("aborted")) {
+    return false;
+  }
+  return true;
+};
+
+// One shared toast id so parallel list+filter failures on navigation collapse
+// into a single banner instead of a stack of identical "Terjadi kesalahan".
+const QUERY_ERROR_TOAST_ID = "simagang-query-error";
 
 export default function Providers({ children, config }: TProvidersProps) {
   const [queryClient] = useState(() => {
@@ -51,11 +68,16 @@ export default function Providers({ children, config }: TProvidersProps) {
       // toast, nothing). This is the one place that gap gets closed for
       // every query in the app at once.
       queryCache: new QueryCache({
-        onError: (error) => {
+        onError: (error, query) => {
+          const meta = query.meta as QueryMeta | undefined;
+          if (meta?.silent) return;
+
           const apiError = error as ApiError;
-          if (shouldToast(apiError)) {
-            toast.error(apiError.message || "Gagal memuat data, coba lagi.");
-          }
+          if (!shouldToast(apiError)) return;
+
+          toast.error(apiError.message || "Gagal memuat data, coba lagi.", {
+            id: QUERY_ERROR_TOAST_ID,
+          });
         },
       }),
       // Individual mutations already toast their own errors with
@@ -66,7 +88,9 @@ export default function Providers({ children, config }: TProvidersProps) {
           if (mutation.options.onError) return;
           const apiError = error as ApiError;
           if (shouldToast(apiError)) {
-            toast.error(apiError.message || "Terjadi kesalahan, coba lagi.");
+            toast.error(apiError.message || "Terjadi kesalahan, coba lagi.", {
+              id: "simagang-mutation-error",
+            });
           }
         },
       }),

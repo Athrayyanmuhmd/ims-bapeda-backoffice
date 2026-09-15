@@ -31,6 +31,7 @@ export default function DialogEditProfile({ open, onOpenChange }: DialogEditProf
     queryKey: queryKeys.user.detail(user?.id ?? ""),
     queryFn: () => services.user.getDetailUser(user!.id),
     enabled: open && !!user?.id,
+    meta: { silent: true },
   });
 
   const detail = detailRes?.content;

@@ -32,12 +32,14 @@ export function FormDialog({ open, onOpenChange, user }: FormDialogProps) {
     queryKey: queryKeys.divisi.options(),
     queryFn: () => services.divisi.getAllDivisi({ rows: 100 }),
     enabled: open,
+    meta: { silent: true },
   });
 
   const { data: roleData } = useQuery({
     queryKey: queryKeys.role.options(),
     queryFn: () => services.role.getAllRole({ rows: 100 }),
     enabled: open,
+    meta: { silent: true },
   });
 
   const divisiOptions = (divisiData?.content?.entries ?? []).map((d) => ({

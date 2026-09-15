@@ -75,18 +75,21 @@ export function FormDialog({ open, onOpenChange, peserta }: FormDialogProps) {
     queryKey: queryKeys.divisi.options(),
     queryFn: () => services.divisi.getAllDivisi({ rows: 100 }),
     enabled: open,
+    meta: { silent: true },
   });
 
   const { data: instansiData } = useQuery({
     queryKey: queryKeys.instansi.options(),
     queryFn: () => services.instansi.getAllInstansi({ rows: 100 }),
     enabled: open,
+    meta: { silent: true },
   });
 
   const { data: userData } = useQuery({
     queryKey: queryKeys.user.options(),
     queryFn: () => services.user.getAllUser({ rows: 100 }),
     enabled: open && isAdmin,
+    meta: { silent: true },
   });
 
   const divisiOptions = (divisiData?.content?.entries ?? []).map((d) => ({
