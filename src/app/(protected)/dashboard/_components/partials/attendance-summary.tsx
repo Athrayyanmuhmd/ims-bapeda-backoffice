@@ -36,8 +36,8 @@ export default function AttendanceSummary() {
   ];
 
   return (
-    <Card className="relative h-full overflow-hidden border-[#E2E8EA] shadow-[0_1px_2px_rgba(15,76,92,0.04)] before:absolute before:inset-y-0 before:left-0 before:w-1 before:bg-[#175e86] before:content-['']">
-      <CardHeader className="pl-7">
+    <Card className="h-full border-[#E2E8EA] shadow-[0_1px_2px_rgba(15,76,92,0.04)]">
+      <CardHeader>
         <CardTitle>Ringkasan Kehadiran</CardTitle>
         <CardAction>
           <Link href="/absensi" className="text-primary text-sm font-medium hover:underline">
@@ -45,7 +45,7 @@ export default function AttendanceSummary() {
           </Link>
         </CardAction>
       </CardHeader>
-      <CardContent className="pl-7">
+      <CardContent>
         {isLoading ? (
           <Skeleton className="h-24 w-full" />
         ) : (

@@ -37,8 +37,8 @@ export default function EndingSoon() {
     .sort((a, b) => a.daysLeft - b.daysLeft);
 
   return (
-    <Card className="relative overflow-hidden border-[#E2E8EA] shadow-[0_1px_2px_rgba(15,76,92,0.04)] before:absolute before:inset-y-0 before:left-0 before:w-1 before:bg-[#B85C1A] before:content-['']">
-      <CardHeader className="pl-7">
+    <Card className="border-[#E2E8EA] shadow-[0_1px_2px_rgba(15,76,92,0.04)]">
+      <CardHeader>
         <CardTitle className="flex items-center gap-2 text-base">
           <Icon icon="mdi:calendar-clock-outline" className="size-4 text-[#B85C1A]" />
           Magang Segera Berakhir
@@ -50,7 +50,7 @@ export default function EndingSoon() {
         </CardAction>
       </CardHeader>
 
-      <CardContent className="pl-7">
+      <CardContent>
         {isLoading ? (
           <Skeleton className="h-24 w-full" />
         ) : items.length === 0 ? (
