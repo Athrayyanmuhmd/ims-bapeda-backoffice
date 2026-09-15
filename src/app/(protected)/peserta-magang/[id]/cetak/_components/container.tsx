@@ -102,9 +102,9 @@ export default function Container({ id }: { id: string }) {
   const periode = `${fmtDate(peserta.tanggalMulai)} s.d. ${fmtDate(peserta.tanggalSelesai)}`;
 
   return (
-    <div className="flex flex-col gap-4">
-      {/* Screen-only controls — hidden in print by the [data-print-area] rule. */}
-      <div className="flex items-center justify-between">
+    <div className="flex flex-col gap-4 print:gap-0">
+      {/* Screen-only controls — also display:none via [data-print-hide]. */}
+      <div data-print-hide className="flex items-center justify-between print:hidden">
         <Button asChild variant="outline" size="sm">
           <Link href={`/peserta-magang/${id}`}>
             <Icon icon="lucide:arrow-left" /> Kembali
@@ -117,7 +117,7 @@ export default function Container({ id }: { id: string }) {
 
       <div
         data-print-area
-        className="mx-auto w-full max-w-[210mm] bg-white p-8 text-black shadow-sm"
+        className="mx-auto w-full max-w-[210mm] bg-white p-8 text-black shadow-sm print:mx-0 print:max-w-none print:p-0 print:shadow-none"
       >
         <header className="border-b-2 border-black pb-3 text-center">
           <h1 className="text-lg font-bold tracking-wide uppercase">Laporan Kegiatan Magang</h1>

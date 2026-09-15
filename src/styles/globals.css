@@ -128,11 +128,53 @@
   }
 }
 
-/* Printing the laporan magang: hide the app chrome (sidebar, header, buttons)
-   so Ctrl+P produces just the document. Uses visibility rather than display so
-   it doesn't need to know how the sidebar/header are structured — anything
-   outside [data-print-area] simply stops rendering ink. */
+/* Printing the laporan magang: full A4 width. Hide chrome with display:none
+   (visibility:hidden alone still reserves sidebar width and shrinks the sheet). */
 @media print {
+  @page {
+    size: A4 portrait;
+    margin: 18mm 16mm;
+  }
+
+  html,
+  body {
+    width: 100% !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    background: white !important;
+  }
+
+  /* Drop layout chrome so it does not consume horizontal space. */
+  [data-slot="sidebar"],
+  [data-slot="sidebar-gap"],
+  [data-slot="sidebar-container"],
+  [data-sidebar],
+  header,
+  [data-print-hide] {
+    display: none !important;
+  }
+
+  /* Flatten wrappers that normally sit beside the sidebar. */
+  [data-slot="sidebar-wrapper"],
+  [data-slot="sidebar-inset"],
+  main,
+  [data-slot="sidebar-inset"] > section {
+    display: block !important;
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    gap: 0 !important;
+    overflow: visible !important;
+    position: static !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+  }
+
   body * {
     visibility: hidden;
   }
@@ -143,21 +185,19 @@
   }
 
   [data-print-area] {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    padding: 0;
+    position: absolute !important;
+    inset: 0 auto auto 0 !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    background: white !important;
   }
 
   /* Keep table rows and signature blocks from splitting across pages. */
   tr,
   [data-print-keep] {
     break-inside: avoid;
-  }
-
-  @page {
-    size: A4;
-    margin: 18mm 16mm;
   }
 }
