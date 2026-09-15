@@ -60,16 +60,21 @@ export default function AttendanceSummary() {
               ))}
             </div>
 
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+            <div className="grid grid-cols-4 gap-1.5 sm:gap-2">
               {[
                 { label: "Aktif", value: totalAktif },
                 { label: "Hadir", value: hadir },
                 { label: "Sakit/Izin", value: sakitIzin },
                 { label: "Alpa", value: alpa },
               ].map((s) => (
-                <div key={s.label} className="rounded-lg bg-[#F7FAFB] px-2 py-2">
-                  <p className="font-display text-xl font-semibold tabular-nums">{s.value}</p>
-                  <p className="text-muted-foreground text-xs">{s.label}</p>
+                <div
+                  key={s.label}
+                  className="min-w-0 rounded-lg bg-[#F7FAFB] px-1.5 py-2 text-center sm:px-2 sm:text-left"
+                >
+                  <p className="font-display text-lg font-semibold tabular-nums sm:text-xl">
+                    {s.value}
+                  </p>
+                  <p className="text-muted-foreground truncate text-[10px] sm:text-xs">{s.label}</p>
                 </div>
               ))}
             </div>
