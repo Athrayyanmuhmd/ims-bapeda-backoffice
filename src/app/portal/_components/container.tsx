@@ -345,14 +345,15 @@ export default function Container({ peserta }: { peserta: TPortalPeserta }) {
           </div>
         </div>
 
-        {/* Primary workspace: 12-col enterprise grid */}
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:gap-5">
+        {/* Primary workspace: equal-height columns so Logbook bottom aligns with Dokumen */}
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:items-stretch lg:gap-5">
           {/* Left / main */}
-          <div className="flex flex-col gap-4 lg:col-span-7 xl:col-span-8">
+          <div className="flex h-full min-h-0 flex-col gap-4 lg:col-span-7 xl:col-span-8">
             <Section
               eyebrow="Hari ini"
               title={fmtTanggalLong(`${todayIsoDate()}T00:00:00.000Z`)}
               action={<StatusChip label={todayStatusLabel} tone={todayStatusTone} />}
+              className="shrink-0"
             >
               {isLoadingToday ? (
                 <Skeleton className="h-28 w-full rounded-xl" />
@@ -419,8 +420,12 @@ export default function Container({ peserta }: { peserta: TPortalPeserta }) {
               )}
             </Section>
 
-            <Section eyebrow="Kegiatan" title="Logbook" className="scroll-mt-24">
-              <div id="logbook-form">
+            <Section
+              eyebrow="Kegiatan"
+              title="Logbook"
+              className="scroll-mt-24 flex min-h-0 flex-1 flex-col"
+            >
+              <div id="logbook-form" className="shrink-0">
                 <LogbookForm
                   embedded
                   editing={editingLogbook}
@@ -432,14 +437,14 @@ export default function Container({ peserta }: { peserta: TPortalPeserta }) {
                 />
               </div>
 
-              <div className="mt-5 border-t border-[#EDE8E0] pt-4">
-                <p className="mb-3 text-[11px] font-semibold tracking-[0.12em] text-[#7A8790] uppercase">
+              <div className="mt-5 flex min-h-0 flex-1 flex-col border-t border-[#EDE8E0] pt-4">
+                <p className="mb-3 shrink-0 text-[11px] font-semibold tracking-[0.12em] text-[#7A8790] uppercase">
                   Entri terakhir
                 </p>
                 {logbook.length === 0 ? (
                   <p className="text-sm text-[#5C6B72]">Belum ada catatan kegiatan.</p>
                 ) : (
-                  <ul className="flex flex-col gap-2">
+                  <ul className="flex flex-1 flex-col gap-2">
                     {logbook.slice(0, 6).map((entry) => (
                       <li
                         key={entry.id}
@@ -475,9 +480,9 @@ export default function Container({ peserta }: { peserta: TPortalPeserta }) {
           </div>
 
           {/* Right rail */}
-          <aside className="flex flex-col gap-4 lg:col-span-5 xl:col-span-4">
+          <aside className="flex h-full min-h-0 flex-col gap-4 lg:col-span-5 xl:col-span-4">
             {(profile.sisaHariKerja != null || profile.tanggalSelesai) && (
-              <Section eyebrow="Periode" title="Masa magang">
+              <Section eyebrow="Periode" title="Masa magang" className="shrink-0">
                 <div className="flex items-end justify-between gap-3">
                   <div>
                     <p className="text-xs text-[#5C6B72]">
@@ -528,6 +533,7 @@ export default function Container({ peserta }: { peserta: TPortalPeserta }) {
             <Section
               eyebrow="Riwayat"
               title="Kehadiran"
+              className="min-h-0 flex-1"
               action={
                 <Button
                   asChild
@@ -581,7 +587,7 @@ export default function Container({ peserta }: { peserta: TPortalPeserta }) {
               )}
             </Section>
 
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
+            <div className="grid shrink-0 gap-4 sm:grid-cols-2 lg:grid-cols-1">
               <Section eyebrow="Hasil" title="Penilaian">
                 {penilaian.length === 0 ? (
                   <p className="text-sm text-[#5C6B72]">Belum ada penilaian.</p>
