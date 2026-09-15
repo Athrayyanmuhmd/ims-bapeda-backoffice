@@ -19,7 +19,7 @@ import { toDateInput, toTimeInput } from "@/utils/datetime";
 
 const schemaForm = z.object({
   pesertaMagangId: z.string().min(1, "Peserta magang wajib dipilih"),
-  kehadiran: z.string().min(1, "Kehadiran wajib dipilih"),
+  kehadiran: z.enum(KEHADIRAN_OPTIONS, { message: "Kehadiran wajib dipilih" }),
   tanggal: z.string().min(1, "Tanggal wajib diisi"),
   jamMasuk: z.string().optional(),
   jamKeluar: z.string().optional(),
@@ -27,6 +27,15 @@ const schemaForm = z.object({
 });
 
 type TFormValues = z.infer<typeof schemaForm>;
+
+const emptyForm: TFormValues = {
+  pesertaMagangId: "",
+  kehadiran: "Hadir",
+  tanggal: "",
+  jamMasuk: "",
+  jamKeluar: "",
+  keterangan: "",
+};
 
 interface FormDialogProps {
   open: boolean;
@@ -51,21 +60,14 @@ export function FormDialog({ open, onOpenChange, absensi }: FormDialogProps) {
 
   const form = useForm<TFormValues>({
     resolver: zodResolver(schemaForm),
-    defaultValues: {
-      pesertaMagangId: "",
-      kehadiran: "",
-      tanggal: "",
-      jamMasuk: "",
-      jamKeluar: "",
-      keterangan: "",
-    },
+    defaultValues: emptyForm,
   });
 
   useEffect(() => {
     if (open) {
       form.reset({
         pesertaMagangId: absensi?.pesertaMagangId ?? "",
-        kehadiran: absensi?.kehadiran ?? "",
+        kehadiran: absensi?.kehadiran ?? "Hadir",
         tanggal: toDateInput(absensi?.tanggal),
         jamMasuk: toTimeInput(absensi?.jamMasuk),
         jamKeluar: toTimeInput(absensi?.jamKeluar),
@@ -150,7 +152,7 @@ export function FormDialog({ open, onOpenChange, absensi }: FormDialogProps) {
                 <SingleSelect
                   options={KEHADIRAN_OPTIONS.map((k) => ({ label: k, value: k }))}
                   value={field.value}
-                  onChange={(v) => field.onChange(v ?? "")}
+                  onChange={(v) => field.onChange(v ?? "Hadir")}
                   placeholder="Pilih kehadiran"
                 />
                 <FieldError errors={[error]} />
