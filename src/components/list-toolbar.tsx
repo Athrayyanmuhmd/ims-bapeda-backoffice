@@ -23,11 +23,11 @@ export function ListToolbar({
   return (
     <div
       className={cn(
-        "flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between",
+        "flex flex-col gap-3 rounded-xl border border-[#E8EEF0] bg-[#F7FAFB] p-3 sm:flex-row sm:items-center sm:justify-between",
         className
       )}
     >
-      <InputGroup className="w-full border-[#D7E2E5] bg-[#F7FAFB] sm:max-w-sm">
+      <InputGroup className="w-full border-[#D7E2E5] bg-white sm:max-w-sm">
         <InputGroupInput
           placeholder={searchPlaceholder}
           defaultValue={defaultSearchValue}

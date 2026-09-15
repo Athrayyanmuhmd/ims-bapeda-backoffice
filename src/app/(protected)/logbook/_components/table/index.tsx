@@ -67,6 +67,7 @@ export default function TableLogbook() {
         eyebrow="Kegiatan"
         title="Logbook"
         description="Logbook harian kegiatan peserta magang."
+        icon="mdi:notebook-outline"
       />
 
       <ListPageCard>

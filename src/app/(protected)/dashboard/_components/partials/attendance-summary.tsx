@@ -36,8 +36,8 @@ export default function AttendanceSummary() {
   ];
 
   return (
-    <Card className="h-full border-[#E2E8EA] shadow-[0_1px_2px_rgba(15,76,92,0.04)]">
-      <CardHeader>
+    <Card className="relative h-full overflow-hidden border-[#E2E8EA] shadow-[0_1px_2px_rgba(15,76,92,0.04)] before:absolute before:inset-y-0 before:left-0 before:w-1 before:bg-[#175e86] before:content-['']">
+      <CardHeader className="pl-7">
         <CardTitle>Ringkasan Kehadiran</CardTitle>
         <CardAction>
           <Link href="/absensi" className="text-primary text-sm font-medium hover:underline">
@@ -45,12 +45,12 @@ export default function AttendanceSummary() {
           </Link>
         </CardAction>
       </CardHeader>
-      <CardContent>
+      <CardContent className="pl-7">
         {isLoading ? (
           <Skeleton className="h-24 w-full" />
         ) : (
           <div className="flex flex-col gap-4">
-            <div className="flex h-2.5 w-full overflow-hidden rounded-full">
+            <div className="flex h-2.5 w-full overflow-hidden rounded-full bg-[#EEF2F3]">
               {segments.map((s, i) => (
                 <div
                   key={i}
@@ -67,7 +67,7 @@ export default function AttendanceSummary() {
                 { label: "Sakit/Izin", value: sakitIzin },
                 { label: "Alpa", value: alpa },
               ].map((s) => (
-                <div key={s.label}>
+                <div key={s.label} className="rounded-lg bg-[#F7FAFB] px-2 py-2">
                   <p className="font-display text-xl font-semibold tabular-nums">{s.value}</p>
                   <p className="text-muted-foreground text-xs">{s.label}</p>
                 </div>

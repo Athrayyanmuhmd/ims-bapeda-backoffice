@@ -18,6 +18,7 @@ export default function Container() {
         eyebrow="Ringkasan"
         title="Dashboard"
         description={`Selamat datang kembali, ${user?.fullName ?? "User"}`}
+        icon="material-symbols:dashboard-outline"
       />
 
       <div className="grid min-w-0 gap-5 lg:grid-cols-3 lg:items-stretch">

@@ -67,6 +67,7 @@ export default function TablePenilaian() {
         eyebrow="Evaluasi"
         title="Penilaian"
         description="Nilai dan komentar akhir dari pembimbing untuk peserta magang."
+        icon="mdi:star-outline"
       />
 
       <ListPageCard>

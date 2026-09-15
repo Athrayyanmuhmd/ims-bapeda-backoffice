@@ -71,6 +71,7 @@ export default function TablePesertaMagang() {
         eyebrow="Operasional"
         title="Peserta Magang"
         description="Daftar peserta magang yang terdaftar di sistem."
+        icon="mynaui:book-user"
       />
 
       <ListPageCard>

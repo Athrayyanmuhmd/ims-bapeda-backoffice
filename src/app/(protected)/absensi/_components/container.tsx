@@ -18,6 +18,7 @@ export default function Container() {
         eyebrow="Kehadiran"
         title="Absensi"
         description="Catat kehadiran harian peserta magang dan kelola riwayatnya."
+        icon="mdi:clock-edit-outline"
         actions={
           <div className="bg-muted/80 flex items-center gap-1 rounded-xl border border-[#E2E8EA] p-1">
             <Button

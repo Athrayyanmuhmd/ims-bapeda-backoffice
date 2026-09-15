@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { TPesertaMagang } from "@/services/peserta-magang/types";
-import { STATUS_MAGANG_BADGE_CLASS } from "@/utils/status-badge";
+import { STATUS_MAGANG_BADGE_CLASS, BADGE_SIZE_CLASS } from "@/utils/status-badge";
 
 interface IColumnProps {
   onEdit?: (row: TPesertaMagang) => void;
@@ -72,14 +72,8 @@ export const createColumns = ({
       accessorKey: "status",
       cell: ({ row }) => {
         const status = row.original?.status;
-        const className = STATUS_MAGANG_BADGE_CLASS[status] ?? "text-red-600 bg-red-50";
-        return (
-          <span
-            className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${className}`}
-          >
-            {status}
-          </span>
-        );
+        const className = STATUS_MAGANG_BADGE_CLASS[status] ?? "text-[#A33B3B] bg-[#FCEAEA]";
+        return <span className={`${BADGE_SIZE_CLASS} ${className}`}>{status}</span>;
       },
     },
     {
@@ -89,8 +83,8 @@ export const createColumns = ({
         const active = row.original?.hasPortalAccount;
         return (
           <span
-            className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${
-              active ? "bg-emerald-50 text-emerald-700" : "bg-muted text-muted-foreground"
+            className={`${BADGE_SIZE_CLASS} ${
+              active ? "bg-[#E8F3EE] text-[#1B6B4A]" : "bg-[#EEF2F3] text-[#5C6B72]"
             }`}
           >
             {active ? "Aktif" : "Nonaktif"}

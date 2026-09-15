@@ -18,7 +18,7 @@ function Badge({ label, className }: { label: string; className?: string }) {
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold",
+        "inline-flex h-6 min-w-[5.5rem] items-center justify-center rounded-md px-2.5 text-xs font-semibold leading-none whitespace-nowrap",
         className
       )}
     >

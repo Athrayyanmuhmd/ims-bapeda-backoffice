@@ -29,8 +29,8 @@ export default function TodayHighlight() {
   const hadirCount = todayRecords.filter((a) => a.kehadiran === "Hadir").length;
 
   return (
-    <Card className="h-full border-[#E2E8EA] shadow-[0_1px_2px_rgba(15,76,92,0.04)]">
-      <CardHeader>
+    <Card className="relative h-full overflow-hidden border-[#E2E8EA] shadow-[0_1px_2px_rgba(15,76,92,0.04)] before:absolute before:inset-y-0 before:left-0 before:w-1 before:bg-[#1B6B4A] before:content-['']">
+      <CardHeader className="pl-7">
         <CardTitle>Absensi Hari Ini</CardTitle>
         <CardAction>
           <Link href="/absensi" className="text-primary text-sm font-medium hover:underline">
@@ -41,7 +41,7 @@ export default function TodayHighlight() {
           {today.setLocale("id").toFormat("cccc, d LLLL yyyy")}
         </p>
       </CardHeader>
-      <CardContent>
+      <CardContent className="pl-7">
         {isLoading ? (
           <Skeleton className="h-24 w-full" />
         ) : (

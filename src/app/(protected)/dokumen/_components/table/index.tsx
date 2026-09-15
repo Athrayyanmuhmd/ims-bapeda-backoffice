@@ -62,6 +62,7 @@ export default function TableDokumen() {
         eyebrow="Berkas"
         title="Dokumen"
         description="Surat pengantar, surat balasan, sertifikat, dan laporan peserta magang."
+        icon="mdi:file-document-outline"
       />
 
       <ListPageCard>
