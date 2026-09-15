@@ -27,11 +27,6 @@ const SUMMARY_CONFIG = [
     tone: "bg-orange-50 text-orange-700 ring-orange-100",
   },
   {
-    key: "pending",
-    label: "Menunggu",
-    tone: "bg-amber-50 text-amber-700 ring-amber-100",
-  },
-  {
     key: "alpa",
     label: "Alpa",
     tone: "bg-red-50 text-red-700 ring-red-100",
@@ -127,11 +122,15 @@ export default function AbsensiHariIni() {
   }, [roster]);
 
   const summary = useMemo(() => {
-    const counts = { hadir: 0, sakitIzin: 0, pending: 0, alpa: 0, belum: 0 };
+    const counts = { hadir: 0, sakitIzin: 0, alpa: 0, belum: 0 };
     roster.forEach((p) => {
-      if (p.izinStatus === "PENDING") counts.pending++;
-      else if (p.kehadiran === "Hadir") counts.hadir++;
-      else if (p.kehadiran === "Sakit" || p.kehadiran === "Izin") counts.sakitIzin++;
+      if (p.kehadiran === "Hadir") counts.hadir++;
+      else if (
+        p.izinStatus === "PENDING" ||
+        p.kehadiran === "Sakit" ||
+        p.kehadiran === "Izin"
+      )
+        counts.sakitIzin++;
       else if (p.kehadiran === "Alpa") counts.alpa++;
       else counts.belum++;
     });
@@ -215,17 +214,17 @@ export default function AbsensiHariIni() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        <div className="flex items-center gap-2">
+      <div className="flex flex-col gap-3 rounded-xl border border-[#E2E8EA] bg-white p-3 shadow-[0_1px_2px_rgba(15,76,92,0.04)] lg:flex-row lg:items-stretch lg:gap-4">
+        <div className="flex shrink-0 items-center justify-center gap-2 lg:justify-start lg:pr-2">
           <Button
             variant="outline"
             size="icon"
-            className="size-8"
+            className="size-8 shrink-0"
             onClick={() => setSelectedDate((d) => d.minus({ days: 1 }))}
           >
             <Icon icon="lucide:chevron-left" />
           </Button>
-          <div className="min-w-40 px-1">
+          <div className="min-w-[9.5rem] px-1 text-center lg:min-w-44 lg:text-left">
             <p className="text-sm font-semibold tracking-tight">
               {selectedDate.setLocale("id").toFormat("cccc, d LLL yyyy")}
             </p>
@@ -240,23 +239,28 @@ export default function AbsensiHariIni() {
           <Button
             variant="outline"
             size="icon"
-            className="size-8"
+            className="size-8 shrink-0"
             onClick={() => setSelectedDate((d) => d.plus({ days: 1 }))}
           >
             <Icon icon="lucide:chevron-right" />
           </Button>
         </div>
 
-        <div className="grid w-full grid-cols-5 gap-1.5 sm:max-w-lg sm:flex-1">
+        <div
+          className="hidden w-px shrink-0 bg-[#E8EEF0] lg:block"
+          aria-hidden
+        />
+
+        <div className="grid min-w-0 flex-1 grid-cols-4 gap-2">
           {SUMMARY_CONFIG.map((s) => (
             <div
               key={s.key}
               className={cn(
-                "flex flex-col items-center justify-center gap-1 rounded-lg px-1 py-2 ring-1 ring-inset",
+                "flex min-h-[3.25rem] flex-col items-center justify-center gap-1 rounded-lg px-2 py-2 ring-1 ring-inset",
                 s.tone
               )}
             >
-              <span className="font-display text-xl font-semibold tabular-nums leading-none sm:text-2xl">
+              <span className="font-display text-xl font-semibold tabular-nums leading-none lg:text-2xl">
                 {summary[s.key]}
               </span>
               <span className="text-center text-[10px] font-semibold tracking-wide uppercase opacity-80">

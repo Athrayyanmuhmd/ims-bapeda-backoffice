@@ -90,29 +90,28 @@ export function ExportCsv() {
   };
 
   return (
-    <div className="flex flex-col gap-3 rounded-lg border border-dashed p-3 sm:flex-row sm:items-end">
-      <div className="flex flex-1 flex-col gap-1.5">
-        <span className="text-muted-foreground text-xs font-semibold">Dari Tanggal</span>
-        <Input
-          type="date"
-          value={dariTanggal}
-          max={sampaiTanggal || undefined}
-          onChange={(e) => setDariTanggal(e.target.value)}
-        />
-      </div>
-
-      <div className="flex flex-1 flex-col gap-1.5">
-        <span className="text-muted-foreground text-xs font-semibold">Sampai Tanggal</span>
-        <Input
-          type="date"
-          value={sampaiTanggal}
-          min={dariTanggal || undefined}
-          onChange={(e) => setSampaiTanggal(e.target.value)}
-        />
-      </div>
-
+    <div className="flex w-full flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+      <Input
+        type="date"
+        aria-label="Dari tanggal"
+        title="Dari tanggal"
+        value={dariTanggal}
+        max={sampaiTanggal || undefined}
+        onChange={(e) => setDariTanggal(e.target.value)}
+        className="h-9 w-full border-[#D7E2E5] bg-white sm:w-auto sm:min-w-[10.5rem]"
+      />
+      <Input
+        type="date"
+        aria-label="Sampai tanggal"
+        title="Sampai tanggal"
+        value={sampaiTanggal}
+        min={dariTanggal || undefined}
+        onChange={(e) => setSampaiTanggal(e.target.value)}
+        className="h-9 w-full border-[#D7E2E5] bg-white sm:w-auto sm:min-w-[10.5rem]"
+      />
       <Button
         variant="outline"
+        className="h-9 w-full border-[#D7E2E5] bg-white sm:w-auto"
         onClick={onExport}
         isLoading={isExporting}
         disabled={isExporting || isRangeInverted}

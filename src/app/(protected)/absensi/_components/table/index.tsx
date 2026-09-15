@@ -1,6 +1,5 @@
 "use client";
 
-import { Icon } from "@iconify/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { debounce } from "lodash";
 import { useMemo, useState } from "react";
@@ -10,23 +9,23 @@ import { DataTable } from "@/components/data-table";
 import { ListFilters } from "@/components/list-filters";
 import { ListPageCard } from "@/components/list-page-card";
 import { ListToolbar } from "@/components/list-toolbar";
-import { Button } from "@/components/ui/button";
 import { queryKeys } from "@/constants/query-keys";
 import { useQueryBuilder } from "@/hooks/use-query-builder";
 import { services } from "@/services";
 import type { TAbsensi } from "@/services/absensi/types";
 import { ExportCsv } from "../export-csv";
-import { FormDialog } from "../form-dialog";
 import { createColumns } from "./columns";
 
-export default function TableAbsensi() {
+type TableAbsensiProps = {
+  onEdit: (row: TAbsensi) => void;
+};
+
+export default function TableAbsensi({ onEdit }: TableAbsensiProps) {
   const queryClient = useQueryClient();
   const { params, page, rows, setPage, setSearch, setFilter, filters } = useQueryBuilder({
     defaultSearchKeys: ["name"],
   });
 
-  const [formOpen, setFormOpen] = useState(false);
-  const [selected, setSelected] = useState<TAbsensi | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<TAbsensi | null>(null);
 
   const { data, isFetching } = useQuery({
@@ -49,10 +48,7 @@ export default function TableAbsensi() {
   const debouncedSearch = useMemo(() => debounce(setSearch, 400), [setSearch]);
 
   const columns = createColumns({
-    onEdit: (row) => {
-      setSelected(row);
-      setFormOpen(true);
-    },
+    onEdit,
     onDelete: (row) => setDeleteTarget(row),
     currentPage: page,
     pageSize: rows,
@@ -68,21 +64,7 @@ export default function TableAbsensi() {
         searchPlaceholder="Cari nama peserta..."
         onSearch={debouncedSearch}
         filters={<ListFilters values={filters} onChange={setFilter} showKehadiran />}
-        action={
-          <div className="flex w-full flex-wrap items-center justify-end gap-2 sm:w-auto">
-            <ExportCsv />
-            <Button
-              className="w-full sm:w-auto"
-              onClick={() => {
-                setSelected(null);
-                setFormOpen(true);
-              }}
-            >
-              <Icon icon="lucide:plus" />
-              Tambah Absensi
-            </Button>
-          </div>
-        }
+        extras={<ExportCsv />}
       />
 
       <DataTable
@@ -97,8 +79,6 @@ export default function TableAbsensi() {
         totalData={totalData}
         loading={isFetching}
       />
-
-      <FormDialog open={formOpen} onOpenChange={setFormOpen} absensi={selected} />
 
       <ConfirmDialog
         open={!!deleteTarget}
