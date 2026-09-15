@@ -1,8 +1,8 @@
-﻿"use client";
+"use client";
 
 import { Icon } from "@iconify/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { debounce } from "lodash";
+import { debounce } from "@/utils/debounce";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { ConfirmDialog } from "@/components/confirm-dialog";
@@ -55,7 +55,7 @@ export default function TablePesertaMagang() {
       setSelected(row);
       setFormOpen(true);
     },
-    // Admin-only server-side too (peserta-magang routes) — this just avoids
+    // Admin-only server-side too (peserta-magang routes) � this just avoids
     // offering an action that would come back 403.
     onDelete: isAdmin ? (row) => setDeleteTarget(row) : undefined,
     currentPage: page,

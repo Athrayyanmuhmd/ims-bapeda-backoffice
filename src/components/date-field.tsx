@@ -1,6 +1,6 @@
 "use client";
 
-import { Icon } from "@iconify/react";
+import { Calendar } from "lucide-react";
 import { cn } from "@/utils/classname";
 import { fmtTanggalShort } from "@/utils/datetime";
 
@@ -12,14 +12,11 @@ type DateFieldProps = {
   max?: string;
   disabled?: boolean;
   className?: string;
-  /** Shown when empty — default Indonesian date mask. */
-  emptyLabel?: string;
 };
 
 /**
- * iOS Safari paints empty `<input type="date">` as a blank box. We overlay a
- * visible hh/bb/tttt (or selected dd/MM/yyyy) and keep the native picker
- * transparent on top for the actual interaction.
+ * iOS Safari paints empty `<input type="date">` as a blank box. We overlay
+ * hh/bb/tttt (or selected dd/MM/yyyy) and keep the native picker transparent.
  */
 export function DateField({
   label,
@@ -29,7 +26,6 @@ export function DateField({
   max,
   disabled,
   className,
-  emptyLabel = "hh/bb/tttt",
 }: DateFieldProps) {
   const display = value ? fmtTanggalShort(`${value}T00:00:00.000Z`) : null;
 
@@ -46,8 +42,8 @@ export function DateField({
             display ? "text-[#1C2A30]" : "text-[#9AA4AA]"
           )}
         >
-          <Icon icon="lucide:calendar" className="size-4 shrink-0 text-[#5C6B72]" />
-          <span className="min-w-0 truncate tabular-nums">{display ?? emptyLabel}</span>
+          <Calendar className="size-4 shrink-0 text-[#5C6B72]" />
+          <span className="min-w-0 truncate tabular-nums">{display ?? "hh/bb/tttt"}</span>
         </div>
         <input
           type="date"

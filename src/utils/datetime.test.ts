@@ -4,7 +4,6 @@ import {
   fmtJam,
   fmtTanggal,
   fmtTanggalShort,
-  hariKerjaEfektif,
   toDateInput,
   toTimeInput,
 } from "./datetime";
@@ -65,27 +64,5 @@ describe("daysUntil", () => {
     const base = daysUntil("2026-07-16T00:00:00.000Z");
     expect(daysUntil("2026-07-17T00:00:00.000Z")).toBe(base + 1);
     expect(daysUntil("2026-07-15T00:00:00.000Z")).toBe(base - 1);
-  });
-});
-
-describe("hariKerjaEfektif", () => {
-  it("counts weekdays through an explicit end date", () => {
-    // Mon 2026-08-10 .. Fri 2026-08-14 = 5 weekdays
-    expect(hariKerjaEfektif("2026-08-10T00:00:00.000Z", "2026-08-14T00:00:00.000Z", "2026-08-14")).toBe(
-      5
-    );
-  });
-
-  it("stops at today when the period is still open", () => {
-    // Period runs to Sep 30, but "today" is Aug 14 → same as through Aug 14
-    expect(hariKerjaEfektif("2026-08-10T00:00:00.000Z", "2026-09-30T00:00:00.000Z", "2026-08-14")).toBe(
-      5
-    );
-  });
-
-  it("uses selesai when the period has already ended", () => {
-    expect(hariKerjaEfektif("2026-08-10T00:00:00.000Z", "2026-08-12T00:00:00.000Z", "2026-08-20")).toBe(
-      3
-    );
   });
 });

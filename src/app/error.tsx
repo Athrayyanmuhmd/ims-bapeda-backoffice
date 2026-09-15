@@ -5,23 +5,18 @@ import { useEffect } from "react";
 const CHUNK_RELOAD_KEY = "simagang:chunk-reload";
 
 function isChunkLoadError(error: Error) {
-  const message = error.message || "";
   return (
     error.name === "ChunkLoadError" ||
-    /loading chunk|failed to load chunk|importing a module script failed/i.test(message)
+    /loading chunk|failed to load chunk|importing a module script failed/i.test(error.message || "")
   );
 }
 
 export default function GlobalError({
   error,
-  reset,
 }: {
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  // After a deploy (or Turbopack rebuild), old tabs keep hashed chunk URLs that
-  // 404. One hard reload usually picks up the new build; guard with sessionStorage
-  // so a real broken chunk can't loop forever.
   useEffect(() => {
     if (!isChunkLoadError(error)) return;
     if (sessionStorage.getItem(CHUNK_RELOAD_KEY) === "1") {
@@ -42,7 +37,6 @@ export default function GlobalError({
         type="button"
         onClick={() => {
           sessionStorage.removeItem(CHUNK_RELOAD_KEY);
-          reset();
           window.location.reload();
         }}
         className="bg-primary text-primary-foreground rounded-md px-4 py-2 text-sm font-medium"

@@ -8,7 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { queryKeys } from "@/constants/query-keys";
 import { services } from "@/services";
 import { KEHADIRAN_OPTIONS } from "@/services/absensi/types";
-import { fmtTanggalLong, fmtTanggalShort, hariKerjaEfektif, todayInApp } from "@/utils/datetime";
+import { fmtTanggalLong, fmtTanggalShort, todayInApp } from "@/utils/datetime";
 
 // Full history, not the 10-row preview the detail page shows.
 // ponytail: one capped request per section instead of paging. A single magang
@@ -91,10 +91,7 @@ export default function Container({ id }: { id: string }) {
   }));
 
   const totalHadir = rekap.find((r) => r.kehadiran === "Hadir")?.total ?? 0;
-  // Prefer API (includes national holidays); fall back to weekday-only client count.
-  const hariKerja =
-    peserta.hariKerjaPeriode ??
-    hariKerjaEfektif(peserta.tanggalMulai, peserta.tanggalSelesai);
+  const hariKerja = peserta.hariKerjaPeriode ?? 0;
   const persenKehadiran =
     hariKerja > 0 ? Math.min(100, Math.round((totalHadir / hariKerja) * 100)) : 0;
 

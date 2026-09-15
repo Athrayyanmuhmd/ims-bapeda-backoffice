@@ -62,37 +62,3 @@ export const daysUntil = (iso: string) =>
       .startOf("day")
       .diff(DateTime.fromISO(todayIsoDate(), { zone: "utc" }), "days").days
   );
-
-/** Inclusive weekday count (Mon–Fri). Fallback when API hasn't sent hariKerjaPeriode. */
-export const countWeekdaysInclusive = (
-  fromIso: string | null | undefined,
-  toIso: string | null | undefined
-): number => {
-  const from = toDateInput(fromIso);
-  const to = toDateInput(toIso);
-  if (!from || !to || from > to) return 0;
-
-  let count = 0;
-  let cursor = DateTime.fromISO(from, { zone: "utc" });
-  const end = DateTime.fromISO(to, { zone: "utc" });
-  while (cursor <= end) {
-    // Luxon: 1=Mon … 7=Sun
-    if (cursor.weekday <= 5) count += 1;
-    cursor = cursor.plus({ days: 1 });
-  }
-  return count;
-};
-
-/** Working days from mulai through min(today, selesai) — mirrors backend hariKerjaPeriode. */
-export const hariKerjaEfektif = (
-  tanggalMulai: string | null | undefined,
-  tanggalSelesai: string | null | undefined,
-  today = todayIsoDate()
-): number => {
-  const mulai = toDateInput(tanggalMulai);
-  const selesai = toDateInput(tanggalSelesai);
-  if (!mulai || !selesai) return 0;
-  const end = selesai < today ? selesai : today;
-  if (end < mulai) return 0;
-  return countWeekdaysInclusive(mulai, end);
-};

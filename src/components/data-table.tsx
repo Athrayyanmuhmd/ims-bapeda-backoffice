@@ -54,6 +54,8 @@ interface DataTableProps<TData> {
   totalData?: number;
   onClickRow?: (row: TData) => void;
   hideFooter?: boolean;
+  /** Mobile-only hint that the table scrolls horizontally. */
+  showScrollHint?: boolean;
 }
 
 function DraggableRow<TData>({
@@ -103,6 +105,7 @@ export function DataTable<TData>({
   totalData,
   onClickRow,
   hideFooter = false,
+  showScrollHint = false,
 }: DataTableProps<TData>) {
   const [data, setData] = useState(() => initialData);
   const [rowSelection, setRowSelection] = useState({});
@@ -216,10 +219,12 @@ export function DataTable<TData>({
   return (
     <div className="flex w-full min-w-0 flex-col justify-start gap-4 sm:gap-6">
       <div className="relative flex max-w-full min-w-0 flex-col gap-3">
-        <p className="text-muted-foreground flex items-center gap-1.5 text-[11px] sm:hidden">
-          <MoveHorizontalIcon className="size-3.5 shrink-0" />
-          Geser tabel ke samping untuk melihat semua kolom
-        </p>
+        {showScrollHint && (
+          <p className="text-muted-foreground flex items-center gap-1.5 text-[11px] sm:hidden">
+            <MoveHorizontalIcon className="size-3.5 shrink-0" />
+            Geser tabel ke samping untuk melihat semua kolom
+          </p>
+        )}
         <div className="w-full min-w-0 overflow-x-auto overscroll-x-contain rounded-lg border border-[#E8EEF0] [-webkit-overflow-scrolling:touch]">
           <div className="min-w-fit">
             <Table>
