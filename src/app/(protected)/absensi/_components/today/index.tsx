@@ -6,7 +6,6 @@ import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { ListFilters } from "@/components/list-filters";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
 import { Skeleton } from "@/components/ui/skeleton";
 import { queryKeys } from "@/constants/query-keys";
@@ -17,11 +16,31 @@ import { nowJam, todayInApp, todayIsoDate } from "@/utils/datetime";
 import { RosterItem, type RosterPeserta } from "./roster-item";
 
 const SUMMARY_CONFIG = [
-  { key: "hadir", label: "Hadir", color: "text-green-600" },
-  { key: "sakitIzin", label: "Sakit/Izin", color: "text-orange-600" },
-  { key: "pending", label: "Menunggu Izin", color: "text-amber-600" },
-  { key: "alpa", label: "Alpa", color: "text-red-600" },
-  { key: "belum", label: "Belum Absen", color: "text-muted-foreground" },
+  {
+    key: "hadir",
+    label: "Hadir",
+    tone: "bg-emerald-50 text-emerald-700 ring-emerald-100",
+  },
+  {
+    key: "sakitIzin",
+    label: "Sakit/Izin",
+    tone: "bg-orange-50 text-orange-700 ring-orange-100",
+  },
+  {
+    key: "pending",
+    label: "Menunggu",
+    tone: "bg-amber-50 text-amber-700 ring-amber-100",
+  },
+  {
+    key: "alpa",
+    label: "Alpa",
+    tone: "bg-red-50 text-red-700 ring-red-100",
+  },
+  {
+    key: "belum",
+    label: "Belum",
+    tone: "bg-slate-50 text-slate-600 ring-slate-200/80",
+  },
 ] as const;
 
 export default function AbsensiHariIni() {
@@ -196,47 +215,56 @@ export default function AbsensiHariIni() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div className="flex items-center gap-2">
           <Button
             variant="outline"
             size="icon"
+            className="size-8"
             onClick={() => setSelectedDate((d) => d.minus({ days: 1 }))}
           >
             <Icon icon="lucide:chevron-left" />
           </Button>
-          <div className="min-w-[170px]">
-            <p className="text-sm font-semibold">
+          <div className="min-w-40 px-1">
+            <p className="text-sm font-semibold tracking-tight">
               {selectedDate.setLocale("id").toFormat("cccc, d LLL yyyy")}
             </p>
-            {isToday && <p className="text-primary text-xs font-semibold">Hari ini</p>}
+            {isToday ? (
+              <p className="text-primary text-[11px] font-semibold tracking-wide uppercase">
+                Hari ini
+              </p>
+            ) : (
+              <p className="text-muted-foreground text-[11px]">Riwayat tanggal</p>
+            )}
           </div>
           <Button
             variant="outline"
             size="icon"
+            className="size-8"
             onClick={() => setSelectedDate((d) => d.plus({ days: 1 }))}
           >
             <Icon icon="lucide:chevron-right" />
           </Button>
         </div>
-      </div>
 
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
-        {SUMMARY_CONFIG.map((s) => (
-          <Card
-            key={s.key}
-            className="border-[#E2E8EA] shadow-[0_1px_2px_rgba(15,76,92,0.04)]"
-          >
-            <CardContent className="flex items-center justify-between py-4">
-              <span className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
-                {s.label}
-              </span>
-              <span className={cn("font-display text-2xl font-semibold tabular-nums", s.color)}>
+        <div className="grid w-full grid-cols-5 gap-1.5 sm:max-w-lg sm:flex-1">
+          {SUMMARY_CONFIG.map((s) => (
+            <div
+              key={s.key}
+              className={cn(
+                "flex flex-col items-center justify-center gap-1 rounded-lg px-1 py-2 ring-1 ring-inset",
+                s.tone
+              )}
+            >
+              <span className="font-display text-xl font-semibold tabular-nums leading-none sm:text-2xl">
                 {summary[s.key]}
               </span>
-            </CardContent>
-          </Card>
-        ))}
+              <span className="text-center text-[10px] font-semibold tracking-wide uppercase opacity-80">
+                {s.label}
+              </span>
+            </div>
+          ))}
+        </div>
       </div>
 
       <div className="flex flex-col gap-2.5 rounded-xl border border-[#E2E8EA] bg-white p-3 shadow-[0_1px_2px_rgba(15,76,92,0.04)]">

@@ -20,11 +20,14 @@ export default function Container() {
         description="Catat kehadiran harian peserta magang dan kelola riwayatnya."
         icon="mdi:clock-edit-outline"
         actions={
-          <div className="bg-muted/80 flex items-center gap-1 rounded-xl border border-[#E2E8EA] p-1">
+          <div className="bg-muted/80 flex w-full items-center gap-1 rounded-xl border border-[#E2E8EA] p-1 sm:w-auto">
             <Button
               size="sm"
               variant={tab === "today" ? "default" : "ghost"}
-              className={cn(tab !== "today" && "text-muted-foreground")}
+              className={cn(
+                "h-8 flex-1 px-3 sm:flex-none",
+                tab !== "today" && "text-muted-foreground"
+              )}
               onClick={() => setTab("today")}
             >
               Hari Ini
@@ -32,7 +35,10 @@ export default function Container() {
             <Button
               size="sm"
               variant={tab === "history" ? "default" : "ghost"}
-              className={cn(tab !== "history" && "text-muted-foreground")}
+              className={cn(
+                "h-8 flex-1 px-3 sm:flex-none",
+                tab !== "history" && "text-muted-foreground"
+              )}
               onClick={() => setTab("history")}
             >
               Riwayat
