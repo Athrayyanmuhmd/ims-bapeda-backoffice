@@ -5,6 +5,10 @@ import { deleteSession, getSession } from "./session";
 
 export const api = _axios.create({
   baseURL: env.NEXT_PUBLIC_BE_URL,
+  // Bounded so a cold/paused backend (free-tier Supabase wake-up) fails fast
+  // and hits the react-query retry instead of hanging on axios's default
+  // no-timeout behavior.
+  timeout: 15000,
 });
 
 api.interceptors.request.use(async (config) => {

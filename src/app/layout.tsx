@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Poppins } from "next/font/google";
 import { Suspense } from "react";
 import { ProgressBar } from "@/components/progress-bar";
@@ -51,6 +51,12 @@ export const metadata: Metadata = {
   icons: {
     icon: "/logo.png",
   },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
 };
 
 export default async function RootLayout({

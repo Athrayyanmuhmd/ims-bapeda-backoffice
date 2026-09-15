@@ -126,6 +126,13 @@
     @apply bg-background text-foreground;
     overflow-x: hidden;
   }
+  /* iOS Safari date inputs have a large intrinsic min-width that blows past cards. */
+  input[type="date"],
+  input[type="time"],
+  input[type="datetime-local"] {
+    max-width: 100%;
+    min-width: 0;
+  }
 }
 
 /* Printing the laporan magang: full A4 width. Hide chrome with display:none

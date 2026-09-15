@@ -48,7 +48,7 @@ function Section({
   return (
     <section
       className={cn(
-        "rounded-xl border border-[#E2E8EA] bg-white p-4 shadow-[0_1px_2px_rgba(15,76,92,0.04)] sm:p-5",
+        "min-w-0 rounded-xl border border-[#E2E8EA] bg-white p-4 shadow-[0_1px_2px_rgba(15,76,92,0.04)] sm:p-5",
         className
       )}
     >
@@ -290,7 +290,7 @@ export default function Container({ peserta }: { peserta: TPortalPeserta }) {
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-7xl px-4 py-5 pb-28 sm:px-6 sm:py-8 sm:pb-10 lg:px-8">
+      <main className="mx-auto w-full max-w-7xl px-4 py-5 pb-[calc(7.5rem+env(safe-area-inset-bottom))] sm:px-6 sm:py-8 sm:pb-10 lg:px-8">
         {/* Page heading */}
         <div className="mb-5 flex flex-col gap-1 sm:mb-6 sm:flex-row sm:items-end sm:justify-between">
           <div className="min-w-0">
@@ -345,10 +345,12 @@ export default function Container({ peserta }: { peserta: TPortalPeserta }) {
           </div>
         </div>
 
-        {/* Primary workspace: equal-height columns so Logbook bottom aligns with Dokumen */}
+        {/* Primary workspace: equal-height columns only from lg up.
+            On mobile, h-full/flex-1 constrained the Logbook card and let
+            "Entri terakhir" paint over the aside (Masa magang / Kehadiran). */}
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:items-stretch lg:gap-5">
           {/* Left / main */}
-          <div className="flex h-full min-h-0 flex-col gap-4 lg:col-span-7 xl:col-span-8">
+          <div className="flex min-h-0 flex-col gap-4 lg:col-span-7 lg:h-full xl:col-span-8">
             <Section
               eyebrow="Hari ini"
               title={fmtTanggalLong(`${todayIsoDate()}T00:00:00.000Z`)}
@@ -423,7 +425,7 @@ export default function Container({ peserta }: { peserta: TPortalPeserta }) {
             <Section
               eyebrow="Kegiatan"
               title="Logbook"
-              className="scroll-mt-24 flex min-h-0 flex-1 flex-col"
+              className="scroll-mt-24 flex flex-col lg:min-h-0 lg:flex-1"
             >
               <div id="logbook-form" className="shrink-0">
                 <LogbookForm
@@ -437,7 +439,7 @@ export default function Container({ peserta }: { peserta: TPortalPeserta }) {
                 />
               </div>
 
-              <div className="mt-5 flex min-h-0 flex-1 flex-col border-t border-[#EDE8E0] pt-4">
+              <div className="mt-5 flex flex-col border-t border-[#EDE8E0] pt-4 lg:min-h-0 lg:flex-1">
                 <p className="mb-3 shrink-0 text-[11px] font-semibold tracking-[0.12em] text-[#7A8790] uppercase">
                   Entri terakhir
                 </p>
@@ -480,7 +482,7 @@ export default function Container({ peserta }: { peserta: TPortalPeserta }) {
           </div>
 
           {/* Right rail */}
-          <aside className="flex h-full min-h-0 flex-col gap-4 lg:col-span-5 xl:col-span-4">
+          <aside className="flex min-h-0 flex-col gap-4 lg:col-span-5 lg:h-full xl:col-span-4">
             {(profile.sisaHariKerja != null || profile.tanggalSelesai) && (
               <Section eyebrow="Periode" title="Masa magang" className="shrink-0">
                 <div className="flex items-end justify-between gap-3">
@@ -533,7 +535,7 @@ export default function Container({ peserta }: { peserta: TPortalPeserta }) {
             <Section
               eyebrow="Riwayat"
               title="Kehadiran"
-              className="min-h-0 flex-1"
+              className="lg:min-h-0 lg:flex-1 lg:overflow-hidden"
               action={
                 <Button
                   asChild
@@ -652,7 +654,7 @@ export default function Container({ peserta }: { peserta: TPortalPeserta }) {
       </main>
 
       {/* Mobile action dock */}
-      <div className="fixed inset-x-0 bottom-0 z-20 border-t border-[#D7E2E5] bg-white/95 p-3 backdrop-blur sm:hidden">
+      <div className="fixed inset-x-0 bottom-0 z-20 border-t border-[#D7E2E5] bg-white/95 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur sm:hidden">
         {!hasCheckedIn &&
           !hasFinalIzin &&
           !isPendingIzin &&

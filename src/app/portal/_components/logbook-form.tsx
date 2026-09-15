@@ -16,6 +16,7 @@ import {
   type TPortalLogbookRequest,
 } from "@/services/portal/types";
 import { todayIsoDate } from "@/utils/datetime";
+import { cn } from "@/utils/classname";
 
 interface LogbookFormProps {
   onSaved: () => void;
@@ -80,7 +81,7 @@ export default function LogbookForm({
   });
 
   return (
-    <form onSubmit={onSubmit} className={embedded ? "" : "rounded-2xl border p-4"}>
+    <form onSubmit={onSubmit} className={cn("min-w-0 w-full", embedded ? "" : "rounded-2xl border p-4")}>
       {!embedded && (
         <h3 className="mb-3 font-display text-base font-semibold">
           {isEdit ? "Edit logbook" : "Tulis logbook"}
@@ -98,7 +99,7 @@ export default function LogbookForm({
                 type="date"
                 max={today}
                 disabled={isEdit}
-                className="border-[#DFD9CF] bg-white"
+                className="w-full min-w-0 max-w-full border-[#DFD9CF] bg-white"
                 lang="id-ID"
                 {...field}
               />

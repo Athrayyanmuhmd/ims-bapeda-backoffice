@@ -90,7 +90,7 @@ export function ExportCsv() {
   };
 
   return (
-    <div className="flex w-full flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+    <div className="flex w-full min-w-0 flex-col gap-2 md:flex-row md:flex-wrap md:items-center">
       <Input
         type="date"
         aria-label="Dari tanggal"
@@ -98,7 +98,7 @@ export function ExportCsv() {
         value={dariTanggal}
         max={sampaiTanggal || undefined}
         onChange={(e) => setDariTanggal(e.target.value)}
-        className="h-9 w-full border-[#D7E2E5] bg-white sm:w-auto sm:min-w-[10.5rem]"
+        className="h-9 w-full min-w-0 max-w-full border-[#D7E2E5] bg-white md:w-auto md:min-w-[10.5rem]"
       />
       <Input
         type="date"
@@ -107,11 +107,11 @@ export function ExportCsv() {
         value={sampaiTanggal}
         min={dariTanggal || undefined}
         onChange={(e) => setSampaiTanggal(e.target.value)}
-        className="h-9 w-full border-[#D7E2E5] bg-white sm:w-auto sm:min-w-[10.5rem]"
+        className="h-9 w-full min-w-0 max-w-full border-[#D7E2E5] bg-white md:w-auto md:min-w-[10.5rem]"
       />
       <Button
         variant="outline"
-        className="h-9 w-full border-[#D7E2E5] bg-white sm:w-auto"
+        className="h-9 w-full shrink-0 border-[#D7E2E5] bg-white md:w-auto"
         onClick={onExport}
         isLoading={isExporting}
         disabled={isExporting || isRangeInverted}

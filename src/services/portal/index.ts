@@ -19,7 +19,7 @@ import type {
 // A separate axios instance from `api`: the portal carries a different token
 // from a different cookie, and on 401 it must return to the portal login rather
 // than the backoffice one.
-const portalApi = _axios.create({ baseURL: `${env.NEXT_PUBLIC_BE_URL}/portal` });
+const portalApi = _axios.create({ baseURL: `${env.NEXT_PUBLIC_BE_URL}/portal`, timeout: 15000 });
 
 portalApi.interceptors.request.use(async (config) => {
   const url = config.url ?? "";

@@ -13,11 +13,11 @@ export function ListPageCard({ children, className, contentClassName }: ListPage
   return (
     <Card
       className={cn(
-        "border-[#E2E8EA] bg-white shadow-[0_1px_2px_rgba(15,76,92,0.04)]",
+        "min-w-0 border-[#E2E8EA] bg-white shadow-[0_1px_2px_rgba(15,76,92,0.04)]",
         className
       )}
     >
-      <CardContent className={cn("flex flex-col gap-4 pt-6", contentClassName)}>
+      <CardContent className={cn("flex min-w-0 flex-col gap-4 pt-6", contentClassName)}>
         {children}
       </CardContent>
     </Card>
