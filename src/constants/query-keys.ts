@@ -64,6 +64,7 @@ export const queryKeys = {
     all: ["user"] as const,
     list: (params: unknown) => [...queryKeys.user.all, "list", params] as const,
     options: () => [...queryKeys.user.all, "options"] as const,
+    detail: (id: string) => [...queryKeys.user.all, "detail", id] as const,
   },
   notifications: {
     all: ["notifications"] as const,

@@ -34,6 +34,14 @@ export async function setSession(value: TLoginResponse) {
   };
 }
 
+/** Keep the JWT; refresh only the user payload after self-service profile edits. */
+export async function updateSessionUser(user: TLoginResponse["user"]) {
+  const cookieStore = await cookies();
+  const options = sessionCookieOptions();
+  cookieStore.set(userCookieKey, JSON.stringify(user), options);
+  return user;
+}
+
 export async function deleteSession() {
   const cookieStore = await cookies();
 

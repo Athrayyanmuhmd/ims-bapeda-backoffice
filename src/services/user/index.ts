@@ -9,6 +9,8 @@ import type {
   TGetDetailUserResponse,
   TUpdateUserRequest,
   TUpdateUserResponse,
+  TUpdateOwnProfileRequest,
+  TUpdateOwnProfileResponse,
 } from "./types";
 
 export const getAllUser = async (data: TGetAllUserRequest) => {
@@ -55,6 +57,15 @@ export const updateUser = async (id: string, data: TUpdateUserRequest) => {
 
 // Always acts on the logged-in user — the backend takes the target from the
 // token, so there's no id to pass here.
+export const updateOwnProfile = async (data: TUpdateOwnProfileRequest) => {
+  try {
+    const response = await api.put<TResponse<TUpdateOwnProfileResponse>>("/users/me", data);
+    return response.data;
+  } catch (error) {
+    throw getError(error);
+  }
+};
+
 export const changeOwnPassword = async (data: TChangePasswordRequest) => {
   try {
     const response = await api.post<TResponse<null>>("/users/change-password", data);

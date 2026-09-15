@@ -97,3 +97,71 @@ export type TChangePasswordRequest = {
   currentPassword: string;
   newPassword: string;
 };
+
+const phoneOptional = z
+  .string()
+  .optional()
+  .refine(
+    (value) => {
+      if (!value) return true;
+      const compact = value.replace(/[\s\-()]/g, "");
+      return /^(\+62|62|0)8[1-9][0-9]{7,11}$/.test(compact);
+    },
+    { message: "Format nomor HP tidak valid (contoh: 081234567890)" }
+  );
+
+export const schemaUpdateOwnProfileRequest = z
+  .object({
+    fullName: z.string().min(1, "Nama wajib diisi"),
+    phoneNumber: phoneOptional,
+    currentPassword: z.string().optional(),
+    newPassword: z.string().optional(),
+    confirmPassword: z.string().optional(),
+  })
+  .superRefine((data, ctx) => {
+    const changing =
+      !!data.newPassword?.trim() ||
+      !!data.confirmPassword?.trim() ||
+      !!data.currentPassword?.trim();
+    if (!changing) return;
+
+    if (!data.currentPassword?.trim()) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Password saat ini wajib diisi",
+        path: ["currentPassword"],
+      });
+    }
+    if (!data.newPassword || data.newPassword.length < 8) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Password baru minimal 8 karakter",
+        path: ["newPassword"],
+      });
+    }
+    if (data.newPassword !== data.confirmPassword) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Konfirmasi password tidak sama",
+        path: ["confirmPassword"],
+      });
+    }
+    if (data.newPassword && data.currentPassword && data.newPassword === data.currentPassword) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Password baru harus berbeda dari password saat ini",
+        path: ["newPassword"],
+      });
+    }
+  });
+
+export type TUpdateOwnProfileForm = z.infer<typeof schemaUpdateOwnProfileRequest>;
+
+export type TUpdateOwnProfileRequest = {
+  fullName: string;
+  phoneNumber?: string;
+  currentPassword?: string;
+  newPassword?: string;
+};
+
+export type TUpdateOwnProfileResponse = TUser;

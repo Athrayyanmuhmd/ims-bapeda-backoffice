@@ -25,6 +25,17 @@ export async function setPortalSession(value: { token: string; peserta: TPortalP
   return { accessToken: value.token, peserta: value.peserta };
 }
 
+/** Keep the portal JWT; refresh only the peserta payload after profile edits. */
+export async function updatePortalPeserta(peserta: TPortalPeserta) {
+  const cookieStore = await cookies();
+  const token = cookieStore.get(portalTokenCookieKey)?.value;
+  if (!token) return null;
+
+  const options = sessionCookieOptions();
+  cookieStore.set(portalPesertaCookieKey, JSON.stringify(peserta), options);
+  return peserta;
+}
+
 export async function deletePortalSession() {
   const cookieStore = await cookies();
 

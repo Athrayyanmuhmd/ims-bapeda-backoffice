@@ -19,14 +19,14 @@ import { NAVIGATION } from "@/constants/navigation";
 import { useAuth } from "@/stores/auth";
 import { usePathname } from "next/navigation";
 import { NotificationBell } from "./notification-bell";
-import DialogChangePassword from "./partials/dialog-change-password";
+import DialogEditProfile from "./partials/dialog-edit-profile";
 import DialogLogout from "./partials/dialog-logout";
 
 export default function AppHeader() {
   const { user } = useAuth();
   const pathname = usePathname();
   const logoutDialogRef = useRef<IModalRef>(null);
-  const [changePasswordOpen, setChangePasswordOpen] = useState(false);
+  const [editProfileOpen, setEditProfileOpen] = useState(false);
 
   const pageTitle =
     NAVIGATION.find((item) => pathname === item.href || pathname.startsWith(`${item.href}/`))
@@ -80,10 +80,10 @@ export default function AppHeader() {
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 className="inline-flex w-full cursor-pointer items-center gap-2"
-                onClick={() => setChangePasswordOpen(true)}
+                onClick={() => setEditProfileOpen(true)}
               >
-                <Icon icon="mdi:key-outline" className="size-4" />
-                <span>Ganti Password</span>
+                <Icon icon="mdi:account-edit-outline" className="size-4" />
+                <span>Edit Profil</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -95,7 +95,7 @@ export default function AppHeader() {
         </div>
       </header>
       <DialogLogout dialogRef={logoutDialogRef} />
-      <DialogChangePassword open={changePasswordOpen} onOpenChange={setChangePasswordOpen} />
+      <DialogEditProfile open={editProfileOpen} onOpenChange={setEditProfileOpen} />
     </>
   );
 }

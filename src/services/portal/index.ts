@@ -66,6 +66,13 @@ export const login = (data: TPortalLoginRequest) =>
 
 export const getProfile = () => unwrap(portalApi.get<TResponse<TPortalPeserta>>("/me"));
 
+export const updateProfile = (data: {
+  name: string;
+  phoneNumber?: string;
+  currentPassword?: string;
+  newPassword?: string;
+}) => unwrap(portalApi.put<TResponse<TPortalPeserta>>("/me", data));
+
 export const changePassword = (data: { currentPassword: string; newPassword: string }) =>
   unwrap(portalApi.post<TResponse<null>>("/change-password", data));
 

@@ -11,7 +11,7 @@ import { services } from "@/services";
 import type { TPortalLogbook, TPortalPeserta } from "@/services/portal/types";
 import { cn } from "@/utils/classname";
 import { fmtJam, fmtTanggal, fmtTanggalLong, todayIsoDate } from "@/utils/datetime";
-import ChangePasswordDialog from "./change-password-dialog";
+import EditProfileDialog from "./edit-profile-dialog";
 import IzinDialog from "./izin-dialog";
 import LogbookForm from "./logbook-form";
 
@@ -95,7 +95,7 @@ function TimeBlock({ label, value }: { label: string; value: string }) {
 export default function Container({ peserta }: { peserta: TPortalPeserta }) {
   const queryClient = useQueryClient();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-  const [changePasswordOpen, setChangePasswordOpen] = useState(false);
+  const [editProfileOpen, setEditProfileOpen] = useState(false);
   const [izinOpen, setIzinOpen] = useState(false);
   const [editingLogbook, setEditingLogbook] = useState<TPortalLogbook | null>(null);
 
@@ -270,10 +270,10 @@ export default function Container({ peserta }: { peserta: TPortalPeserta }) {
                 variant="ghost"
                 size="icon"
                 className="size-9 text-[#5C6B72] hover:bg-[#F0F4F5] hover:text-[#0F4C5C]"
-                onClick={() => setChangePasswordOpen(true)}
-                aria-label="Ganti password"
+                onClick={() => setEditProfileOpen(true)}
+                aria-label="Edit profil"
               >
-                <Icon icon="mdi:lock-reset" className="size-5" />
+                <Icon icon="mdi:account-edit-outline" className="size-5" />
               </Button>
               <Button
                 variant="ghost"
@@ -691,7 +691,11 @@ export default function Container({ peserta }: { peserta: TPortalPeserta }) {
         </div>
       </div>
 
-      <ChangePasswordDialog open={changePasswordOpen} onOpenChange={setChangePasswordOpen} />
+      <EditProfileDialog
+        open={editProfileOpen}
+        onOpenChange={setEditProfileOpen}
+        profile={profile}
+      />
       <IzinDialog open={izinOpen} onOpenChange={setIzinOpen} onSaved={invalidateAbsensi} />
     </div>
   );
