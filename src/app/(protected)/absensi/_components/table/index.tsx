@@ -7,6 +7,7 @@ import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { DataTable } from "@/components/data-table";
+import { ListFilters } from "@/components/list-filters";
 import { ListPageCard } from "@/components/list-page-card";
 import { ListToolbar } from "@/components/list-toolbar";
 import { Button } from "@/components/ui/button";
@@ -20,7 +21,7 @@ import { createColumns } from "./columns";
 
 export default function TableAbsensi() {
   const queryClient = useQueryClient();
-  const { params, page, rows, setPage, setSearch } = useQueryBuilder({
+  const { params, page, rows, setPage, setSearch, setFilter, filters } = useQueryBuilder({
     defaultSearchKeys: ["name"],
   });
 
@@ -66,10 +67,12 @@ export default function TableAbsensi() {
       <ListToolbar
         searchPlaceholder="Cari nama peserta..."
         onSearch={debouncedSearch}
+        filters={<ListFilters values={filters} onChange={setFilter} showKehadiran />}
         action={
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex w-full flex-wrap items-center justify-end gap-2 sm:w-auto">
             <ExportCsv />
             <Button
+              className="w-full sm:w-auto"
               onClick={() => {
                 setSelected(null);
                 setFormOpen(true);

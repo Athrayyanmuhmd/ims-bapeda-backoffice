@@ -67,24 +67,22 @@ export default function TableManajemenUser() {
         eyebrow="Administrasi"
         title="Manajemen User"
         description="Daftar user yang terdaftar di sistem."
+        actions={
+          <Button
+            className="w-full sm:w-auto"
+            onClick={() => {
+              setSelected(null);
+              setFormOpen(true);
+            }}
+          >
+            <Icon icon="lucide:plus" />
+            Tambah User
+          </Button>
+        }
       />
 
       <ListPageCard>
-        <ListToolbar
-          searchPlaceholder="Cari nama user..."
-          onSearch={debouncedSearch}
-          action={
-            <Button
-              onClick={() => {
-                setSelected(null);
-                setFormOpen(true);
-              }}
-            >
-              <Icon icon="lucide:plus" />
-              Tambah User
-            </Button>
-          }
-        />
+        <ListToolbar searchPlaceholder="Cari nama user..." onSearch={debouncedSearch} />
 
         <DataTable
           pagination={{

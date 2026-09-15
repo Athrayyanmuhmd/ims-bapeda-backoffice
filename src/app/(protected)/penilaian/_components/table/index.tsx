@@ -7,6 +7,7 @@ import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { DataTable } from "@/components/data-table";
+import { ListFilters } from "@/components/list-filters";
 import { ListPageCard } from "@/components/list-page-card";
 import { ListToolbar } from "@/components/list-toolbar";
 import { PageHeader } from "@/components/page-header";
@@ -20,7 +21,7 @@ import { createColumns } from "./columns";
 
 export default function TablePenilaian() {
   const queryClient = useQueryClient();
-  const { params, page, rows, setPage, setSearch } = useQueryBuilder({
+  const { params, page, rows, setPage, setSearch, setFilter, filters } = useQueryBuilder({
     defaultSearchKeys: ["name"],
   });
 
@@ -68,23 +69,25 @@ export default function TablePenilaian() {
         title="Penilaian"
         description="Nilai dan komentar akhir dari pembimbing untuk peserta magang."
         icon="mdi:star-outline"
+        actions={
+          <Button
+            className="w-full sm:w-auto"
+            onClick={() => {
+              setSelected(null);
+              setFormOpen(true);
+            }}
+          >
+            <Icon icon="lucide:plus" />
+            Tambah Penilaian
+          </Button>
+        }
       />
 
       <ListPageCard>
         <ListToolbar
           searchPlaceholder="Cari nama peserta..."
           onSearch={debouncedSearch}
-          action={
-            <Button
-              onClick={() => {
-                setSelected(null);
-                setFormOpen(true);
-              }}
-            >
-              <Icon icon="lucide:plus" />
-              Tambah Penilaian
-            </Button>
-          }
+          filters={<ListFilters values={filters} onChange={setFilter} />}
         />
 
         <DataTable

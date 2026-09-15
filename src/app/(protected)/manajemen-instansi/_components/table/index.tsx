@@ -67,24 +67,22 @@ export default function TableManajemenInstansi() {
         eyebrow="Administrasi"
         title="Manajemen Instansi"
         description="Sekolah/kampus asal peserta magang."
+        actions={
+          <Button
+            className="w-full sm:w-auto"
+            onClick={() => {
+              setSelected(null);
+              setFormOpen(true);
+            }}
+          >
+            <Icon icon="lucide:plus" />
+            Tambah Instansi
+          </Button>
+        }
       />
 
       <ListPageCard>
-        <ListToolbar
-          searchPlaceholder="Cari nama instansi..."
-          onSearch={debouncedSearch}
-          action={
-            <Button
-              onClick={() => {
-                setSelected(null);
-                setFormOpen(true);
-              }}
-            >
-              <Icon icon="lucide:plus" />
-              Tambah Instansi
-            </Button>
-          }
-        />
+        <ListToolbar searchPlaceholder="Cari nama instansi..." onSearch={debouncedSearch} />
 
         <DataTable
           pagination={{

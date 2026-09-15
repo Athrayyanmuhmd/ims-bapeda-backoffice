@@ -4,6 +4,7 @@ import { Icon } from "@iconify/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
+import { ListFilters } from "@/components/list-filters";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
@@ -29,8 +30,18 @@ export default function AbsensiHariIni() {
   // over at the wrong hour for anyone in another timezone.
   const [selectedDate, setSelectedDate] = useState(todayInApp);
   const [search, setSearch] = useState("");
+  const [filters, setFilters] = useState<Record<string, string>>({});
   const dateISO = selectedDate.toISODate() as string;
   const isToday = dateISO === todayIsoDate();
+
+  const setFilter = (key: string, value: string | null) => {
+    setFilters((prev) => {
+      const next = { ...prev };
+      if (!value) delete next[key];
+      else next[key] = value;
+      return next;
+    });
+  };
 
   const { data: pesertaData, isLoading: isLoadingPeserta } = useQuery({
     queryKey: queryKeys.pesertaMagang.roster(),
@@ -57,7 +68,10 @@ export default function AbsensiHariIni() {
           pesertaMagangId: p.id,
           name: p.name,
           divisi: p.divisi,
+          divisiId: p.divisiId,
+          instansiId: p.instansiId,
           pembimbingLapangan: p.pembimbingLapangan,
+          pembimbingLapanganId: p.pembimbingLapanganId,
           absensiId: absensi?.id ?? null,
           kehadiran: (absensi?.kehadiran as RosterPeserta["kehadiran"]) ?? null,
           jamMasuk: absensi?.jamMasuk ?? null,
@@ -66,8 +80,17 @@ export default function AbsensiHariIni() {
           keterangan: absensi?.keterangan ?? null,
         };
       })
-      .filter((p) => !search || p.name.toLowerCase().includes(search.toLowerCase()));
-  }, [pesertaData, absensiData, search]);
+      .filter((p) => {
+        if (search && !p.name.toLowerCase().includes(search.toLowerCase())) return false;
+        if (filters.divisiId && p.divisiId !== filters.divisiId) return false;
+        if (filters.instansiId && p.instansiId !== filters.instansiId) return false;
+        if (filters.pembimbingLapanganId && p.pembimbingLapanganId !== filters.pembimbingLapanganId) {
+          return false;
+        }
+        if (filters.kehadiran && p.kehadiran !== filters.kehadiran) return false;
+        return true;
+      });
+  }, [pesertaData, absensiData, search, filters]);
 
   const groups = useMemo(() => {
     const byDivisi = new Map<string, RosterPeserta[]>();
@@ -216,27 +239,33 @@ export default function AbsensiHariIni() {
         ))}
       </div>
 
-      <div className="flex flex-wrap items-center gap-2.5 rounded-xl border border-[#E2E8EA] bg-white p-3 shadow-[0_1px_2px_rgba(15,76,92,0.04)]">
-        <InputGroup className="max-w-sm flex-1 border-transparent bg-[#F7FAFB]">
-          <InputGroupInput
-            placeholder="Cari nama peserta..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="bg-transparent"
-          />
-          <InputGroupAddon align="inline-start">
-            <Icon icon="lucide:search" />
-          </InputGroupAddon>
-        </InputGroup>
+      <div className="flex flex-col gap-2.5 rounded-xl border border-[#E2E8EA] bg-white p-3 shadow-[0_1px_2px_rgba(15,76,92,0.04)]">
+        <div className="flex flex-col gap-2.5 lg:flex-row lg:items-start lg:justify-between">
+          <div className="grid min-w-0 flex-1 grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
+            <InputGroup className="h-9 w-full border-transparent bg-[#F7FAFB]">
+              <InputGroupInput
+                placeholder="Cari nama peserta..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="bg-transparent"
+              />
+              <InputGroupAddon align="inline-start">
+                <Icon icon="lucide:search" />
+              </InputGroupAddon>
+            </InputGroup>
+            <ListFilters values={filters} onChange={setFilter} showKehadiran />
+          </div>
 
-        <Button
-          variant="outline"
-          onClick={() => bulkHadirMutation.mutate()}
-          isLoading={bulkHadirMutation.isPending}
-          disabled={bulkHadirMutation.isPending || summary.belum === 0}
-        >
-          <Icon icon="lucide:check-check" /> Tandai sisanya Hadir
-        </Button>
+          <Button
+            variant="outline"
+            className="shrink-0"
+            onClick={() => bulkHadirMutation.mutate()}
+            isLoading={bulkHadirMutation.isPending}
+            disabled={bulkHadirMutation.isPending || summary.belum === 0}
+          >
+            <Icon icon="lucide:check-check" /> Tandai sisanya Hadir
+          </Button>
+        </div>
       </div>
 
       {isLoading ? (

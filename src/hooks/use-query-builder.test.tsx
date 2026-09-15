@@ -40,6 +40,13 @@ describe("useQueryBuilder — reading params", () => {
     expect(result.current.searchFilters).toEqual({ name: "andi" });
     expect(result.current.searchValue).toBe("andi");
   });
+
+  it("parses filters JSON from the URL", () => {
+    currentSearch = `filters=${encodeURIComponent(JSON.stringify({ divisiId: "div-1" }))}`;
+    const { result } = renderHook(() => useQueryBuilder());
+
+    expect(result.current.filters).toEqual({ divisiId: "div-1" });
+  });
 });
 
 describe("useQueryBuilder — setPage", () => {
@@ -92,6 +99,30 @@ describe("useQueryBuilder — setSearch", () => {
     expect(push).not.toHaveBeenCalled();
     expect(warnSpy).toHaveBeenCalled();
     warnSpy.mockRestore();
+  });
+});
+
+describe("useQueryBuilder — setFilter", () => {
+  it("writes a filter and resets to page 1", () => {
+    currentSearch = "page=3";
+    const { result } = renderHook(() => useQueryBuilder({ defaultPage: 1 }));
+
+    result.current.setFilter("kehadiran", "Alpa");
+
+    const [url] = push.mock.calls[0];
+    expect(url).not.toContain("page=");
+    expect(url).toContain(encodeURIComponent(JSON.stringify({ kehadiran: "Alpa" })));
+  });
+
+  it("removes a filter key when value is null", () => {
+    currentSearch = `filters=${encodeURIComponent(JSON.stringify({ kehadiran: "Alpa", divisiId: "d1" }))}`;
+    const { result } = renderHook(() => useQueryBuilder());
+
+    result.current.setFilter("kehadiran", null);
+
+    const [url] = push.mock.calls[0];
+    expect(url).toContain(encodeURIComponent(JSON.stringify({ divisiId: "d1" })));
+    expect(url).not.toContain("Alpa");
   });
 });
 

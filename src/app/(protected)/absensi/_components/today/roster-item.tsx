@@ -8,7 +8,10 @@ export interface RosterPeserta {
   pesertaMagangId: string;
   name: string;
   divisi: string | null;
+  divisiId?: string | null;
+  instansiId?: string | null;
   pembimbingLapangan: string | null;
+  pembimbingLapanganId?: string | null;
   absensiId: string | null;
   kehadiran: (typeof KEHADIRAN_OPTIONS)[number] | null;
   jamMasuk: string | null;

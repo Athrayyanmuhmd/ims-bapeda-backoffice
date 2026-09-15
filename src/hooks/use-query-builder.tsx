@@ -30,6 +30,7 @@ export function useQueryBuilder(options: UseQueryBuilderOptions = {}) {
     const page = searchParams.get("page");
     const rows = searchParams.get("rows");
     const searchFilters = searchParams.get("searchFilters");
+    const filters = searchParams.get("filters");
     const orderKey = searchParams.get("orderKey");
     const orderRule = searchParams.get("orderRule") as "asc" | "desc" | null;
 
@@ -37,6 +38,7 @@ export function useQueryBuilder(options: UseQueryBuilderOptions = {}) {
       page: page ? Number.parseInt(page) : defaultPage,
       rows: rows ? Number.parseInt(rows) : defaultRows,
       searchFilters: searchFilters ? JSON.parse(searchFilters) : undefined,
+      filters: filters ? JSON.parse(filters) : undefined,
       orderKey: orderKey || defaultOrderKey,
       orderRule: orderRule || defaultOrderRule,
     };
@@ -148,9 +150,23 @@ export function useQueryBuilder(options: UseQueryBuilderOptions = {}) {
     [params.orderKey, params.orderRule, updateParams]
   );
 
+  const setFilter = useCallback(
+    (key: string, value: string | number | boolean | null) => {
+      const next = { ...params.filters };
+      if (value === null || value === undefined || value === "") {
+        delete next[key];
+      } else {
+        next[key] = value;
+      }
+      updateParams({ filters: next }, true);
+    },
+    [params.filters, updateParams]
+  );
+
   const clearFilters = useCallback(() => {
     updateParams({
       searchFilters: undefined,
+      filters: undefined,
       page: defaultPage,
     });
   }, [updateParams, defaultPage]);
@@ -167,6 +183,7 @@ export function useQueryBuilder(options: UseQueryBuilderOptions = {}) {
     page: params.page ?? defaultPage,
     rows: params.rows ?? defaultRows,
     searchFilters: params.searchFilters,
+    filters: params.filters,
     searchValue, // Current search value (from first defaultSearchKey)
     orderKey: params.orderKey,
     orderRule: params.orderRule,
@@ -176,6 +193,7 @@ export function useQueryBuilder(options: UseQueryBuilderOptions = {}) {
     setRows,
     setSearch, // Uses defaultSearchKeys array
     setSearchByKey, // For individual key search
+    setFilter,
     setOrder,
     toggleOrder,
     clearFilters,

@@ -52,7 +52,7 @@ const portalPasswordField = z.union([
   z.string().min(8, "Password portal minimal 8 karakter"),
 ]);
 
-export const schemaCreatePesertaMagangRequest = z.object({
+const schemaPesertaMagangFields = z.object({
   name: z.string().min(1, "Nama wajib diisi"),
   email: z.string().min(1, "Email wajib diisi").email("Format email tidak valid"),
   phoneNumber: phoneIdSchema,
@@ -62,20 +62,39 @@ export const schemaCreatePesertaMagangRequest = z.object({
   pembimbingLapanganId: z.string().optional(),
   tanggalMulai: z.string().optional(),
   tanggalSelesai: z.string().optional(),
-  status: z.string().optional(),
+  status: z.enum(STATUS_MAGANG_OPTIONS).optional(),
   // Optional on create: blank = portal stays inactive.
   portalPassword: portalPasswordField.optional(),
 });
 
-export type TCreatePesertaMagangRequest = z.infer<typeof schemaCreatePesertaMagangRequest>;
+const tanggalRangeRefine = <T extends z.ZodTypeAny>(schema: T) =>
+  schema.refine(
+    (value) => {
+      const data = value as {
+        tanggalMulai?: string;
+        tanggalSelesai?: string;
+      };
+      if (!data.tanggalMulai || !data.tanggalSelesai) return true;
+      return data.tanggalSelesai >= data.tanggalMulai;
+    },
+    { message: "Tanggal selesai harus setelah atau sama dengan tanggal mulai", path: ["tanggalSelesai"] }
+  );
+
+export const schemaCreatePesertaMagangRequest = tanggalRangeRefine(schemaPesertaMagangFields);
+
+export type TCreatePesertaMagangRequest = z.infer<typeof schemaPesertaMagangFields>;
 export type TCreatePesertaMagangResponse = TPesertaMagang;
 
 // Edit form: same fields + revoke flag (UI-only; maps to portalPassword: null).
-export const schemaUpdatePesertaMagangRequest = schemaCreatePesertaMagangRequest.extend({
-  revokePortalAccess: z.boolean().optional(),
-});
+export const schemaUpdatePesertaMagangRequest = tanggalRangeRefine(
+  schemaPesertaMagangFields.extend({
+    revokePortalAccess: z.boolean().optional(),
+  })
+);
 
-export type TUpdatePesertaMagangForm = z.infer<typeof schemaUpdatePesertaMagangRequest>;
+export type TUpdatePesertaMagangForm = z.infer<typeof schemaPesertaMagangFields> & {
+  revokePortalAccess?: boolean;
+};
 
 // What the API actually accepts on PUT — revoke becomes portalPassword: null.
 export type TUpdatePesertaMagangRequest = Omit<

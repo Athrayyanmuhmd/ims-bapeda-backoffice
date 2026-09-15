@@ -124,7 +124,9 @@ export function FormDialog({ open, onOpenChange, peserta }: FormDialogProps) {
         pembimbingLapanganId: peserta?.pembimbingLapanganId ?? "",
         tanggalMulai: toDateInput(peserta?.tanggalMulai),
         tanggalSelesai: toDateInput(peserta?.tanggalSelesai),
-        status: peserta?.status ?? "AKTIF",
+        status: (STATUS_MAGANG_OPTIONS as readonly string[]).includes(peserta?.status ?? "")
+          ? (peserta!.status as (typeof STATUS_MAGANG_OPTIONS)[number])
+          : "AKTIF",
         portalPassword: "",
         revokePortalAccess: false,
       });

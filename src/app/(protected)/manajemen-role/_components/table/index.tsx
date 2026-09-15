@@ -67,24 +67,22 @@ export default function TableManajemenRole() {
         eyebrow="Administrasi"
         title="Manajemen Role"
         description="Daftar role yang terdaftar di sistem."
+        actions={
+          <Button
+            className="w-full sm:w-auto"
+            onClick={() => {
+              setSelected(null);
+              setFormOpen(true);
+            }}
+          >
+            <Icon icon="lucide:plus" />
+            Tambah Role
+          </Button>
+        }
       />
 
       <ListPageCard>
-        <ListToolbar
-          searchPlaceholder="Cari nama role..."
-          onSearch={debouncedSearch}
-          action={
-            <Button
-              onClick={() => {
-                setSelected(null);
-                setFormOpen(true);
-              }}
-            >
-              <Icon icon="lucide:plus" />
-              Tambah Role
-            </Button>
-          }
-        />
+        <ListToolbar searchPlaceholder="Cari nama role..." onSearch={debouncedSearch} />
 
         <DataTable
           pagination={{
